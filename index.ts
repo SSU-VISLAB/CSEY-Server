@@ -14,9 +14,7 @@ const app = express();
 app.use(_express.json());
 app.use(_express.urlencoded({ extended: false }));
 app.use(cors(/*corsOptions*/));
-app.get('/', async (req: express.Request, res: express.Response) => {
-
-});
+app.get('/', async (req: express.Request, res: express.Response) => res.sendFile(__dirname + '/test.html'));
 app.get('/login', (req:express.Request, res:express.Response) => res.sendFile(__dirname + '/testLogin.html'));
 app.use('/api', userRoutes);
 (async ()=>{
