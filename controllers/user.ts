@@ -1,9 +1,11 @@
+import * as express from "express"
+
 const { default: axios } = require("axios");
 const User = require("../models/user");
 
-exports.signup = async (req, res, next) => {};
+exports.signup = async (req:express.Request, res:express.Response, next: any) => {};
 
-exports.login = async (req, res, next) => {
+exports.login = async (req:express.Request, res:express.Response, next: any) => {
   const code = req.body.code;
   console.log({code});
   try {
@@ -43,7 +45,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-const getKakaoToken = async (code) => {
+const getKakaoToken = async (code: any) => {
   const { KAKAO_API } = process.env;
   const url = "https://kauth.kakao.com/oauth/token";
   const params = {
@@ -65,7 +67,7 @@ const getKakaoToken = async (code) => {
   }
 };
 
-const getKakaoInfo = async (token) => {
+const getKakaoInfo = async (token: any) => {
   const url = "https://kapi.kakao.com/v1/user/access_token_info";
   const config = {
     headers: {
