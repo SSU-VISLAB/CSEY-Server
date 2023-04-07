@@ -1,11 +1,11 @@
+import axios from "axios";
 import * as express from "express"
+import { DBUser, User } from "../models/user";
 
-const { default: axios } = require("axios");
-const User = require("../models/user");
 
-exports.signup = async (req:express.Request, res:express.Response, next: any) => {};
+export const signup = async (req:express.Request, res:express.Response, next: any) => {};
 
-exports.login = async (req:express.Request, res:express.Response, next: any) => {
+export const login = async (req:express.Request, res:express.Response, next: any) => {
   const code = req.body.code;
   console.log({code});
   try {
@@ -16,16 +16,22 @@ exports.login = async (req:express.Request, res:express.Response, next: any) => 
       refresh_token_expires_in,
     } = await getKakaoToken(code);
     const id = await getKakaoInfo(access_token);
-    console.log({access_token, id});
-    // let user = await User.findUser(id);
-    // if (!user) {
-    //   user = new User({
-    //     id: id,
-    //     nickname: `사용자-${id}`.slice(0, 10),
-    //     snsProvider: "kakao",
-    //   });
-    //   await user.save();
-    // }
+
+    let user: User = await DBUser.findUser(id);
+    console.log({user});
+    if (!user) {
+      user = new DBUser({
+        id: id,
+        name: '사용자',
+        activated: true,
+        createdDate: new Date(),
+        lastAccess: new Date(),
+        major: '0'
+      });
+      await (user as DBUser).save();
+      console.log('사용자 생성:', user.id);
+    } 
+    console.log('login 성공:', user.id);
 
     let token;
     // try {
@@ -83,3 +89,4 @@ const getKakaoInfo = async (token: any) => {
     console.error(e);
   }
 };
+
