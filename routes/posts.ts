@@ -1,8 +1,8 @@
-const express = require('express');
+//const express = require('express');
 
 const postsController = require('../controllers/posts');
 
-const router = express.Router();
+//const router = express.Router();
 
 /** url: /posts/alerts */
 router.get('/alerts', postsController.alerts);
