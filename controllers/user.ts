@@ -1,6 +1,7 @@
 import axios from "axios";
-import * as express from "express"
+import * as express from "express";
 import { DBUser, User } from "../models/user";
+import { DBAlarm } from "../models/alarm";
 
 
 export const signup = async (req:express.Request, res:express.Response, next: any) => {};
@@ -28,7 +29,11 @@ export const login = async (req:express.Request, res:express.Response, next: any
         lastAccess: new Date(),
         major: '0'
       });
-      await (user as DBUser).save();
+      await (user as DBUser).saveAll();
+      
+      const alarmInit = new DBAlarm({fk_id: id}, true);
+      await alarmInit.saveAll();
+
       console.log('사용자 생성:', user.id);
     } 
     console.log('login 성공:', user.id);

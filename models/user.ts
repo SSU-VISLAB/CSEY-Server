@@ -29,14 +29,14 @@ export class DBUser extends DefaultModel implements User{
     }
 
     // 회원가입 정보 DB에 저장
-    async save() {
+    async saveAll() {
         const sql = `INSERT INTO users (${this.allKeys}) VALUES (${this.allParams})`;
         const res = await mySql.execute(sql, this.allValues);
         return res;
     }
 
     // user_id에 해당하는 유저 정보 출력
-    static async findUser(user_id: string): Promise<User> {
+    static async findUser(user_id: number): Promise<User> {
         const sql = 'SELECT * FROM users WHERE users.id = ?';
         const user = (await mySql.execute(sql, [user_id]))[0][0];
         return user;
