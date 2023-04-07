@@ -1,8 +1,8 @@
-const express = require('express');
+//const express = require('express');
 
 const userController = require('../controllers/user');
 
-const router = express.Router();
+//const router = express.Router();
 
 /** url: /api/signup */
 router.post('/signup', userController.signup);
