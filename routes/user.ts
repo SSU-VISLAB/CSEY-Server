@@ -12,4 +12,7 @@ userRouter.post('/login', userController.login);
 
 userRouter.put('/:id/alarms/set', alarmController.setAlarm);
 
+/** url: /api/sendFCM */
+userRouter.get('/sendFCM', alarmController.sendFCM);
+
 export default userRouter;
