@@ -8,13 +8,13 @@ export interface IUser {
 }
 
 export interface IAlarm {
-  alarm_push?: '0' | '1';
-  event_push?: '0' | '1';
+  alarm_push?: boolean;
+  event_push?: boolean;
   events_timer?: number;
-  events_post?: "0" | "1";
-  major_schedule_push?: '0' | '1';
-  major_schedule_post?: '0' | '1';
-  notice_push?: '0' | '1';
-  alerts_push?: '0' | '1';
+  events_post?: boolean;
+  major_schedule_push?: boolean;
+  major_schedule_post?: boolean;
+  notice_push?: boolean;
+  alerts_push?: boolean;
   fk_id: number;
 }

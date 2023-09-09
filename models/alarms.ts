@@ -1,7 +1,8 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from ".";
+import { IAlarm } from "./types";
 
-const Alarm = sequelize.define(
+const Alarm = sequelize.define<Model<IAlarm, IAlarm>>(
   "Alarm",
   {
     alarm_push: {
@@ -73,6 +74,7 @@ const Alarm = sequelize.define(
     fk_id: {
       type: DataTypes.BIGINT,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: 'User',
         key: 'id'
@@ -85,5 +87,21 @@ const Alarm = sequelize.define(
     timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
   }
 );
+  
+// 훅을 사용하여 alarm_push 속성 값이 변경될 때 실행될 함수 정의
+// UPDATE 메서드에서 individualHooks: true 넣어야 사용 가능
+
+// Alarm.beforeUpdate((instance) => {
+//   // alarm_push 속성 값이 false로 변경될 때
+//   if (instance.getDataValue('alarm_push') == false) {
+//     // 다른 속성들을 false로 업데이트
+//     console.log('업데이트')
+//     instance.setDataValue('alerts_push', false);
+//     instance.setDataValue('event_push', false);
+//     instance.setDataValue('major_schedule_post', false);
+//     instance.setDataValue('major_schedule_push', false);
+//     instance.setDataValue('notice_push', false);
+//   }
+// })
 
 export default Alarm;

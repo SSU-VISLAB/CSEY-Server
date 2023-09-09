@@ -1,3 +1,4 @@
+// sequelize로 대체했으므로 사용 중지
 import { createPool } from "mysql2/promise";
 
 const mySql = createPool({
