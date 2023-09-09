@@ -1,59 +1,57 @@
 import axios from "axios";
 import * as express from "express";
-import { DBUser, User } from "../models/user";
-import { DBAlarm } from "../models/alarm";
 
 
 export const signup = async (req:express.Request, res:express.Response, next: any) => {};
 
 export const login = async (req:express.Request, res:express.Response, next: any) => {
-  const code = req.body.code;
-  console.log({code});
-  try {
-    const {
-      access_token,
-      expires_in,
-      refresh_token,
-      refresh_token_expires_in,
-    } = await getKakaoToken(code);
-    const id = await getKakaoInfo(access_token);
+  // const code = req.body.code;
+  // console.log({code});
+  // try {
+  //   const {
+  //     access_token,
+  //     expires_in,
+  //     refresh_token,
+  //     refresh_token_expires_in,
+  //   } = await getKakaoToken(code);
+  //   const id = await getKakaoInfo(access_token);
 
-    let user: User = await DBUser.findUser(id);
-    console.log({user});
-    if (!user) {
-      user = new DBUser({
-        id: id,
-        name: '사용자',
-        activated: true,
-        createdDate: new Date(),
-        lastAccess: new Date(),
-        major: '0'
-      });
-      await (user as DBUser).saveAll();
+  //   let user: IUser = await DBUser.findUser(id);
+  //   console.log({user});
+  //   if (!user) {
+  //     user = new DBUser({
+  //       id: id,
+  //       name: '사용자',
+  //       activated: true,
+  //       createdDate: new Date(),
+  //       lastAccess: new Date(),
+  //       major: '0'
+  //     });
+  //     await (user as DBUser).saveAll();
       
-      const alarmInit = new DBAlarm({fk_id: id}, true);
-      await alarmInit.saveAll();
+  //     const alarmInit = new DBAlarm({fk_id: id}, true);
+  //     await alarmInit.saveAll();
 
-      console.log('사용자 생성:', user.id);
-    } 
-    console.log('login 성공:', user.id);
+  //     console.log('사용자 생성:', user.id);
+  //   } 
+  //   console.log('login 성공:', user.id);
 
-    let token;
-    // try {
-    //   token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
-    // } catch (err) {
-    //   const error = new HttpError("회원가입 실패", 500);
-    //   return next(error);
-    // }
+  //   let token;
+  //   // try {
+  //   //   token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
+  //   // } catch (err) {
+  //   //   const error = new HttpError("회원가입 실패", 500);
+  //   //   return next(error);
+  //   // }
 
-    res.status(200).json({
-      // 프론트로 반환
-      // userId: user.id,
-      token: token,
-    });
-  } catch (e) {
-    console.error({ e });
-  }
+  //   res.status(200).json({
+  //     // 프론트로 반환
+  //     // userId: user.id,
+  //     token: token,
+  //   });
+  // } catch (e) {
+  //   console.error({ e });
+  // }
 };
 
 const getKakaoToken = async (code: any) => {

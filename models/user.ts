@@ -1,44 +1,41 @@
-import mySql from "../mysql/mysql_database";
-import { DefaultModel } from "./models";
+import { DataTypes } from "sequelize";
+import { sequelize } from ".";
 
-export interface User {
-    id: number;
-    activated: boolean;
-    name: string;
-    createdDate: Date;
-    lastAccess: Date;
-    major: '0' | '1';
-}
+const User = sequelize.define(
+  "User",
+  {
+    id: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
+    },
+    activated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    createdDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    lastAccess: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    major: {
+      type: DataTypes.ENUM("컴퓨터", "소프트"),
+      allowNull: false,
+    },
+  },
+  {
+    modelName: "User",
+    tableName: "users",
+    timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  }
+);
 
-export class DBUser extends DefaultModel implements User{
-    id: number;
-    activated: boolean;
-    name: string;
-    createdDate: Date;
-    lastAccess: Date;
-    major: "0" | "1";
-
-    constructor({id, activated, name, createdDate, lastAccess, major}: User) {
-        super();
-        this.id = id;
-        this.activated = activated;
-        this.name = name;
-        this.createdDate = createdDate;
-        this.lastAccess = lastAccess;
-        this.major = major;
-    }
-
-    // 회원가입 정보 DB에 저장
-    async saveAll() {
-        const sql = `INSERT INTO users (${this.allKeys}) VALUES (${this.allParams})`;
-        const res = await mySql.execute(sql, this.allValues);
-        return res;
-    }
-
-    // user_id에 해당하는 유저 정보 출력
-    static async findUser(user_id: number): Promise<User> {
-        const sql = 'SELECT * FROM users WHERE users.id = ?';
-        const user = (await mySql.execute(sql, [user_id]))[0][0];
-        return user;
-    }
-};
+export default User
