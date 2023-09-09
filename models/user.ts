@@ -13,6 +13,9 @@ const User = sequelize.define(
     activated: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      validate: {
+        isBoolean: true,
+      },
     },
     name: {
       type: DataTypes.STRING(20),

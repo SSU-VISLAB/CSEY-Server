@@ -21,13 +21,18 @@ const Notice = sequelize.define(
     image: {
       type: DataTypes.STRING,
       allowNull: true,
+      validate: {
+        isUrl: {
+          msg: '유효한 URL 형식이 아닙니다.', // 실패 시 반환할 메시지
+        },
+      },
     },
     date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
     major_advisor: {
-      type: DataTypes.ENUM("컴퓨터", "소프트"), // 가능한 관리학부 값들
+      type: DataTypes.ENUM("컴퓨터", "소프트"),
       allowNull: false,
     },
     like: {
@@ -41,7 +46,7 @@ const Notice = sequelize.define(
       defaultValue: 0,
     },
     priority: {
-      type: DataTypes.ENUM("긴급", "일반"), // 가능한 중요도 값들
+      type: DataTypes.ENUM("긴급", "일반"),
       allowNull: false,
     },
   },
