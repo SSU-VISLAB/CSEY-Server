@@ -1,6 +1,6 @@
 import { Router } from "express";
-import * as alarmController from "../controllers/alarm";
-import * as userController from "../controllers/user";
+import * as alarmController from "../controllers/alarm.ts";
+import * as userController from "../controllers/user.ts";
 
 
 const userRouter = Router();

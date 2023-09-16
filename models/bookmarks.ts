@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from '.';
+import { sequelize } from './index.ts';
 
 const Bookmark = sequelize.define('Bookmark', {
   bookmark: {

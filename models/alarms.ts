@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
-import { sequelize } from ".";
-import { IAlarm } from "./types";
+import { sequelize } from "./index.ts";
+import { IAlarm } from "./types.ts";
 
 const Alarm = sequelize.define<Model<IAlarm, IAlarm>>(
   "Alarm",
