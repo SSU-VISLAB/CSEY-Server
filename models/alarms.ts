@@ -1,17 +1,38 @@
-import { DataTypes, Model } from "sequelize";
-import { sequelize } from "./index.ts";
-import { IAlarm } from "./types.ts";
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from './index.js';
+import User from './user.ts';
 
-const Alarm = sequelize.define<Model<IAlarm, IAlarm>>(
-  "Alarm",
+export interface IAlarm {
+  alarm_push: boolean;
+  event_push: boolean;
+  events_timer: number;
+  events_post: '북마크' | '전체';
+  major_schedule_push: boolean;
+  major_schedule_post: boolean;
+  notice_push: boolean;
+  alerts_push: boolean;
+  fk_id: number;
+}
+
+class Alarm extends Model<IAlarm, IAlarm> {
+  public alarm_push!: boolean;
+  public event_push!: boolean;
+  public events_timer!: number;
+  public events_post!: '북마크' | '전체';
+  public major_schedule_push!: boolean;
+  public major_schedule_post!: boolean;
+  public notice_push!: boolean;
+  public alerts_push!: boolean;
+  public fk_id!: number;
+}
+
+Alarm.init(
   {
     alarm_push: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      validate: {
-        isBoolean: true,
-      },
+
     },
     event_push: {
       type: DataTypes.BOOLEAN,
@@ -24,20 +45,17 @@ const Alarm = sequelize.define<Model<IAlarm, IAlarm>>(
     events_timer: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: 24 * 60 * 60 * 1000, // 기본값 설정 (24시간)
+      defaultValue: 24 * 60 * 60 * 1000,
       validate: {
-        isInt: true, // 정수 형식 검사
+        isInt: true,
         min: 0,
         max: 24,
       },
     },
     events_post: {
-      type: DataTypes.ENUM("북마크", "전체"), // 가능한 행사알림 형태 값들
+      type: DataTypes.ENUM('북마크', '전체'),
       allowNull: false,
-      defaultValue: "전체", // 기본값 설정 (전체)
-      validate: {
-        isBoolean: true,
-      },
+      defaultValue: '전체',
     },
     major_schedule_push: {
       type: DataTypes.BOOLEAN,
@@ -72,36 +90,29 @@ const Alarm = sequelize.define<Model<IAlarm, IAlarm>>(
       },
     },
     fk_id: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
+      type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
+      allowNull: false,
+      unique: true,
       references: {
-        model: 'User',
-        key: 'id'
-      }
+        model: User, // User 모델을 참조합니다.
+        key: 'id',  // User 모델의 id를 참조합니다.
+      },
+      onUpdate: "RESTRICT",
+      onDelete: "CASCADE"
     },
   },
   {
-    modelName: "Alarm", // 모델 이름
-    tableName: "alarms", // 데이터베이스 테이블 이름 (선택 사항)
-    timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+    sequelize,
+    tableName: 'alarms',
+    modelName: 'Alarm',
+    timestamps: false,
   }
 );
-  
-// 훅을 사용하여 alarm_push 속성 값이 변경될 때 실행될 함수 정의
-// UPDATE 메서드에서 individualHooks: true 넣어야 사용 가능
-
-// Alarm.beforeUpdate((instance) => {
-//   // alarm_push 속성 값이 false로 변경될 때
-//   if (instance.getDataValue('alarm_push') == false) {
-//     // 다른 속성들을 false로 업데이트
-//     console.log('업데이트')
-//     instance.setDataValue('alerts_push', false);
-//     instance.setDataValue('event_push', false);
-//     instance.setDataValue('major_schedule_post', false);
-//     instance.setDataValue('major_schedule_push', false);
-//     instance.setDataValue('notice_push', false);
-//   }
-// })
+Alarm.belongsTo(User, {
+  foreignKey: 'fk_id',
+  targetKey: 'id',
+  as: 'user'
+});
 
 export default Alarm;

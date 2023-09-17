@@ -5,27 +5,28 @@ const Notice = sequelize.define(
   "Notice",
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
+      unique: true
     },
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     content: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(2000),
       allowNull: false,
     },
     image: {
       type: DataTypes.STRING,
       allowNull: true,
-      validate: {
-        isUrl: {
-          msg: '유효한 URL 형식이 아닙니다.', // 실패 시 반환할 메시지
-        },
-      },
+      // validate: {
+      //   isUrl: {
+      //     msg: '유효한 URL 형식이 아닙니다.', // 실패 시 반환할 메시지
+      //   },
+      // },
     },
     date: {
       type: DataTypes.DATEONLY,
@@ -36,12 +37,12 @@ const Notice = sequelize.define(
       allowNull: false,
     },
     like: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       defaultValue: 0,
     },
     dislike: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       defaultValue: 0,
     },

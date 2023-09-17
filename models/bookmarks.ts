@@ -2,17 +2,14 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from './index.ts';
 
 const Bookmark = sequelize.define('Bookmark', {
-  bookmark: {
+  bookmark_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
-    references: {
-      model: 'Event',
-      key: 'id',
-    },
   },
-  id: {
+  fk_user_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
+    primaryKey: true,
     references: {
       model: 'User',
       key: 'id',
