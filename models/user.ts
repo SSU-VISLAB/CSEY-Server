@@ -1,8 +1,28 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
+import Alarm from "./alarms.ts";
 import { sequelize } from "./index.ts";
 
-const User = sequelize.define(
-  "User",
+export interface IUser {
+  id: number;
+  activated: boolean;
+  name: string | null;
+  createdDate: Date;
+  lastAccess: Date;
+  major: "컴퓨터" | "소프트";
+}
+
+export type UserCreationAttributes = Optional<IUser, "id">;
+
+class User extends Model<IUser, UserCreationAttributes> {
+  public id!: number;
+  public activated!: boolean;
+  public name!: string | null;
+  public createdDate!: Date;
+  public lastAccess!: Date;
+  public major!: "컴퓨터" | "소프트";
+}
+
+User.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -35,10 +55,15 @@ const User = sequelize.define(
     },
   },
   {
+    sequelize,
     modelName: "User",
     tableName: "users",
     timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
   }
 );
 
-export default User
+User.afterCreate(async (user, options) => {
+  Alarm.create({ fk_id: user.id }, { transaction: options.transaction });
+});
+
+export default User;

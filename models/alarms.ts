@@ -3,6 +3,7 @@ import { sequelize } from './index.js';
 import User from './user.ts';
 
 export interface IAlarm {
+  id: number;
   alarm_push: boolean;
   event_push: boolean;
   events_timer: number;
@@ -15,6 +16,7 @@ export interface IAlarm {
 }
 
 class Alarm extends Model<IAlarm, IAlarm> {
+  public id!: number;
   public alarm_push!: boolean;
   public event_push!: boolean;
   public events_timer!: number;
@@ -28,11 +30,16 @@ class Alarm extends Model<IAlarm, IAlarm> {
 
 Alarm.init(
   {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     alarm_push: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-
     },
     event_push: {
       type: DataTypes.BOOLEAN,
@@ -45,7 +52,7 @@ Alarm.init(
     events_timer: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: 24 * 60 * 60 * 1000,
+      defaultValue: 24,
       validate: {
         isInt: true,
         min: 0,
@@ -91,7 +98,6 @@ Alarm.init(
     },
     fk_id: {
       type: DataTypes.INTEGER.UNSIGNED,
-      primaryKey: true,
       allowNull: false,
       unique: true,
       references: {
@@ -109,10 +115,5 @@ Alarm.init(
     timestamps: false,
   }
 );
-Alarm.belongsTo(User, {
-  foreignKey: 'fk_id',
-  targetKey: 'id',
-  as: 'user'
-});
 
 export default Alarm;
