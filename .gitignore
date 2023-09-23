@@ -87,3 +87,4 @@ web_modules/
 .cache
 .parcel-cache
 firebaseKey.json
+.adminjs/bundle.js
