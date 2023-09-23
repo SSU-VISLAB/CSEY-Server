@@ -1,22 +1,32 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from "./index.ts";
+import { sequelize } from './sequelize.ts';
 
 const ReadAsset = sequelize.define('Read', {
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
+  },
   fk_notice_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'Notice', // 외래키가 참조하는 모델의 이름 (테이블 이름)
+      model: 'notices', // 외래키가 참조하는 모델의 이름 (테이블 이름)
       key: 'id', // 참조하는 모델의 필드 이름
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
   fk_read_id: {
     type: DataTypes.BIGINT,
     allowNull: true,
     references: {
-      model: 'Read',
-      key: 'read_id'
-    }
+      model: 'reads',
+      key: 'id'
+    },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
 }, {
   modelName: 'ReadAsset', // 모델 이름

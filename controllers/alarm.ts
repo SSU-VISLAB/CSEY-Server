@@ -39,7 +39,7 @@ export const setAlarm = async (
 
     // 사용자의 알람 설정 업데이트
     await Alarm.update(alarms, {
-      where: { fk_id: userId },
+      where: { fk_user_id: userId },
       individualHooks: true,
     });
 

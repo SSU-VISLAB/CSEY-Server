@@ -1,19 +1,22 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './index.ts';
+import { sequelize } from './sequelize.ts';
 
 const Bookmark = sequelize.define('Bookmark', {
-  bookmark_id: {
-    type: DataTypes.BIGINT,
-    allowNull: false,
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
   },
   fk_user_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
-    primaryKey: true,
     references: {
-      model: 'User',
+      model: 'users',
       key: 'id',
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
 }, {
   modelName: 'Bookmark',

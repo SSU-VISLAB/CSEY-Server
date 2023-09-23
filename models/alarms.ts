@@ -1,6 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from './index.js';
-import User from './user.ts';
+import { sequelize } from './sequelize.ts';
 
 export interface IAlarm {
   id: number;
@@ -12,7 +11,7 @@ export interface IAlarm {
   major_schedule_post: boolean;
   notice_push: boolean;
   alerts_push: boolean;
-  fk_id: number;
+  fk_user_id: number;
 }
 
 class Alarm extends Model<IAlarm, IAlarm> {
@@ -25,7 +24,7 @@ class Alarm extends Model<IAlarm, IAlarm> {
   public major_schedule_post!: boolean;
   public notice_push!: boolean;
   public alerts_push!: boolean;
-  public fk_id!: number;
+  public fk_user_id!: number;
 }
 
 Alarm.init(
@@ -96,15 +95,15 @@ Alarm.init(
         isBoolean: true,
       },
     },
-    fk_id: {
+    fk_user_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       unique: true,
       references: {
-        model: User, // User 모델을 참조합니다.
+        model: 'users', // User 모델을 참조합니다.
         key: 'id',  // User 모델의 id를 참조합니다.
       },
-      onUpdate: "RESTRICT",
+      onUpdate: "CASCADE",
       onDelete: "CASCADE"
     },
   },

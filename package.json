@@ -35,7 +35,7 @@
     "express-mysql-session": "^2.1.8",
     "express-session": "^1.17.3",
     "mysql2": "^3.2.0",
-    "nodemon": "^2.0.21",
+    "nodemon": "^3.0.1",
     "sequelize": "^6.33.0",
     "ts-dotenv": "^0.9.1",
     "typescript": "^5.0.2"

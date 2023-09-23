@@ -1,27 +1,37 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from "./index.ts";
+import { sequelize } from './sequelize.ts';
 
 const NoticesLike = sequelize.define('NoticesLike', {
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
+  },
   like: {
     type: DataTypes.ENUM('null', 'like', 'dislike'), // 가능한 버튼 값들
     allowNull: false,
     defaultValue: 'null', // 기본값 설정 (null)
   },
-  notice_id: {
+  fk_notice_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'Notice', // 외래키가 참조하는 모델의 이름 (테이블 이름)
+      model: 'notices', // 외래키가 참조하는 모델의 이름 (테이블 이름)
       key: 'id', // 참조하는 모델의 필드 이름
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
-  user_id: {
+  fk_user_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'User', // 외래키가 참조하는 모델의 이름 (테이블 이름)
+      model: 'users', // 외래키가 참조하는 모델의 이름 (테이블 이름)
       key: 'id', // 참조하는 모델의 필드 이름
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
 }, {
   modelName: 'NoticesLike', // 모델 이름

@@ -3,11 +3,7 @@ import * as AdminJSSequelize from '@adminjs/sequelize';
 import AdminJS, { AdminJSOptions } from "adminjs";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
-import Alarm from "./models/alarms.ts";
-import Event from "./models/events.ts";
-import { sequelize } from "./models/index.ts";
-import Notice from "./models/notice.ts";
-import User from "./models/user.ts";
+import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
 import userRouter from "./routes/user.ts";
 // const corsOptions = {
 //     origin: 'https://',
@@ -33,7 +29,13 @@ const start = async () => {
 			User,
 			Alarm,
 			Notice,
-			Event
+			Event,
+			NoticesLike,
+			EventsLike,
+			Read,
+			ReadAsset,
+			Bookmark,
+			BookmarkAsset
 		],
 	}
   const admin = new AdminJS(adminOptions);

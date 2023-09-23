@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "./index.ts";
+import { sequelize } from './sequelize.ts';
 
 const Notice = sequelize.define(
   "Notice",

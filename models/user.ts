@@ -1,6 +1,8 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import Alarm from "./alarms.ts";
-import { sequelize } from "./index.ts";
+import Bookmark from "./bookmarks.ts";
+import Read from "./reads.ts";
+import { sequelize } from './sequelize.ts';
 
 export interface IUser {
   id: number;
@@ -63,7 +65,9 @@ User.init(
 );
 
 User.afterCreate(async (user, options) => {
-  Alarm.create({ fk_id: user.id }, { transaction: options.transaction });
+  Alarm.create({ fk_user_id: user.id }, { transaction: options.transaction });
+  Bookmark.create({ fk_user_id: user.id}, { transaction: options.transaction });
+  Read.create({ fk_user_id: user.id}, { transaction: options.transaction });
 });
 
 export default User;

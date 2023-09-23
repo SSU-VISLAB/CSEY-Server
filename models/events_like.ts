@@ -1,27 +1,37 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './index.ts';
+import { sequelize } from './sequelize.ts';
 
 const EventsLike = sequelize.define('EventsLike', {
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false
+  },
   like: {
     type: DataTypes.ENUM('null', 'like', 'dislike'),
     allowNull: false,
     defaultValue: 'null',
   },
-  event_id: {
+  fk_event_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'Event',
+      model: 'events',
       key: 'id',
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
-  user_id: {
+  fk_user_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'User',
+      model: 'users',
       key: 'id',
     },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE"
   },
 }, {
   modelName: 'EventsLike',
