@@ -73,31 +73,19 @@ const start = async () => {
 				actions: {
 					list: {
 						component: Components.test
-					}
+					},
 				}
 			}},
-			{resource: EventsLike, options: {navigation: userTab}},
-			{resource: NoticesLike, options: {navigation: userTab}},
+			{resource: EventsLike, options: {navigation: false}},
+			{resource: NoticesLike, options: {navigation: false}},
 			// post
 			{resource: Event, options: { navigation: postTab}}, // post tab으로 grouping
 			{resource: Notice, options: { navigation: postTab}},
 			// others
 			{resource: Read, options: { navigation: false}}, // tab에 표시 안함
-			{resource: ReadAsset, options: {
-				properties: {
-					id: { // id 속성을 모든 action에서 표시하지 않음
-						isVisible: false,
-					}
-				}
-			}},
+			{resource: ReadAsset, options: { navigation: false}},
 			{resource: Bookmark, options: { navigation: false}},
-			{resource: BookmarkAsset, options: {
-				properties: {
-					id: {
-						isVisible: false,
-					}
-				}
-			}}
+			{resource: BookmarkAsset, options: { navigation: false}}
 		] as ResourceWithOptions[],
 		componentLoader
 	};

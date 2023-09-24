@@ -3,12 +3,13 @@ import { ActionProps, RecordsTable, useRecords, useSelectedRecords } from "admin
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-export const List: React.FC<ActionProps> = ({ resource, setTag }) => {
+export const List: React.FC<ActionProps> = (props) => {
+  const { resource, setTag } = props
   const { records, loading, direction, sortBy, page, total, fetchData, perPage } = useRecords(resource.id);
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);
   const location = useLocation();
   const navigate = useNavigate();
-
+  console.log(useRecords(resource.id));
   useEffect(() => {
     if (setTag) {
       setTag(total.toString());

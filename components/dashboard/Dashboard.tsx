@@ -1,18 +1,25 @@
-import { Box, H2, H5, Illustration, IllustrationProps, Text } from '@adminjs/design-system'
-import { styled } from '@adminjs/design-system/styled-components'
-import { useTranslation } from 'adminjs'
-import React from 'react'
-import { useNavigate } from 'react-router'
+import {
+  Box,
+  H2,
+  H5,
+  Illustration,
+  IllustrationProps,
+  Text,
+} from "@adminjs/design-system";
+import { styled } from "@adminjs/design-system/styled-components";
+import { useTranslation } from "adminjs";
+import React from "react";
+import { useNavigate } from "react-router";
 type BoxType = {
   variant: string;
   title: string;
   subtitle?: string;
   href: string;
-}
+};
 
-const pageHeaderHeight = 284
-const pageHeaderPaddingY = 74
-const pageHeaderPaddingX = 250
+const pageHeaderHeight = 284;
+const pageHeaderPaddingY = 74;
+const pageHeaderPaddingX = 250;
 
 const DashboardHeader = () => {
   return (
@@ -39,7 +46,7 @@ const DashboardHeader = () => {
         bg="grey100"
         height={pageHeaderHeight}
         py={pageHeaderPaddingY}
-        px={['default', 'lg', pageHeaderPaddingX]}
+        px={["default", "lg", pageHeaderPaddingX]}
       >
         <Text textAlign="center" color="white">
           <H2>관리자 페이지 title</H2>
@@ -47,37 +54,25 @@ const DashboardHeader = () => {
         </Text>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-const boxes = ({ translateLabel }): Array<BoxType> => [{
-  variant: 'Planet',
-  title: translateLabel('users'),
-  href: '/admin/resources/users',
-}, {
-  variant: 'DocumentCheck',
-  title: translateLabel('alarms'),
-  href: '/admin/resources/alarms',
-}, {
-  variant: 'DocumentSearch',
-  title: translateLabel('events_like'),
-  href: '/admin/resources/events_like',
-}, {
-  variant: 'FlagInCog',
-  title: translateLabel('notices_like'),
-  href: '/admin/resources/notices_like',
-}, {
-  variant: 'Folders',
-  title: translateLabel('events'),
-  href: '/admin/resources/events',
-}, {
-  variant: 'Astronaut',
-  title: translateLabel('notices'),
-  href: '/admin/resources/notices',
-}]
+const boxes = ({ translateLabel }): Array<BoxType> => [
+
+  {
+    variant: "Folders",
+    title: translateLabel("events"),
+    href: "/admin/resources/events",
+  },
+  {
+    variant: "Astronaut",
+    title: translateLabel("notices"),
+    href: "/admin/resources/notices",
+  },
+];
 
 const Card = styled(Box)`
-  display: ${({ flex }): string => (flex ? 'flex' : 'block')};
+  display: ${({ flex }): string => (flex ? "flex" : "block")};
   color: ${({ theme }) => theme.colors.grey100};
   height: 100%;
   text-decoration: none;
@@ -88,24 +83,24 @@ const Card = styled(Box)`
     border: 1px solid ${({ theme }) => theme.colors.primary100};
     box-shadow: ${({ theme }) => theme.shadows.cardHover};
   }
-`
+`;
 
 Card.defaultProps = {
-  variant: 'container',
-  boxShadow: 'card',
-}
+  variant: "container",
+  boxShadow: "card",
+};
 
 export const Dashboard = () => {
-  const { translateLabel } = useTranslation()
+  const { translateLabel } = useTranslation();
   const navigate = useNavigate();
   return (
     <Box>
       <DashboardHeader />
       <Box
-        mt={['xl', 'xl']}
+        mt={["xl", "xl"]}
         mb="xl"
-        mx={[0, 0, 0, 'auto']}
-        px={['default', 'lg', 'xxl', '0']}
+        mx={[0, 0, 0, "auto"]}
+        px={["default", "lg", "xxl", "0"]}
         position="relative"
         flex
         flexDirection="row"
@@ -113,11 +108,19 @@ export const Dashboard = () => {
         width={[1, 1, 1, 1024]}
       >
         {boxes({ translateLabel }).map((box, index) => (
-          <Box key={index} width={[1 / 4]} p="lg">
-            <Card as="a" href={box.href} onClick={(e) => {e.preventDefault(); navigate(box.href);}} target="_blank">
+          <Box key={index} width={[1 / 2]} p="lg">
+            <Card
+              as="a"
+              href={box.href}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(box.href);
+              }}
+              target="_blank"
+            >
               <Text textAlign="center">
                 <Illustration
-                  variant={box.variant as IllustrationProps['variant']}
+                  variant={box.variant as IllustrationProps["variant"]}
                   width={100}
                   height={70}
                 />
@@ -129,7 +132,7 @@ export const Dashboard = () => {
         ))}
       </Box>
     </Box>
-  )
-}
+  );
+};
 // https://github.com/SoftwareBrothers/adminjs/blob/master/src/frontend/components/app/default-dashboard.tsx
-export default Dashboard
+export default Dashboard;
