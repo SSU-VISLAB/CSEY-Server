@@ -58,8 +58,8 @@ User.init(
   },
   {
     sequelize,
-    modelName: "User",
-    tableName: "users",
+    modelName: "User", // 코드상에서 참조할 모델의 이름
+    tableName: "users", // 실제 db에서의 테이블 이름
     timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
   }
 );
