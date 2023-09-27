@@ -24,24 +24,24 @@ export const getEvent = async(
     try {
         const eventId = req.params.eventId;  
         const event = await Event.findByPk(eventId) as IEvent;
-        if (event) {
-            const response = {
-                id: event.id,
-                title: event.title,
-                content: event.content,
-                image: event.image,
-                start: event.start,
-                end: event.end,
-                major_advisor: event.major_advisor,
-                like: event.like,
-                dislike: event.dislike
-            };
-            return res.status(200).json(response);
-        } else {
+
+        if (!event) {
             return res.status(400).json({ message: "해당 행사를 찾을 수 없습니다." });
         }
+
+        validateEventObject(event);
+
+        return res.status(200).json(event);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "서버 내부 에러" });
+    }
+};
+
+const validateEventObject = (obj: IEvent): void => {
+    const keys = Object.keys(obj);
+    const missingKeys = bodyList.filter(key => !keys.includes(key));
+    if (missingKeys.length > 0) {
+        throw new Error(`Missing required keys: ${missingKeys.join(", ")}`);
     }
 };

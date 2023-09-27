@@ -15,23 +15,25 @@ const bodyList=[
  * @param body "event_id","user_id",
  * @param status 'like','dislike','null'
  */
-async function updateLikeStatus(body: IEventUserRequest, status: string) {
+async function updateLikeStatus(body: IEventUserRequest, status: {like: string}) {
     const transaction = await sequelize.transaction();
     try {
+        const {event_id,user_id}=body;
+
         await findUserAndEvent(body);
 
         const existingLike = await EventsLike.findOne({
-            where: {fk_event_id: body.event_id, fk_user_id: body.user_id},
+            where: {fk_event_id: event_id, fk_user_id: user_id},
             transaction
         });
         
         if(existingLike) {
-            await existingLike.update({like: status}, {transaction});
+            await existingLike.update(status, {transaction});
         } else {
             await EventsLike.create({
-                like: status,
-                fk_event_id: body.event_id,
-                fk_user_id: body.user_id
+                ...status,
+                fk_event_id: event_id,
+                fk_user_id: user_id
             }, {transaction});
         }
 
@@ -51,11 +53,11 @@ export const setLike = async (
     try {
         // body값이 잘못됐는지 확인
         const keys = Object.keys(body);
-        if (keys.some((key) => !bodyList.includes(key))) {
+        if (!validateRequestBody(body)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body, 'like');
+        await updateLikeStatus(body, {like : 'like'});
         return res.status(200).json({message:"좋아요 설정 성공했습니다."});
     } catch(error){
         console.log(error);
@@ -72,11 +74,11 @@ export const setDisLike = async (
     try {
         // body값이 잘못됐는지 확인
         const keys = Object.keys(body);
-        if (keys.some((key) => !bodyList.includes(key))) {
+        if (!validateRequestBody(body)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body, 'dislike');
+        await updateLikeStatus(body, {like: 'dislike'});
         return res.status(200).json({message:"싫어요 설정 성공했습니다."});
     } catch(error){
         console.log(error);
@@ -84,29 +86,14 @@ export const setDisLike = async (
     }
 };
 
-// DELETE /posts/events/like
+// DELETE /posts/events/like  &  /posts/events/dislike
 export const deleteLike = async (
     { params, body }: express.Request<any, any, IEventUserRequest>,
     res: express.Response,
     next: any
 ) => {
     try {
-        await updateLikeStatus(body, 'null');
-        return res.status(200).json({message:"좋아요 삭제를 성공했습니다."});
-    } catch(error){
-        console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
-    }
-};
-
-// DELETE /posts/events/dislike
-export const deleteDisLike = async (
-    { params, body }: express.Request<any, any, IEventUserRequest>,
-    res: express.Response,
-    next: any
-) => {
-    try {
-        await updateLikeStatus(body, 'null');
+        await updateLikeStatus(body, {like: 'null'});
         return res.status(200).json({message:"좋아요 삭제를 성공했습니다."});
     } catch(error){
         console.log(error);
@@ -118,7 +105,20 @@ async function findUserAndEvent(body: IEventUserRequest) {
     const event = await Event.findByPk(body.event_id);
     const user = await User.findByPk(body.user_id);
 
-    if (!user || !event) {
-        throw new Error(!user ? "사용자를 찾을 수 없습니다." : "공지를 찾을 수 없습니다.");
+    const errors = [];
+    if (!user) {
+        errors.push("사용자를 찾을 수 없습니다.");
+    }
+    if (!event) {
+        errors.push("공지를 찾을 수 없습니다.");
+    }
+    if (errors.length > 0) {
+        throw new Error(errors.join(" "));
     }
 }
+
+// Request body 검증 함수
+const validateRequestBody = (body: any): boolean => {
+    const keys = Object.keys(body);
+    return !keys.some((key) => !bodyList.includes(key));
+};

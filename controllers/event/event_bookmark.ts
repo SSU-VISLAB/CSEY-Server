@@ -5,9 +5,7 @@ import User from "../../models/user.ts";
 import Event from "../../models/events.ts";
 import Bookmark from "../../models/bookmarks.ts";
 import BookmarkAsset from "../../models/bookmark_assets.ts";
-import { Sequelize, Transaction } from "sequelize";
-
-const sequelize = new Sequelize();
+import { sequelize } from "../../models/sequelize.ts";
 
 const bodyList = [
     "event_id",
@@ -22,7 +20,7 @@ export const setBookmark = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const bookmark_body = body;
+        const { user_id, event_id } = body;
 
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body)) {
@@ -30,19 +28,19 @@ export const setBookmark = async (
         }
 
         // DB에서 공지와 유저 찾기
-        await findUserAndEvent(bookmark_body);
+        await findUserAndEvent(body);
 
         // 북마크에 이미 추가되어 있는지 확인
-        let bookmark = await Bookmark.findOne({ where: { fk_user_id: body.user_id } }) as IBookmark | null;
+        let bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
 
         // 북마크가 없다면 새로 생성
         if (!bookmark) {
-            bookmark = await Bookmark.create({ fk_user_id: body.user_id }, { transaction })as IBookmark;
+            bookmark = await Bookmark.create({ fk_user_id: user_id }, { transaction })as IBookmark;
         }
 
         // BookmarkAsset 테이블에 항목 추가
         await BookmarkAsset.create({
-            fk_event_id: body.event_id,
+            fk_event_id: event_id,
             fk_bookmark_id: bookmark.id,
         }, { transaction });
 
@@ -64,7 +62,7 @@ export const deleteBookmark = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const bookmark_body = body;
+        const { user_id, event_id } = body;
 
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body)) {
@@ -72,17 +70,17 @@ export const deleteBookmark = async (
         }
 
         // DB에서 공지와 유저 찾기
-        await findUserAndEvent(bookmark_body);
+        await findUserAndEvent(body);
 
         // 북마크에 이미 추가되어 있는지 확인
-        const bookmark = await Bookmark.findOne({ where: { fk_user_id: body.user_id } }) as IBookmark | null;
+        const bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
 
         if (bookmark) {
             // BookmarkAsset 테이블 삭제
             await BookmarkAsset.destroy({
                 where: {
                     fk_bookmark_id: bookmark.id,
-                    fk_event_id: body.event_id
+                    fk_event_id: event_id
                 },
                 transaction: transaction
             });
@@ -111,8 +109,15 @@ async function findUserAndEvent(body: IEventUserRequest) {
     const event = await Event.findByPk(body.event_id);
     const user = await User.findByPk(body.user_id);
 
-    if (!user || !event) {
-        throw new Error(!user ? "사용자를 찾을 수 없습니다." : "공지를 찾을 수 없습니다.");
+    const errors = [];
+    if (!user) {
+        errors.push("사용자를 찾을 수 없습니다.");
+    }
+    if (!event) {
+        errors.push("공지를 찾을 수 없습니다.");
+    }
+    if (errors.length > 0) {
+        throw new Error(errors.join(" "));
     }
 }
 
