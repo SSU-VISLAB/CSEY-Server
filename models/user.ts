@@ -1,44 +1,73 @@
-import mySql from "../mysql/mysql_database";
-import { DefaultModel } from "./models";
+import { DataTypes, Model, Optional } from "sequelize";
+import Alarm from "./alarms.ts";
+import Bookmark from "./bookmarks.ts";
+import Read from "./reads.ts";
+import { sequelize } from './sequelize.ts';
 
-export interface User {
-    id: number;
-    activated: boolean;
-    name: string;
-    createdDate: Date;
-    lastAccess: Date;
-    major: '0' | '1';
+export interface IUser {
+  id: number;
+  activated: boolean;
+  name: string | null;
+  createdDate: Date;
+  lastAccess: Date;
+  major: "컴퓨터" | "소프트";
 }
 
-export class DBUser extends DefaultModel implements User{
-    id: number;
-    activated: boolean;
-    name: string;
-    createdDate: Date;
-    lastAccess: Date;
-    major: "0" | "1";
+export type UserCreationAttributes = Optional<IUser, "id">;
 
-    constructor({id, activated, name, createdDate, lastAccess, major}: User) {
-        super();
-        this.id = id;
-        this.activated = activated;
-        this.name = name;
-        this.createdDate = createdDate;
-        this.lastAccess = lastAccess;
-        this.major = major;
-    }
+class User extends Model<IUser, UserCreationAttributes> {
+  public id!: number;
+  public activated!: boolean;
+  public name!: string | null;
+  public createdDate!: Date;
+  public lastAccess!: Date;
+  public major!: "컴퓨터" | "소프트";
+}
 
-    // 회원가입 정보 DB에 저장
-    async saveAll() {
-        const sql = `INSERT INTO users (${this.allKeys}) VALUES (${this.allParams})`;
-        const res = await mySql.execute(sql, this.allValues);
-        return res;
-    }
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
+    },
+    activated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      validate: {
+        isBoolean: true,
+      },
+    },
+    name: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    createdDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    lastAccess: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    major: {
+      type: DataTypes.ENUM("컴퓨터", "소프트"),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "User", // 코드상에서 참조할 모델의 이름
+    tableName: "users", // 실제 db에서의 테이블 이름
+    timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  }
+);
 
-    // user_id에 해당하는 유저 정보 출력
-    static async findUser(user_id: number): Promise<User> {
-        const sql = 'SELECT * FROM users WHERE users.id = ?';
-        const user = (await mySql.execute(sql, [user_id]))[0][0];
-        return user;
-    }
-};
+User.afterCreate(async (user, options) => {
+  Alarm.create({ fk_user_id: user.id }, { transaction: options.transaction });
+  Bookmark.create({ fk_user_id: user.id}, { transaction: options.transaction });
+  Read.create({ fk_user_id: user.id}, { transaction: options.transaction });
+});
+
+export default User;
