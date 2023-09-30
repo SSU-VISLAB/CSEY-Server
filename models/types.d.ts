@@ -22,7 +22,7 @@ export interface IUser {
     fk_id: number;
   }
   
-  export interface INotice {
+  export interface INotice extends Model{
     id: number;
     title?: string;
     content?: string;
