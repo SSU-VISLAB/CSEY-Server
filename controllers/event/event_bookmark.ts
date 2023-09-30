@@ -6,6 +6,7 @@ import Event from "../../models/events.ts";
 import Bookmark from "../../models/bookmarks.ts";
 import BookmarkAsset from "../../models/bookmark_assets.ts";
 import { sequelize } from "../../models/sequelize.ts";
+import { validateRequestBody } from "../common_method/validator.ts";
 
 const bodyList = [
     "event_id",
@@ -23,7 +24,7 @@ export const setBookmark = async (
         const { user_id, event_id } = body;
 
         // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body)) {
+        if (!validateRequestBody(body,bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
@@ -65,7 +66,7 @@ export const deleteBookmark = async (
         const { user_id, event_id } = body;
 
         // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body)) {
+        if (!validateRequestBody(body,bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
@@ -120,8 +121,3 @@ async function findUserAndEvent(body: IEventUserRequest) {
         throw new Error(errors.join(" "));
     }
 }
-
-const validateRequestBody = (body: any): boolean => {
-    const keys = Object.keys(body);
-    return !keys.some((key) => !bodyList.includes(key));
-};
