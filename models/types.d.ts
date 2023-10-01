@@ -22,7 +22,7 @@ export interface IUser {
     fk_id: number;
   }
   
-  export interface INotice {
+  export interface INotice extends Model{
     id: number;
     title?: string;
     content?: string;
@@ -72,12 +72,12 @@ export interface IUser {
     fk_bookmark_id?: number;
   }
   
-  export interface IRead {
+  export interface IRead extends Model{
     id: number;
     fk_user_id: number;
   }
 
-  export interface IReadAsset{
+  export interface IReadAsset extends Model{
     id?: number;
     fk_notice_id?: number;
     fk_read_id?: number;
