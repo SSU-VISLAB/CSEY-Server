@@ -1,12 +1,10 @@
 import * as express from "express";
 import { IEventUserRequest } from "./request/request.js";
-import User from "../../models/user.ts"; 
-import Event from "../../models/events.ts"; 
 import EventsLike from "../../models/events_like.ts";
 import { sequelize } from "../../models/sequelize.ts";
-import { validateRequestBody } from "../common_method/validator.ts";
+import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
 
-const bodyList=[
+const bodyList = [
     "event_id",
     "user_id",
 ];
@@ -16,31 +14,36 @@ const bodyList=[
  * @param body "event_id","user_id",
  * @param status 'like','dislike','null'
  */
-async function updateLikeStatus(body: IEventUserRequest, status: {like: string}) {
+async function updateLikeStatus(body: IEventUserRequest, status: { like: string }) {
     const transaction = await sequelize.transaction();
     try {
-        const {event_id,user_id}=body;
+        const { event_id, user_id } = body;
 
-        await findUserAndEvent(body);
+        // DB에서 행사와 유저 찾기
+        const errorMessage = await findObjectByPk(body);
+        if (errorMessage) {
+            return { error: errorMessage };
+        }
 
         const existingLike = await EventsLike.findOne({
-            where: {fk_event_id: event_id, fk_user_id: user_id},
+            where: { fk_event_id: event_id, fk_user_id: user_id },
             transaction
         });
-        
-        if(existingLike) {
-            await existingLike.update(status, {transaction});
+
+        if (existingLike) {
+            await existingLike.update(status, { transaction });
         } else {
             await EventsLike.create({
                 ...status,
                 fk_event_id: event_id,
                 fk_user_id: user_id
-            }, {transaction});
+            }, { transaction });
         }
 
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
+        console.log(error);
         throw error;  // Re-throw the error after rolling back
     }
 }
@@ -53,16 +56,19 @@ export const setLike = async (
 ) => {
     try {
         // body값이 잘못됐는지 확인
-        const keys = Object.keys(body);
-        if (!validateRequestBody(body,bodyList)) {
+        if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body, {like : 'like'});
-        return res.status(200).json({message:"좋아요 설정 성공했습니다."});
-    } catch(error){
+        const result = await updateLikeStatus(body, { like: 'like' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });  
+        }
+
+        return res.status(200).json({ message: "좋아요 설정 성공했습니다." });
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
 
@@ -74,16 +80,19 @@ export const setDisLike = async (
 ) => {
     try {
         // body값이 잘못됐는지 확인
-        const keys = Object.keys(body);
-        if (!validateRequestBody(body,bodyList)) {
+        if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body, {like: 'dislike'});
-        return res.status(200).json({message:"싫어요 설정 성공했습니다."});
-    } catch(error){
+        const result = await updateLikeStatus(body, { like: 'dislike' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });  
+        }
+
+        return res.status(200).json({ message: "싫어요 설정 성공했습니다." });
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
 
@@ -94,27 +103,14 @@ export const deleteLike = async (
     next: any
 ) => {
     try {
-        await updateLikeStatus(body, {like: 'null'});
-        return res.status(200).json({message:"좋아요 삭제를 성공했습니다."});
-    } catch(error){
+        const result =await updateLikeStatus(body, { like: 'null' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });  
+        }
+
+        return res.status(200).json({ message: "좋아요 삭제를 성공했습니다." });
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
-
-async function findUserAndEvent(body: IEventUserRequest) {
-    const event = await Event.findByPk(body.event_id);
-    const user = await User.findByPk(body.user_id);
-
-    const errors = [];
-    if (!user) {
-        errors.push("사용자를 찾을 수 없습니다.");
-    }
-    if (!event) {
-        errors.push("공지를 찾을 수 없습니다.");
-    }
-    if (errors.length > 0) {
-        throw new Error(errors.join(" "));
-    }
-}
-

@@ -1,12 +1,10 @@
 import * as express from "express";
 import { IEventUserRequest } from "./request/request.js";
 import { IBookmark } from "../../models/types.js";
-import User from "../../models/user.ts";
-import Event from "../../models/events.ts";
 import Bookmark from "../../models/bookmarks.ts";
 import BookmarkAsset from "../../models/bookmark_assets.ts";
 import { sequelize } from "../../models/sequelize.ts";
-import { validateRequestBody } from "../common_method/validator.ts";
+import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
 
 const bodyList = [
     "event_id",
@@ -28,8 +26,11 @@ export const setBookmark = async (
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        // DB에서 공지와 유저 찾기
-        await findUserAndEvent(body);
+        // DB에서 행사와 유저 찾기
+        const errorMessage = await findObjectByPk(body);
+        if (errorMessage) {
+            return res.status(400).json({ error: errorMessage });
+        }
 
         // 북마크에 이미 추가되어 있는지 확인
         let bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
@@ -71,7 +72,10 @@ export const deleteBookmark = async (
         }
 
         // DB에서 공지와 유저 찾기
-        await findUserAndEvent(body);
+        const errorMessage = await findObjectByPk(body);
+        if (errorMessage) {
+            return res.status(400).json({ error: errorMessage });
+        }
 
         // 북마크에 이미 추가되어 있는지 확인
         const bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
@@ -104,20 +108,3 @@ export const deleteBookmark = async (
         return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
-
-
-async function findUserAndEvent(body: IEventUserRequest) {
-    const event = await Event.findByPk(body.event_id);
-    const user = await User.findByPk(body.user_id);
-
-    const errors = [];
-    if (!user) {
-        errors.push("사용자를 찾을 수 없습니다.");
-    }
-    if (!event) {
-        errors.push("공지를 찾을 수 없습니다.");
-    }
-    if (errors.length > 0) {
-        throw new Error(errors.join(" "));
-    }
-}

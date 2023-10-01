@@ -1,10 +1,9 @@
 import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
-import User from "../../models/user.ts";
 import Notice from "../../models/notice.ts";
 import Read from "../../models/reads.ts";
 import ReadAsset from "../../models/reads_assets.ts";
-import { findUser, validateRequestBody } from "../common_method/validator.ts";
+import { findObjectByPk, findUser, validateRequestBody } from "../common_method/validator.ts";
 import { sequelize } from "../../models/sequelize.ts";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
@@ -15,16 +14,16 @@ const bodyList = [
 ]
 
 // GET /users/read
-export const getUnread=async(
-    { params, body }: express.Request<any, any, {user_id:number}>,
+export const getUnread = async (
+    { params, body }: express.Request<any, any, { user_id: number }>,
     res: express.Response,
     next: any
-)=>{
-    try{
-        const user_id=body.user_id;
+) => {
+    try {
+        const user_id = body.user_id;
 
         // body값이 잘못됐는지 확인
-        if(!validateRequestBody(body, ["user_id"])){
+        if (!validateRequestBody(body, ["user_id"])) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
@@ -52,7 +51,7 @@ export const getUnread=async(
             });
             return res.status(200).json(unreadNotices);
         }
-    } catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(500).json({ error: "서버 내부 에러" });
     }
@@ -74,8 +73,11 @@ export const setRead = async (
         }
 
         // DB에서 공지와 유저 찾기
-        await findUserAndNotice(body);
-
+        const errorMessage = await findObjectByPk(body);
+        if (errorMessage) {
+            return res.status(400).json({ error: errorMessage });
+        }
+        
         // Read 테이블이 생성되어 있는지 확인
         let read = await Read.findOne({ where: { fk_user_id: user_id } }) as IRead | null;
 
@@ -99,19 +101,3 @@ export const setRead = async (
         return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
-
-async function findUserAndNotice(body: INoticeUserRequest) {
-    const notice = await Notice.findByPk(body.notice_id);
-    const user = await User.findByPk(body.user_id);
-
-    const errors = [];
-    if (!user) {
-        errors.push("사용자를 찾을 수 없습니다.");
-    }
-    if (!notice) {
-        errors.push("공지를 찾을 수 없습니다.");
-    }
-    if (errors.length > 0) {
-        throw new Error(errors.join(" "));
-    }
-}

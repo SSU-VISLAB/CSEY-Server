@@ -1,10 +1,8 @@
 import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
-import User from "../../models/user.ts";
-import Notice from "../../models/notice.ts";
 import NoticesLike from "../../models/notices_like.ts";
 import { sequelize } from "../../models/sequelize.ts";
-import { validateRequestBody } from "../common_method/validator.ts";
+import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
 
 const bodyList = [
     "notice_id",
@@ -21,7 +19,11 @@ async function updateLikeStatus(body: INoticeUserRequest, status: { like: string
     try {
         const { notice_id, user_id } = body;
 
-        await findUserAndNotice(body);
+        // DB에서 공지와 유저 찾기
+        const errorMessage = await findObjectByPk(body);
+        if (errorMessage) {
+            return { error: errorMessage };
+        }
 
         const existingLike = await NoticesLike.findOne({
             where: { fk_notice_id: notice_id, fk_user_id: user_id },
@@ -53,16 +55,19 @@ export const setLike = async (
 ) => {
     try {
         // body값이 잘못됐는지 확인
-        const keys = Object.keys(body);
-        if(!validateRequestBody(body,bodyList)){
-            return res.status(404).json({error:"잘못된 key 입니다."});
+        if (!validateRequestBody(body, bodyList)) {
+            return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body,{like:'like'});
-        return res.status(200).json({message:"좋아요 설정 성공했습니다."});
+        const result = await updateLikeStatus(body, { like: 'like' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+        
+        return res.status(200).json({ message: "좋아요 설정 성공했습니다." });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
 
@@ -74,16 +79,19 @@ export const setDisLike = async (
 ) => {
     try {
         // body값이 잘못됐는지 확인
-        const keys = Object.keys(body);
-        if (!validateRequestBody(body,bodyList)) {
+        if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
 
-        await updateLikeStatus(body, {like: 'dislike'});
-        return res.status(200).json({message:"싫어요 설정 성공했습니다."});
-    } catch(error){
+        const result = await updateLikeStatus(body, { like: 'dislike' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+
+        return res.status(200).json({ message: "싫어요 설정 성공했습니다." });
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
 
@@ -94,27 +102,14 @@ export const deleteLike = async (
     next: any
 ) => {
     try {
-        await updateLikeStatus(body, {like: 'null'});
-        return res.status(200).json({message:"좋아요 삭제를 성공했습니다."});
-    } catch(error){
+        const result = await updateLikeStatus(body, { like: 'null' });
+        if (result && result.error) {
+            return res.status(400).json({ error: result.error });
+        }
+        
+        return res.status(200).json({ message: "좋아요 삭제를 성공했습니다." });
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({error:"서버 내부 에러"});
+        return res.status(500).json({ error: "서버 내부 에러" });
     }
 };
-
-
-async function findUserAndNotice(body: INoticeUserRequest) {
-    const notice = await Notice.findByPk(body.notice_id);
-    const user = await User.findByPk(body.user_id);
-
-    const errors = [];
-    if (!user) {
-        errors.push("사용자를 찾을 수 없습니다.");
-    }
-    if (!notice) {
-        errors.push("공지를 찾을 수 없습니다.");
-    }
-    if (errors.length > 0) {
-        throw new Error(errors.join(" "));
-    }
-}
