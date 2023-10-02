@@ -57,6 +57,11 @@ const Event = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    ended: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   },
   {
     modelName: "Event",

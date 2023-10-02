@@ -1,6 +1,6 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
-import AdminJS, { AdminJSOptions, ResourceWithOptions } from "adminjs";
+import AdminJS, { ActionQueryParameters, AdminJSOptions, Filter, ResourceWithOptions, SortSetter, flat, populator } from "adminjs";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
 import { Components, componentLoader } from "./components/index.ts";
@@ -64,22 +64,84 @@ const start = async () => {
 				}
 			}
 		},
+		settings: {
+			defaultPerPage: 5,
+		},
 		// 관리할 models 목록
 		resources: [
 			// user
-			{resource: User, options: { navigation: userTab}}, // user tab으로 grouping
-			{resource: Alarm, options: {
-				navigation: userTab,
-				actions: {
-					list: {
-						component: Components.test
-					},
-				}
-			}},
+			{resource: User, options: { navigation: false}}, // user tab으로 grouping
+			{resource: Alarm, options: { navigation: false}},
 			{resource: EventsLike, options: {navigation: false}},
 			{resource: NoticesLike, options: {navigation: false}},
 			// post
-			{resource: Event, options: { navigation: postTab}}, // post tab으로 grouping
+			{resource: Event, options: {
+				navigation: postTab,
+				listProperties: ['id', 'title', 'like', 'dislike', 'start', 'end'],
+				actions: {
+					list: {
+						component: Components.Event_List,
+						handler: async (request, response, context) => {
+							const { query } = request
+							const { resource, _admin } = context
+							let { page, perPage, type = 'ongoing' } = flat.unflatten(query || {});
+							const isOngoing = type == 'ongoing';
+							const { sortBy = isOngoing ? 'start' : 'end', direction = 'desc', filters = {} } = flat.unflatten(query || {}) as ActionQueryParameters
+					
+							if (perPage) {
+								perPage = +perPage > 500 ? 500 : +perPage
+							} else {
+								perPage = _admin.options.settings?.defaultPerPage ?? 10
+							}
+							page = Number(page) || 1
+					
+							const listProperties = resource.decorate().getListProperties()
+							const firstProperty = listProperties.find((p) => p.isSortable())
+							let sort
+							if (firstProperty) {
+								sort = SortSetter(
+									{ sortBy, direction },
+									firstProperty.name(),
+									resource.decorate().options,
+								)
+							}
+							const filter = await new Filter({...filters, ended: isOngoing ? 'false' : 'true'}, resource).populate(context)
+					
+							const { currentAdmin } = context
+							const records = await resource.find(filter, {
+								limit: perPage,
+								offset: (page - 1) * perPage,
+								sort,
+							}, context)
+							const populatedRecords = await populator(records, context)
+					
+							// eslint-disable-next-line no-param-reassign
+							context.records = populatedRecords
+					
+							const total = await resource.count(filter, context)
+							return {
+								meta: {
+									total,
+									perPage,
+									page,
+									direction: sort?.direction,
+									sortBy: sort?.sortBy,
+								},
+								records: populatedRecords.map((r) => r.toJSON(currentAdmin)),
+							}
+						},
+					},
+					// show: {
+					// 	component: Components
+					// },
+					// edit: {
+					// 	component: Components
+					// },
+					// new: {
+					// 	component: Components
+					// }
+				}
+			}}, // post tab으로 grouping
 			{resource: Notice, options: { navigation: postTab}},
 			// others
 			{resource: Read, options: { navigation: false}}, // tab에 표시 안함
