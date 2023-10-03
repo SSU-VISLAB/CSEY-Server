@@ -1,28 +1,15 @@
 import * as express from "express";
-import Event from "../../models/events.ts"; 
+import { Event } from "../../models/index.ts";
 import { IEvent } from "../../models/types.js";
 
-const bodyList = [
-    "id",
-    "title",
-    "calendar_title",
-    "content",
-    "image",
-    "start",
-    "end",
-    "major_advisor",
-    "like",
-    "dislike",
-];
-
 // GET /posts/events/${행사글id}
-export const getEvent = async(
-    req: express.Request<any,any,IEvent>,
+export const getEvent = async (
+    req: express.Request<any, any>,
     res: express.Response,
     next: express.NextFunction
 ) => {
     try {
-        const eventId = req.params.eventId;  
+        const eventId = req.params.eventId;
         const event = await Event.findByPk(eventId) as IEvent;
 
         if (!event) {
@@ -35,3 +22,19 @@ export const getEvent = async(
         return res.status(500).json({ message: "서버 내부 에러" });
     }
 };
+
+// GET /events
+export const getEventAll = async (
+    req: express.Request<any, any>,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        const eventAll = await Event.findAll() as IEvent[];
+
+        return res.status(200).json(eventAll);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: '서버 내부 에러' });
+    }
+}

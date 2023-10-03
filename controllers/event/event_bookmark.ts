@@ -1,10 +1,8 @@
 import * as express from "express";
-import { IEventUserRequest } from "./request/request.js";
+import { IEventUserRequest } from "./request/request.ts";
 import { IBookmark } from "../../models/types.js";
-import Bookmark from "../../models/bookmarks.ts";
-import BookmarkAsset from "../../models/bookmark_assets.ts";
-import { sequelize } from "../../models/sequelize.ts";
-import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
+import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.ts";
+import { findObjectByPk, validateRequestBody } from "../common_method/index.ts";
 
 const bodyList = [
     "event_id",
@@ -19,12 +17,11 @@ export const setBookmark = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const { user_id, event_id } = body;
-
         // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body,bodyList)) {
+        if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const { user_id, event_id } = body;
 
         // DB에서 행사와 유저 찾기
         const errorMessage = await findObjectByPk(body);
@@ -37,7 +34,7 @@ export const setBookmark = async (
 
         // 북마크가 없다면 새로 생성
         if (!bookmark) {
-            bookmark = await Bookmark.create({ fk_user_id: user_id }, { transaction })as IBookmark;
+            bookmark = await Bookmark.create({ fk_user_id: user_id }, { transaction }) as IBookmark;
         }
 
         // BookmarkAsset 테이블에 항목 추가
@@ -64,12 +61,11 @@ export const deleteBookmark = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const { user_id, event_id } = body;
-
         // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body,bodyList)) {
+        if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const { user_id, event_id } = body;
 
         // DB에서 공지와 유저 찾기
         const errorMessage = await findObjectByPk(body);

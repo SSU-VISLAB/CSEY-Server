@@ -1,10 +1,7 @@
 import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
-import Notice from "../../models/notice.ts";
-import Read from "../../models/reads.ts";
-import ReadAsset from "../../models/reads_assets.ts";
 import { findObjectByPk, findUser, validateRequestBody } from "../common_method/validator.ts";
-import { sequelize } from "../../models/sequelize.ts";
+import { Notice, Read, ReadAsset, sequelize } from "../../models/index.ts";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
 
@@ -20,12 +17,11 @@ export const getUnread = async (
     next: any
 ) => {
     try {
-        const user_id = body.user_id;
-
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, ["user_id"])) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const user_id = body.user_id;
 
         // DB에서 유저 찾기
         await findUser(user_id);
@@ -65,19 +61,18 @@ export const setRead = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const { user_id, notice_id } = body;
-
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const { user_id, notice_id } = body;
 
         // DB에서 공지와 유저 찾기
         const errorMessage = await findObjectByPk(body);
         if (errorMessage) {
             return res.status(400).json({ error: errorMessage });
         }
-        
+
         // Read 테이블이 생성되어 있는지 확인
         let read = await Read.findOne({ where: { fk_user_id: user_id } }) as IRead | null;
 

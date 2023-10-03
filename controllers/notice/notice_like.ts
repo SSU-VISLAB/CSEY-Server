@@ -1,7 +1,6 @@
 import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
-import NoticesLike from "../../models/notices_like.ts";
-import { sequelize } from "../../models/sequelize.ts";
+import { NoticesLike, sequelize } from "../../models/index.ts";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
 
 const bodyList = [
