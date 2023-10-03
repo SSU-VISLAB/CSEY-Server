@@ -29,6 +29,7 @@ export async function findUser(user_id: number) {
     }
 }
 
+// 기본키로 해당 객체 있는지 확인
 export async function findObjectByPk(body: IGenericUserRequest) {
     const errors = [];
 

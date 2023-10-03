@@ -3,18 +3,6 @@ import Notice from "../../models/notice.ts";
 import { INotice } from "../../models/types.js";
 import { Op } from "sequelize";
 
-const bodyList=[
-    "id",
-    "title",
-    "content",
-    "image",
-    "date",
-    "major_advisor",
-    "like",
-    "dislike",
-    "priority"
-];
-
 // GET /posts/notices
 export const getNoticeAll=async(
     req: express.Request<any,any>,
@@ -54,14 +42,14 @@ export const getAlertAll=async(
     }
 }
 
-// GET /posts/notices/${공지글id} & /posts/alerts/${공지글id}
+// GET /posts/notices/${noticeId} & /posts/alerts/${noticeId}
 export const getNotice=async(
     req: express.Request<any,any>,
     res: express.Response,
     next: express.NextFunction
 )=>{
     try{
-        const noticeId=req.params.notice_id;
+        const noticeId=parseInt(req.params.noticeId,10);
         const notice=await Notice.findByPk(noticeId) as INotice;
 
         return res.status(200).json(notice);
