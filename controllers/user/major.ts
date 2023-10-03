@@ -13,12 +13,12 @@ export const setMajor = async (
     next: any
 ) => {
     try {
-        const userId = parseInt(params.userId,10);
-        const major = body.major;
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const userId = parseInt(params.userId,10);
+        const major = body.major;
 
         // 유저 정보와 전공 확인
         const errorMessage = await findObjectByPk({ user_id: userId });

@@ -20,12 +20,11 @@ export const getUnread = async (
     next: any
 ) => {
     try {
-        const user_id = body.user_id;
-
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, ["user_id"])) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const user_id = body.user_id;
 
         // DB에서 유저 찾기
         await findUser(user_id);
@@ -65,12 +64,11 @@ export const setRead = async (
 ) => {
     const transaction = await sequelize.transaction();
     try {
-        const { user_id, notice_id } = body;
-
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
+        const { user_id, notice_id } = body;
 
         // DB에서 공지와 유저 찾기
         const errorMessage = await findObjectByPk(body);
