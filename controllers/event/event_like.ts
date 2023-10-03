@@ -1,7 +1,6 @@
 import * as express from "express";
 import { IEventUserRequest } from "./request/request.js";
-import EventsLike from "../../models/events_like.ts";
-import { sequelize } from "../../models/sequelize.ts";
+import { EventsLike,sequelize } from "../../models/index.ts";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
 
 const bodyList = [
@@ -62,7 +61,7 @@ export const setLike = async (
 
         const result = await updateLikeStatus(body, { like: 'like' });
         if (result && result.error) {
-            return res.status(400).json({ error: result.error });  
+            return res.status(400).json({ error: result.error });
         }
 
         return res.status(200).json({ message: "좋아요 설정 성공했습니다." });
@@ -86,7 +85,7 @@ export const setDisLike = async (
 
         const result = await updateLikeStatus(body, { like: 'dislike' });
         if (result && result.error) {
-            return res.status(400).json({ error: result.error });  
+            return res.status(400).json({ error: result.error });
         }
 
         return res.status(200).json({ message: "싫어요 설정 성공했습니다." });
@@ -103,9 +102,9 @@ export const deleteLike = async (
     next: any
 ) => {
     try {
-        const result =await updateLikeStatus(body, { like: 'null' });
+        const result = await updateLikeStatus(body, { like: 'null' });
         if (result && result.error) {
-            return res.status(400).json({ error: result.error });  
+            return res.status(400).json({ error: result.error });
         }
 
         return res.status(200).json({ message: "좋아요 삭제를 성공했습니다." });

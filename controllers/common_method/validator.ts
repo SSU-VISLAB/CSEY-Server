@@ -1,8 +1,6 @@
-import User from "../../models/user.ts";
-import Notice from "../../models/notice.ts";
-import Event from "../../models/events.ts";
+import { User, Notice, Event } from "../../models/index.ts";
 
-const modelMap=new Map([
+const modelMap = new Map([
     ['user_id', User],
     ['notice_id', Notice],
     ['event_id', Event]
@@ -15,7 +13,7 @@ export interface IGenericUserRequest {
 }
 
 // Request body 검증 함수
-export const validateRequestBody = (body: any, bodyList:any): boolean => {
+export const validateRequestBody = (body: any, bodyList: any): boolean => {
     const keys = Object.keys(body);
     return !keys.some((key) => !bodyList.includes(key));
 };

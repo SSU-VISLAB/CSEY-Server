@@ -1,10 +1,7 @@
 import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
-import Notice from "../../models/notice.ts";
-import Read from "../../models/reads.ts";
-import ReadAsset from "../../models/reads_assets.ts";
 import { findObjectByPk, findUser, validateRequestBody } from "../common_method/validator.ts";
-import { sequelize } from "../../models/sequelize.ts";
+import { Notice, Read, ReadAsset, sequelize } from "../../models/index.ts";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
 
@@ -75,7 +72,7 @@ export const setRead = async (
         if (errorMessage) {
             return res.status(400).json({ error: errorMessage });
         }
-        
+
         // Read 테이블이 생성되어 있는지 확인
         let read = await Read.findOne({ where: { fk_user_id: user_id } }) as IRead | null;
 

@@ -1,5 +1,5 @@
 import * as express from "express";
-import User from "../../models/user.ts";
+import { User } from "../../models/index.ts";
 
 // DELETE /users/${userId}
 export const deleteUser = async(

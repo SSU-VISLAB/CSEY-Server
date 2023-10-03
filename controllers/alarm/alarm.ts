@@ -1,6 +1,6 @@
 import * as express from "express";
-import Alarm, { IAlarm } from "../models/alarms.ts";
-import User from "../models/user.ts";
+import { Alarm, User } from "../../models/index.ts";
+import { IAlarm } from "../../models/alarms.ts";
 
 const bodyList = [
   "alarm_push",

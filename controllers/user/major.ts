@@ -1,6 +1,6 @@
 import * as express from "express";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
-import User from "../../models/user.ts";
+import { User } from "../../models/index.ts";
 
 const bodyList = [
     "major"
