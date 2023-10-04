@@ -1,5 +1,6 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
+import uploadFeature from '@adminjs/upload';
 import AdminJS, { AdminJSOptions, ResourceWithOptions } from "adminjs";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
@@ -74,50 +75,71 @@ const start = async () => {
 		assets: {
 			styles: ["/event_show.css"]
 		},
+
 		// 관리할 models 목록
 		resources: [
 			// user
-			{resource: User, options: { navigation: false}}, // user tab으로 grouping
-			{resource: Alarm, options: { navigation: false}},
-			{resource: EventsLike, options: {navigation: false}},
-			{resource: NoticesLike, options: {navigation: false}},
+			{ resource: User, options: { navigation: false } }, // user tab으로 grouping
+			{ resource: Alarm, options: { navigation: false } },
+			{ resource: EventsLike, options: { navigation: false } },
+			{ resource: NoticesLike, options: { navigation: false } },
 			// post
-			{resource: Event, options: {
-				navigation: postTab,
-				listProperties: ['id', 'title', 'like', 'dislike', 'start', 'end'],
-				showProperties: ['major_advisor', 'like', 'dislike', 'ended', 'start', 'end', 'title', 'content', 'image'],
-				actions: {
-					list: {
-						component: Components.event_list,
-						handler: Handlers.EventHandler.list,
+			{
+				resource: Event, options: {
+					navigation: postTab,
+					listProperties: ['id', 'title', 'like', 'dislike', 'start', 'end'],
+					showProperties: ['major_advisor', 'like', 'dislike', 'ended', 'start', 'end', 'title', 'content', 'image'],
+					actions: {
+						list: {
+							component: Components.event_list,
+							handler: Handlers.EventHandler.list,
+						},
+						show: {
+							component: Components.event_show
+						},
+						// edit: {
+						// 	component: Components
+						// },
+						// new: {
+						// 	component: Components
+						// }
+					}
+				}, features: [uploadFeature({
+					provider: {
+						// bucket과 baseUrl 작동 잘 하는가?
+						local: {
+							bucket: 'public',
+							opts: {
+								baseUrl: ''
+							}
+						}
 					},
-					show: {
-						component: Components.event_show
-					},
-					// edit: {
-					// 	component: Components
-					// },
-					// new: {
-					// 	component: Components
-					// }
-				}
-			}}, // post tab으로 grouping
-			{resource: Notice, options: { navigation: postTab}},
+					componentLoader,
+					// properties의 의미는?
+					// DB 새로 생성
+					properties: {
+						key: "/",
+					}
+				})]
+			}, // post tab으로 grouping
+			{ resource: Notice, options: { navigation: postTab } },
 			// others
-			{resource: Read, options: { navigation: false}}, // tab에 표시 안함
-			{resource: ReadAsset, options: { navigation: false}},
-			{resource: Bookmark, options: { navigation: false}},
-			{resource: BookmarkAsset, options: { navigation: false}}
+			{ resource: Read, options: { navigation: false } }, // tab에 표시 안함
+			{ resource: ReadAsset, options: { navigation: false } },
+			{ resource: Bookmark, options: { navigation: false } },
+			{ resource: BookmarkAsset, options: { navigation: false } }
 		] as ResourceWithOptions[],
 		componentLoader
 	};
-  const admin = new AdminJS(adminOptions);
+	const admin = new AdminJS(adminOptions);
 	admin.watch();
-  const adminRouter = AdminJSExpress.buildRouter(admin);
-  app.use(admin.options.rootPath, adminRouter);
+	const adminRouter = AdminJSExpress.buildRouter(admin);
+	app.use(admin.options.rootPath, adminRouter);
 	const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
+	app.use(express.static(path.join(__dirname, "./public")));
+
 	await sequelize
 		.authenticate()
 		.then(async () => {
@@ -127,8 +149,8 @@ const start = async () => {
 			console.log("sequelize error : ", e);
 		});
 
-  app.listen(3000, () => {
-    console.log(`AdminJS started on http://localhost:${3000}${admin.options.rootPath}`);
-  });
+	app.listen(3000, () => {
+		console.log(`AdminJS started on http://localhost:${3000}${admin.options.rootPath}`);
+	});
 };
 start();
