@@ -1,7 +1,9 @@
 AdminJS.UserComponents = {}
-import Dashboard from '../components/dashboard/dashboard'
+import Dashboard from '../adminPage/components/dashboard/dashboard'
 AdminJS.UserComponents.Dashboard = Dashboard
-import Event_List from '../components/event/EventList'
-AdminJS.UserComponents.Event_List = Event_List
-import Custom from '../components/custom/Custom'
+import EventList from '../adminPage/components/event/EventList'
+AdminJS.UserComponents.EventList = EventList
+import EventShow from '../adminPage/components/event/EventShow'
+AdminJS.UserComponents.EventShow = EventShow
+import Custom from '../adminPage/components/custom/Custom'
 AdminJS.UserComponents.Custom = Custom

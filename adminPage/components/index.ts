@@ -10,6 +10,7 @@ const add = (componentName: string, url: string): string =>
 
 export const Components = {
   Dashboard: add('Dashboard', './dashboard/dashboard.tsx'),
-  Event_List: add('Event_List', './event/EventList.tsx'),
+  event_list: add('EventList', './event/EventList.tsx'),
+  event_show: add('EventShow', './event/EventShow.tsx'),
   custom: add('Custom', './custom/Custom.tsx')
 }
