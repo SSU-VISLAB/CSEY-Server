@@ -1,19 +1,21 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
-import uploadFeature from '@adminjs/upload';
 import AdminJS, { AdminJSOptions, ResourceWithOptions } from "adminjs";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
 import * as url from 'url';
 import { Components, componentLoader } from "./adminPage/components/index.ts";
-import { Handlers } from "./adminPage/handlers/index.ts";
+import { COMMON, EVENT, NOTICE } from "./adminPage/resources/index.ts";
 import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
 import userRouter from "./routes/user.ts";
+
 // const corsOptions = {
 //     origin: 'https://',
 //     credentials: true
 // }
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
 app.use(json());
 app.use(urlencoded({ extended: false }));
@@ -29,22 +31,11 @@ AdminJS.registerAdapter({
 });
 
 const start = async () => {
-	// icon name list: https://feathericons.com/
-	// PascalCase
-	const userTab = {
-		name: '사용자 관리',
-		icon: 'Users',
-	};
-	const postTab = {
-		name: '작성글 관리',
-		icon: 'Edit',
-
-	};
 	const adminOptions: AdminJSOptions = {
 		dashboard: {
 			component: Components.Dashboard
 		},
-		// 번역(기본 영어)
+		// 번역(기본 - en)
 		locale: {
 			language: 'en',
 			translations: {
@@ -68,6 +59,7 @@ const start = async () => {
 				}
 			}
 		},
+		// list에서 페이지 별 표시될 행 수
 		settings: {
 			defaultPerPage: 5,
 		},
@@ -75,67 +67,29 @@ const start = async () => {
 		assets: {
 			styles: ["/event_show.css"]
 		},
-
 		// 관리할 models 목록
 		resources: [
 			// user
-			{ resource: User, options: { navigation: false } }, // user tab으로 grouping
-			{ resource: Alarm, options: { navigation: false } },
-			{ resource: EventsLike, options: { navigation: false } },
-			{ resource: NoticesLike, options: { navigation: false } },
+			{ resource: User, options: COMMON.options },
+			{ resource: Alarm, options: COMMON.options },
+			{ resource: EventsLike, options: COMMON.options },
+			{ resource: NoticesLike, options: COMMON.options },
 			// post
-			{
-				resource: Event, options: {
-					navigation: postTab,
-					listProperties: ['id', 'title', 'like', 'dislike', 'start', 'end'],
-					showProperties: ['major_advisor', 'like', 'dislike', 'ended', 'start', 'end', 'title', 'content', 'image'],
-					actions: {
-						list: {
-							component: Components.event_list,
-							handler: Handlers.EventHandler.list,
-						},
-						show: {
-							component: Components.event_show
-						},
-						// edit: {
-						// 	component: Components
-						// },
-						// new: {
-						// 	component: Components
-						// }
-					}
-				}, features: [uploadFeature({
-					provider: {
-						// bucket과 baseUrl 작동 잘 하는가?
-						local: {
-							bucket: 'public',
-							opts: {
-								baseUrl: ''
-							}
-						}
-					},
-					componentLoader,
-					// properties의 의미는?
-					// DB 새로 생성
-					properties: {
-						key: "/",
-					}
-				})]
-			}, // post tab으로 grouping
-			{ resource: Notice, options: { navigation: postTab } },
+			{ resource: Event, options: EVENT.options, features: EVENT.features},
+			{ resource: Notice, options: NOTICE.options },
 			// others
-			{ resource: Read, options: { navigation: false } }, // tab에 표시 안함
-			{ resource: ReadAsset, options: { navigation: false } },
-			{ resource: Bookmark, options: { navigation: false } },
-			{ resource: BookmarkAsset, options: { navigation: false } }
+			{ resource: Read, options: COMMON.options },
+			{ resource: ReadAsset, options: COMMON.options },
+			{ resource: Bookmark, options: COMMON.options },
+			{ resource: BookmarkAsset, options: COMMON.options }
 		] as ResourceWithOptions[],
 		componentLoader
 	};
+	
 	const admin = new AdminJS(adminOptions);
 	admin.watch();
 	const adminRouter = AdminJSExpress.buildRouter(admin);
 	app.use(admin.options.rootPath, adminRouter);
-	const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
 	app.use(express.static(path.join(__dirname, "./public")));
