@@ -32,6 +32,7 @@ export interface IUser {
     like?: number;
     dislike?: number;
     priority?: boolean;
+    expired?: boolean;
   }
   
   export interface IEvent extends Model {
@@ -45,6 +46,7 @@ export interface IUser {
     major_advisor?: boolean;
     like?: number;
     dislike?: number;
+    expired?: boolean;
   }
   
   export interface INoticeLike {
