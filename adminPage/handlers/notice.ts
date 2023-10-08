@@ -33,11 +33,12 @@ const list: ActionHandler<any> = async (request, response, context) => {
   };
 
   const noticeTypeMapper = {
-    'urgent': '긴급',
-    'general': '일반',
-    'expired': '종료',
+    'urgent': {priority: '긴급'},
+    'general': {priority: '일반'},
+    'expired': {expired: 'true'}
   }
-  const filter = await new Filter({ ...filters, priority: noticeTypeMapper[type] }, resource).populate(context);
+  
+  const filter = await new Filter({ ...filters, ...noticeTypeMapper[type] }, resource).populate(context);
   const records = await resource.find(filter, {
     limit: perPage,
     offset: (page - 1) * perPage,

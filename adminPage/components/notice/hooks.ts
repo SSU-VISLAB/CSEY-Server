@@ -17,20 +17,23 @@ export function useTabWithPagePersistence(initialTab: TabLabel): [string, (newTa
   const navigate = useNavigate();
 
   /** tab setter
-   * @param {TabLabel} selectedTab - 현재 탭
-   * @param {number} page - 현재 탭의 페이지
-   * @description 현재 탭의 페이지를 localStorage에 저장
+   * @param {TabLabel} selectedTab - 클릭한 탭
+   * @param {number} prevTabPage - 이전 탭의 페이지
+   * @description 이전 탭의 페이지를 localStorage에 저장
    */
-  const handleTabChange = (selectedTab: TabLabel, page: number) => {
-    setCurrentTab(selectedTab);
-    switch(selectedTab) {
-      case 'urgent':
-        setUrgentTabPage(page); break;
-      case 'general':
-        setGeneralTabPage(page); break;
-      case 'expired':
-        setExpiredTabPage(page); break;
-    }
+  const handleTabChange = (selectedTab: TabLabel, prevTabPage: number) => {
+    setCurrentTab(prevTab => {
+      // 함수형 state setter 사용해서 이전 탭과 페이지도 같이 저장
+      switch(prevTab) {
+        case 'urgent':
+          setUrgentTabPage(prevTabPage); break;
+        case 'general':
+          setGeneralTabPage(prevTabPage); break;
+        case 'expired':
+          setExpiredTabPage(prevTabPage); break;
+      }
+      return selectedTab;
+    });
   };
 
   /** 페이지를 이동해도 항상 저장되는 것을 방지 */
@@ -42,13 +45,19 @@ export function useTabWithPagePersistence(initialTab: TabLabel): [string, (newTa
     }
   }, [])
 
+  const tabMapper = {
+    urgent: urgentTabPage,
+    general: generalTabPage,
+    expired: expiredTabPage,
+  }
+
   /** tab 전환 시 전환한 tab의 page로 업데이트 */
   useEffect(() => {
     const search = new URLSearchParams(location.search);
-    const isOngoing = currentTab == 'urgent'
-    search.set("type", currentTab)
-    search.set("page", isOngoing ? expiredTabPage.toString() : urgentTabPage.toString())
-    navigate({ search: search.toString() });
+    search.set("type", currentTab);
+    search.set("page", tabMapper[currentTab].toString());
+
+    navigate({ search: search.toString() }); // 전환한 탭의 데이터 요청
   }, [currentTab]);
 
   return [

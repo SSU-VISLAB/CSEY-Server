@@ -7,7 +7,7 @@ const noticeOptions: ResourceOptions = {
   navigation: postTab,
 
   listProperties: ['id','priority','title','date','like','dislike'],
-  showProperties: ['id','priority','title','date','like','dislike','content'],
+  showProperties: ['id','priority','title','expired','date','like','dislike','content'],
   editProperties: ['priority', 'major_advisor', 'title', 'date', 'content'],
 
   properties: {
