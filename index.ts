@@ -89,8 +89,8 @@ const start = async () => {
 	const admin = new AdminJS(adminOptions);
 	admin.watch();
 	const adminRouter = AdminJSExpress.buildRouter(admin);
+	// admin page router 설정
 	app.use(admin.options.rootPath, adminRouter);
-
 	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
 	app.use(express.static(path.join(__dirname, "./public")));
 
