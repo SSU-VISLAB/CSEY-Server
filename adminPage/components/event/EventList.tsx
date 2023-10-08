@@ -40,7 +40,7 @@ export const List: React.FC<ActionProps> = (props) => {
   return (
     <Tabs fullWidth={true} currentTab={currentTab} onChange={(tabsID: TabLabel) => handleTabChange(tabsID, page)}>
       <Tab id="ongoing" label="진행중인 행사" />
-      <Tab id="ended" label="종료된 행사" />
+      <Tab id="expired" label="종료된 행사" />
       {/* 원래는 Tab의 children으로 넣어줘야 하는데, 둘이 동일한 내용이라 이렇게 작성함 */}
       <Box variant="container" data-css={contentTag}>
         <RecordsTable

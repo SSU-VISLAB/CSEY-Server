@@ -12,11 +12,11 @@ const Show: React.FC<ActionProps> = (props) => {
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`;
   const contentTag = getActionElementCss(resource.id, action.name, 'drawer-content');
   useEffect(() => {
-    // ended 속성의 chip 색상 적용
-    const endedMarker = window.document.querySelector('section[data-css="events-show-ended"] > section > span');
-    const color = record.params.ended ? YesColor : NoColor;
-    endedMarker.style.setProperty('color', color, 'important');
-    endedMarker.style.setProperty('border-color', color, 'important');
+    // expired 속성의 chip 색상 적용
+    const expiredMarker = window.document.querySelector('section[data-css="events-show-expired"] > section > span');
+    const color = record.params.expired ? YesColor : NoColor;
+    expiredMarker.style.setProperty('color', color, 'important');
+    expiredMarker.style.setProperty('border-color', color, 'important');
   }, []);
 
   return (
