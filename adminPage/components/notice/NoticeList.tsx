@@ -14,7 +14,7 @@ export const List: React.FC<ActionProps> = (props) => {
   // custom css 부착용
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`
   const contentTag = getActionElementCss(resource.id, "list", "table-wrapper");
-  const [ currentTab, handleTabChange ] = useTabWithPagePersistence('ongoing');
+  const [ currentTab, handleTabChange ] = useTabWithPagePersistence('urgent');
 
   /** list 제목 옆에 chip형태로 나오는 행 수 업데이트 */
   useEffect(() => {
@@ -40,8 +40,9 @@ export const List: React.FC<ActionProps> = (props) => {
 
   return (
     <Tabs fullWidth={true} currentTab={currentTab} onChange={(tabsID: TabLabel) => handleTabChange(tabsID, page)}>
-      <Tab id="ongoing" label="진행중인 행사" />
-      <Tab id="ended" label="종료된 행사" />
+      <Tab id="urgent" label="긴급 공지" />
+      <Tab id="general" label="일반 공지" />
+      <Tab id="expired" label="종료 공지" />
       {/* 원래는 Tab의 children으로 넣어줘야 하는데, 둘이 동일한 내용이라 이렇게 작성함 */}
       <Box variant="container" data-css={contentTag}>
         <RecordsTable
