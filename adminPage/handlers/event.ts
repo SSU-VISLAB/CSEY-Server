@@ -30,9 +30,9 @@ const list: ActionHandler<any> = async (request, response, context) => {
       resource.decorate().options,
     )
   };
-  // 진행중인 행사 탭이면 ended == false인 데이터만
-  // 종료된 행사 탭이면 ended == true인 데이터만 가져오기
-  const filter = await new Filter({ ...filters, ended: isOngoing ? 'false' : 'true' }, resource).populate(context);
+  // 진행중인 행사 탭이면 expired == false인 데이터만
+  // 종료된 행사 탭이면 expired == true인 데이터만 가져오기
+  const filter = await new Filter({ ...filters, expired: isOngoing ? 'false' : 'true' }, resource).populate(context);
   const records = await resource.find(filter, {
     limit: perPage,
     offset: (page - 1) * perPage,

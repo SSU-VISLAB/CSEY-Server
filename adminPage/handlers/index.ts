@@ -4,7 +4,7 @@ import { NoticeHandler } from './notice.ts';
 
 export interface EventActionQueryParameters extends ActionQueryParameters {
   /** 진행중 | 종료 */
-  type: "ongoing" | "ended"
+  type: "ongoing" | "expired"
 }
 
 export interface NoticeActionQueryParameters extends ActionQueryParameters {

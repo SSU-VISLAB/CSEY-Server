@@ -1,7 +1,7 @@
 section[data-css="events-show-major_advisor"],
 section[data-css="events-show-like"],
 section[data-css="events-show-dislike"],
-section[data-css="events-show-ended"],
+section[data-css="events-show-expired"],
 section[data-css="events-show-start"],
 section[data-css="events-show-end"] {
   display: inline-block;

@@ -41,6 +41,11 @@ const Notice = sequelize.define(
       type: DataTypes.ENUM("긴급", "일반"),
       allowNull: false,
     },
+    expired: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   },
   {
     modelName: "Notice", // 모델 이름

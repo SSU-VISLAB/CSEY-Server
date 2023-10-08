@@ -8,7 +8,7 @@ const eventOptions: ResourceOptions = {
   navigation: postTab, // sidebar에서의 위치 설정
   // action별 표시할 속성 리스트 설정
   listProperties: ['id', 'title', 'like', 'dislike', 'start', 'end'],
-  showProperties: ['major_advisor', 'like', 'dislike', 'ended', 'start', 'end', 'title', 'content'],
+  showProperties: ['major_advisor', 'like', 'dislike', 'expired', 'start', 'end', 'title', 'content'],
   editProperties: ['start', 'end', 'major_advisor', 'title', 'file', 'content'],
   // 속성의 메타데이터 설정
   properties: {
