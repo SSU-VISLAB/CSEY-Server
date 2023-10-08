@@ -21,18 +21,13 @@ const Event = sequelize.define(
     image: {
       type: DataTypes.STRING,
       allowNull: true,
-      // validate: {
-      //   isUrl: {
-      //     msg: '유효한 URL 형식이 아닙니다.', // 실패 시 반환할 메시지
-      //   },
-      // },
     },
     start: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     end: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false,
       validate: {
         isEndDateAfterStartDate(value: Date) {
@@ -57,6 +52,11 @@ const Event = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    expired: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   },
   {
     modelName: "Event",

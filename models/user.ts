@@ -44,11 +44,11 @@ User.init(
       allowNull: true,
     },
     createdDate: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     lastAccess: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     major: {

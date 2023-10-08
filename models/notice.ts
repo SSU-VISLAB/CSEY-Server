@@ -19,17 +19,8 @@ const Notice = sequelize.define(
       type: DataTypes.STRING(2000),
       allowNull: false,
     },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      // validate: {
-      //   isUrl: {
-      //     msg: '유효한 URL 형식이 아닙니다.', // 실패 시 반환할 메시지
-      //   },
-      // },
-    },
     date: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     major_advisor: {
@@ -50,6 +41,11 @@ const Notice = sequelize.define(
       type: DataTypes.ENUM("긴급", "일반"),
       allowNull: false,
     },
+    expired: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    }
   },
   {
     modelName: "Notice", // 모델 이름
