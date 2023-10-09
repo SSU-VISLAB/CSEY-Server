@@ -8,7 +8,9 @@ const NoColor = 'rgb(48, 64, 214)'; // 푸른색
 
 const Show: React.FC<ActionProps> = (props) => {
   const { resource, record, action } = props;
-  const properties = resource.showProperties;
+  const properties = [...resource.showProperties];
+  const propertiesBeforeImage = properties;
+  const propertiesAfterImage = properties.splice(6);
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`;
   const contentTag = getActionElementCss(resource.id, action.name, 'drawer-content');
   useEffect(() => {
@@ -22,7 +24,7 @@ const Show: React.FC<ActionProps> = (props) => {
   return (
     <DrawerContent data-css={contentTag}>
       <div className="properties">
-        {properties.map((property) => (
+        {propertiesBeforeImage.map((property) => (
           <>
             <BasePropertyComponent
               key={property.propertyPath}
@@ -37,6 +39,20 @@ const Show: React.FC<ActionProps> = (props) => {
       </div>
       <div className="image">
         {record.params.image ? <img src={window.location.origin + '/' + record.params.image}></img> : null}
+      </div>
+      <div className="properties">
+        {propertiesAfterImage.map((property) => (
+          <>
+            <BasePropertyComponent
+              key={property.propertyPath}
+              where="show"
+              property={property}
+              resource={resource}
+              record={record}
+            />
+            {divList.includes(property.propertyPath) ? <br></br> : null}
+          </>
+        ))}
       </div>
     </DrawerContent>
   )
