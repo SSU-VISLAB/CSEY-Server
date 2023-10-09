@@ -3,15 +3,7 @@ import Alarm from "./alarms.ts";
 import Bookmark from "./bookmarks.ts";
 import Read from "./reads.ts";
 import { sequelize } from './sequelize.ts';
-
-export interface IUser {
-  id: number;
-  activated: boolean;
-  name: string | null;
-  createdDate: Date;
-  lastAccess: Date;
-  major: "컴퓨터" | "소프트";
-}
+import { IUser } from "./types.js";
 
 export type UserCreationAttributes = Optional<IUser, "id">;
 

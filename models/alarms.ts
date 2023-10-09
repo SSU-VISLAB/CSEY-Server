@@ -1,18 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from './sequelize.ts';
-
-export interface IAlarm {
-  id: number;
-  alarm_push: boolean;
-  event_push: boolean;
-  events_timer: number;
-  events_post: '북마크' | '전체';
-  major_schedule_push: boolean;
-  major_schedule_post: boolean;
-  notice_push: boolean;
-  alerts_push: boolean;
-  fk_user_id: number;
-}
+import { IAlarm } from './types.js';
 
 class Alarm extends Model<IAlarm, IAlarm> {
   public id!: number;

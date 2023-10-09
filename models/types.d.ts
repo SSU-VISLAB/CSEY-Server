@@ -14,12 +14,12 @@ export interface IUser {
     alarm_push?: boolean;
     event_push?: boolean;
     events_timer?: number;
-    events_post?: boolean;
+    events_post: '북마크' | '전체';
     major_schedule_push?: boolean;
     major_schedule_post?: boolean;
     notice_push?: boolean;
     alerts_push?: boolean;
-    fk_id: number;
+    fk_user_id: number;
   }
   
   export interface INotice extends Model{
