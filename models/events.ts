@@ -1,7 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from './sequelize.ts';
+import { IEvent } from "./types.js";
 
-const Event = sequelize.define(
+const Event = sequelize.define<IEvent>(
   "Event",
   {
     id: {
@@ -56,6 +57,13 @@ const Event = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    calendar_title: DataTypes.STRING(100),
+    calendar_content: DataTypes.STRING(2000),
+    calendar_show: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     }
   },
   {

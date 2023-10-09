@@ -6,7 +6,7 @@ export interface IUser {
     name: string;
     createdDate: Date;
     lastAccess: Date;
-    major: '0' | '1';
+    major: '컴퓨터' | '소프트';
   }
   
   export interface IAlarm {
@@ -28,10 +28,10 @@ export interface IUser {
     content?: string;
     image?: string;
     date?: Date;
-    major_advisor?: boolean;
+    major_advisor?: '컴퓨터' | '소프트';
     like?: number;
     dislike?: number;
-    priority?: boolean;
+    priority?: '긴급' | '일반';
     expired?: boolean;
   }
   
@@ -43,10 +43,13 @@ export interface IUser {
     image?: string;
     start?: Date;
     end?: Date;
-    major_advisor?: boolean;
+    major_advisor?: '컴퓨터' | '소프트';
     like?: number;
     dislike?: number;
     expired?: boolean;
+    calendar_title: string;
+    calendar_content: string;
+    calendar_show: boolean;
   }
   
   export interface INoticeLike {
