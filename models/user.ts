@@ -9,6 +9,7 @@ export type UserCreationAttributes = Optional<IUser, "id">;
 
 class User extends Model<IUser, UserCreationAttributes> {
   public id!: number;
+  public account!: string;
   public activated!: boolean;
   public name!: string | null;
   public createdDate!: Date;
@@ -23,6 +24,10 @@ User.init(
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
+    },
+    account: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
     },
     activated: {
       type: DataTypes.BOOLEAN,
@@ -45,7 +50,7 @@ User.init(
     },
     major: {
       type: DataTypes.ENUM("컴퓨터", "소프트"),
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
@@ -58,8 +63,8 @@ User.init(
 
 User.afterCreate(async (user, options) => {
   Alarm.create({ fk_user_id: user.id }, { transaction: options.transaction });
-  Bookmark.create({ fk_user_id: user.id}, { transaction: options.transaction });
-  Read.create({ fk_user_id: user.id}, { transaction: options.transaction });
+  Bookmark.create({ fk_user_id: user.id }, { transaction: options.transaction });
+  Read.create({ fk_user_id: user.id }, { transaction: options.transaction });
 });
 
 export default User;

@@ -2,6 +2,7 @@ import { Model } from "sequelize";
 
 export interface IUser {
     id: number;
+    account: string;
     activated: boolean;
     name: string;
     createdDate: Date;
