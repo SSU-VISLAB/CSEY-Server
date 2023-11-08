@@ -1,18 +1,19 @@
-import * as express from "express";
-import { IUser } from "../../models/types.js";
-import { User, sequelize } from "../../models/index.js"
-import { validateRequestBody, findObjectByPk } from "../common_method/index.ts";
-import { generate, verifyToken, reissue } from "../jwt/index.ts";
-import { getKakaoToken, getKakaoInfo } from "./index.ts";
+import { generate } from "../jwt/index.ts";
+import { refreshTokens } from "./auth.ts";
+
+type LoginSuccess = {
+    accessToken: string;
+    refreshToken: string;
+}
+type LoginFail = {
+    error: string;
+}
 
 // POST /users/login
-export const login = (account:string) : { 
-    accessToken?: string, 
-    refreshToken?: string, 
-    error?: string 
-}=> {
+export const login = (account:string): LoginSuccess | LoginFail => {
     try {
         const { accessToken, refreshToken } = generate(account);
+        refreshTokens.add(refreshToken);
         return { accessToken, refreshToken };
     } catch (error) {
         console.error(error);

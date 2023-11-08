@@ -26,7 +26,7 @@ User.init(
       autoIncrement: true,
     },
     account: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     activated: {

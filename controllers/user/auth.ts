@@ -1,27 +1,19 @@
-import axios from "axios";
+import bcrypt from 'bcryptjs';
 import * as express from "express";
-import * as bcrypt from 'bcrypt';
-import { User } from "../../models/index.ts"
-import { generate } from "../jwt/jwt.ts";
+import { User } from "../../models/index.ts";
+import { reissue } from "../jwt/jwt.ts";
 import { login } from "./user.ts";
 
 const SALT_ROUNDS = 10; // bcrypt 해싱 복잡도
+export const refreshTokens = new Set<string>();
 
 export const Kakao_login = async (req: express.Request, res: express.Response, next: any) => {
-  const code = req.body.code;
-  console.log({ code });
   try {
-    const {
-      access_token,
-      expires_in,
-      refresh_token,
-      refresh_token_expires_in,
-    } = await getKakaoToken(code);
-    const originalId = await getKakaoInfo(access_token);
+    const {kakao_accessToken, kakao_refreshToken, id: originalId} = req.body;
 
     const cryptId = await bcrypt.hash(originalId.toString(), 10);
 
-    const existingUser = await User.findOne({ where: { account: cryptId } });
+    const existingUser = await User.findOne({ where: { id: originalId } });
 
     if (!existingUser) { // User가 없으면 회원가입
       const currentDate = new Date();
@@ -38,52 +30,37 @@ export const Kakao_login = async (req: express.Request, res: express.Response, n
 
     // user login
     const tokens = login(originalId);
-    if (tokens.error) {
+    if ('error' in tokens) {
       return res.status(500).json({ message: tokens.error });
     }
+    
+    // TODO: access와 refresh를 cookie와 localStorage중 어느 곳에 저장할 지 정하기
+    res.cookie('accessToken', tokens.accessToken, {
+      sameSite: 'none',
+      httpOnly: true,
+      secure: true,
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      sameSite: 'none',
+      httpOnly: true,
+      secure: true,
+    });
     return res.status(200).json(tokens);
-
   } catch (e) {
     console.error({ e });
   }
 };
 
-export const getKakaoToken = async (code: any) => {
-  const { KAKAO_API } = process.env;
-  const url = "https://kauth.kakao.com/oauth/token";
-  const params = {
-    grant_type: "authorization_code",
-    client_id: process.env.KAKAO_CLIENT_ID,
-    redirect_uri: "http://localhost:3000/login", 
-    code,
-  };
+export const getRefreshToken = async (req: express.Request, res: express.Response) => {
   try {
-    const response = await axios.post(url, null, {
-      params,
-      headers: {
-        "content-type": "application/x-www-form-urlencoded;charset=utf-8",
-      },
-    });
-    return response.data;
-  } catch (e) {
-    console.error(e);
+    const { code, message, accessToken } = reissue(req.body.refreshToken);
+    return res.status(code).json({ message, accessToken });
+  } catch ({ code, message }) {
+    return res.status(code).json({ message });
   }
-};
+}
 
-export const getKakaoInfo = async (token: any) => {
-  const url = "https://kapi.kakao.com/v1/user/access_token_info";
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  try {
-    const response = await axios.get(url, config);
-    const { id } = response.data;
-
-    return id;
-  } catch (e) {
-    console.error(e);
-  }
-};
-
+export const logout = async (req: express.Request, res: express.Response) => {
+  refreshTokens.delete(req.body.refreshToken);
+  res.status(204);
+}
