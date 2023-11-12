@@ -4,10 +4,14 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { TabLabel, useTabWithPagePersistence } from "./hooks.ts";
 
+const YesColor = 'rgb(194, 0, 18)'; // 붉은색
+const NoColor = 'rgb(48, 64, 214)'; // 푸른색
+
 export const List: React.FC<ActionProps> = (props) => {
   const { resource, setTag } = props
-  console.log(props);
-  const { records, loading, direction, sortBy, page, total, fetchData, perPage } = useRecords(resource.id);
+  // console.log(props);
+  const data = useRecords(resource.id);
+  const { records, loading, direction, sortBy, page, total, fetchData, perPage } = data;
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,6 +20,16 @@ export const List: React.FC<ActionProps> = (props) => {
   const contentTag = getActionElementCss(resource.id, "list", "table-wrapper");
   const [ currentTab, handleTabChange ] = useTabWithPagePersistence('urgent');
 
+  useEffect(() => {
+    // ended 속성의 chip 색상 적용
+    const priorityMarker = window.document.querySelectorAll('section[data-css="notices-list-priority"] > span');      
+    priorityMarker.forEach(element => {
+      const color = element.innerText == '긴급' ? YesColor : NoColor;
+      element.style.setProperty('color', color, 'important');
+      element.style.setProperty('border-color', color, 'important');
+      element.style.setProperty('background-color', 'white', 'important')
+      });
+  }, [data]);
   /** list 제목 옆에 chip형태로 나오는 행 수 업데이트 */
   useEffect(() => {
     if (setTag) {

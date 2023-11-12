@@ -1,5 +1,6 @@
+import uploadFeature from '@adminjs/upload';
 import { ResourceOptions } from 'adminjs';
-import { Components } from "../components/index.ts";
+import { Components, componentLoader } from "../components/index.ts";
 import { Handlers } from "../handlers/index.ts";
 import { postTab } from './common.ts';
 
@@ -7,8 +8,8 @@ const noticeOptions: ResourceOptions = {
   navigation: postTab,
 
   listProperties: ['id','priority','title','date','like','dislike'],
-  showProperties: ['id','priority','title','expired','date','like','dislike','content'],
-  editProperties: ['priority', 'major_advisor', 'title', 'date', 'content'],
+  showProperties: ['id','priority','expired','title', 'date','like','dislike','content','file'],
+  editProperties: ['priority', 'major_advisor', 'title', 'date', 'file', 'content'],
 
   properties: {
     content: {
@@ -29,6 +30,27 @@ const noticeOptions: ResourceOptions = {
   }
 }
 
+// 부가기능(upload)
+const noticeFeatures = [uploadFeature({
+  provider: {
+    local: {
+      bucket: 'public/notices', // 저장될 경로
+      opts: {
+        baseUrl: 'notices'
+      }
+    }
+  },
+  validation: {
+    mimeTypes: ['image/png', 'image/jpeg', 'image/bmp', 'image/x-png', 'image/webp'],
+  },
+  componentLoader,
+  // 저장할 파일의 각종 정보들을 테이블의 어떤 속성에 저장할 지 설정
+  properties: {
+    key: "image", // 저장된 경로를 image 속성에 저장
+  }
+})];
+
 export const NOTICE = {
-  options: noticeOptions
+  options: noticeOptions,
+  features: noticeFeatures
 }

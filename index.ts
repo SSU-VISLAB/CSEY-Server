@@ -76,7 +76,7 @@ const start = async () => {
 			{ resource: NoticesLike, options: COMMON.options },
 			// post
 			{ resource: Event, options: EVENT.options, features: EVENT.features},
-			{ resource: Notice, options: NOTICE.options },
+			{ resource: Notice, options: NOTICE.options, features: NOTICE.features },
 			// others
 			{ resource: Read, options: COMMON.options },
 			{ resource: ReadAsset, options: COMMON.options },

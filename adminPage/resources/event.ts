@@ -34,9 +34,9 @@ const eventOptions: ResourceOptions = {
 const eventFeatures = [uploadFeature({
   provider: {
     local: {
-      bucket: 'public', // 저장될 경로
+      bucket: 'public/events', // 저장될 경로
       opts: {
-        baseUrl: ''
+        baseUrl: '/events'
       }
     }
   },

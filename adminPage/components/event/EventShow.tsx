@@ -36,7 +36,7 @@ const Show: React.FC<ActionProps> = (props) => {
         ))}
       </div>
       <div className="image">
-        {record.params.image ? <img src={window.location.origin + '/' + record.params.image}></img> : null}
+        {record.params.image ? <img src={window.location.origin + '/events/' + record.params.image}></img> : null}
       </div>
     </DrawerContent>
   )

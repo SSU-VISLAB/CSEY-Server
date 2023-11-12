@@ -6,7 +6,7 @@ import { TabLabel, useTabWithPagePersistence } from "./hooks.ts";
 
 export const List: React.FC<ActionProps> = (props) => {
   const { resource, setTag } = props
-  console.log(props);
+  // console.log(props);
   const { records, loading, direction, sortBy, page, total, fetchData, perPage } = useRecords(resource.id);
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);
   const location = useLocation();

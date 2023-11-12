@@ -3,7 +3,7 @@ import { NoticeActionQueryParameters } from "./index.ts";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
-  console.log(query);
+  // console.log(query);
   
   const { resource, _admin } = context; // db table
   const unflattenQuery = flat.unflatten(query || {}) as NoticeActionQueryParameters;
@@ -44,7 +44,7 @@ const list: ActionHandler<any> = async (request, response, context) => {
     offset: (page - 1) * perPage,
     sort,
   }, context);
-  console.log(records);
+  // console.log(records);
   
   const populatedRecords = await populator(records, context);
   context.records = populatedRecords;
