@@ -6,7 +6,7 @@ const ACCESS_EXPIRY = '1d';
 const REFRESH_EXPIRY = '7d';
 
 type Payload = {
-    account: string;
+    id: string;
     type: TokenType;
 }
 
@@ -26,7 +26,7 @@ export const verifyToken = (req: Express.Request, res, next) => {
 
     try {
         const payload = jwt.verify(token, process.env.SECRET_KEY) as Payload;
-        if (payload.account != req.params.id) {
+        if (payload.id != req.params.id) {
             throw new Error('토큰과 다른 사용자.')
         }
         next();
@@ -39,16 +39,16 @@ export const verifyToken = (req: Express.Request, res, next) => {
     }
 }
 
-export const generate = (account: string) => {
-    const accessToken = createToken(account, TokenType.ACCESS, ACCESS_EXPIRY);
-    const refreshToken = createToken(account, TokenType.REFRESH, REFRESH_EXPIRY);
+export const generate = (id: string) => {
+    const accessToken = createToken(id, TokenType.ACCESS, ACCESS_EXPIRY);
+    const refreshToken = createToken(id, TokenType.REFRESH, REFRESH_EXPIRY);
 
     return { accessToken, refreshToken };
 }
 
-const createToken = (account: string, tokenType: TokenType, expiresIn: string): string => {
+const createToken = (id: string, tokenType: TokenType, expiresIn: string): string => {
     const payload: Payload = {
-        account: account.toString(),
+        id: id.toString(),
         type: tokenType,
     };
 
@@ -73,8 +73,8 @@ export const reissue = (refreshToken: string): { code: number, message: string, 
             }
         }
 
-        const account = decoded.account;
-        const newAccessToken = createToken(account, TokenType.ACCESS, ACCESS_EXPIRY);
+        const id = decoded.id;
+        const newAccessToken = createToken(id, TokenType.ACCESS, ACCESS_EXPIRY);
 
         return {
             code: 200,

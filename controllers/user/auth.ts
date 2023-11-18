@@ -9,16 +9,15 @@ export const refreshTokens = new Set<string>();
 
 export const Kakao_login = async (req: express.Request, res: express.Response, next: any) => {
   try {
-    const {kakao_accessToken, kakao_refreshToken, id: originalId} = req.body;
+    const {kakao_accessToken, kakao_refreshToken, id} = req.body;
 
-    const cryptId = await bcrypt.hash(originalId.toString(), 10);
 
-    const existingUser = await User.findOne({ where: { id: originalId } });
+    const existingUser = await User.findOne({ where: { id } });
 
     if (!existingUser) { // User가 없으면 회원가입
       const currentDate = new Date();
       const newUser = await User.create({
-        account: cryptId,
+        id,
         activated: true,
         name: null,
         createdDate: currentDate,
@@ -29,7 +28,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response, n
     }
 
     // user login
-    const tokens = login(originalId);
+    const tokens = login(id);
     if ('error' in tokens) {
       return res.status(500).json({ message: tokens.error });
     }
