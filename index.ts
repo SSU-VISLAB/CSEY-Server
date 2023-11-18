@@ -1,6 +1,7 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
 import AdminJS, { AdminJSOptions, ResourceWithOptions } from "adminjs";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
@@ -9,21 +10,24 @@ import { Components, componentLoader } from "./adminPage/components/index.ts";
 import { COMMON, EVENT, NOTICE } from "./adminPage/resources/index.ts";
 import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
 import userRouter from "./routes/user.ts";
+import eventRouter from "./routes/event.ts";
 
-// const corsOptions = {
-//     origin: 'https://',
-//     credentials: true
-// }
+const corsOptions = {
+    origin: 'http://localhost:8080',
+    credentials: true
+}
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
 app.use(json());
 app.use(urlencoded({ extended: false }));
-app.use(cors(/*corsOptions*/));
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // app.get('/', async (req, res) => res.sendFile(__dirname + '/test.html'));
 // app.get('/login', (req, res) => res.sendFile(__dirname + '/testLogin.html'));
 app.use("/api", userRouter);
+app.use("/api",eventRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,
