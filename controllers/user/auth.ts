@@ -50,7 +50,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response, n
       secure: true,
     });
     res.cookie('id', id, cookieOptions);
-    return res.status(200).json({ ...tokens, name: existingUser.name, new_kakao_access_token, new_kakao_refresh_token, new_expires_in });
+    return res.status(200).json({ ...tokens, id, name: existingUser.name, new_kakao_access_token, new_kakao_refresh_token, new_expires_in });
   } catch (e) {
     console.error({ e });
   }
@@ -112,7 +112,7 @@ const getKakaoInfo = async (kakao_accessToken: string, kakao_refreshToken: strin
     const res = { id, ...refreshedResponse };
     return res;
   } catch (e) {
-    console.error("ERROR", e);
+    console.error("[ERROR] getKakakoInfo:", {kakao_accessToken, kakao_refreshToken, expired});
   }
 };
 
