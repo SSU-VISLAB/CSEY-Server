@@ -8,11 +8,12 @@ import { login } from './index.ts';
 const SALT_ROUNDS = 10; // bcrypt 해싱 복잡도
 export const refreshTokens = new Set<string>();
 
-export const Kakao_login = async (req: express.Request, res: express.Response, next: any) => {
+export const Kakao_login = async (req: express.Request, res: express.Response) => {
+  console.log('body:',req.body)
   try {
     const { kakao_accessToken, kakao_refreshToken, id: originalId, expired } = req.body;
     const { id, access_token: new_kakao_access_token, refresh_token: new_kakao_refresh_token, expires_in: new_expires_in } =
-      await getKakaoInfo(kakao_accessToken, kakao_refreshToken, expired);
+      await getKakaoInfo(kakao_accessToken, kakao_refreshToken, +expired);
 
     if (originalId != id) throw new Error('토큰과 잘못 매치된 id');
     const cryptId = await bcrypt.hash(originalId.toString(), 10);
@@ -112,11 +113,12 @@ const getKakaoInfo = async (kakao_accessToken: string, kakao_refreshToken: strin
     const res = { id, ...refreshedResponse };
     return res;
   } catch (e) {
-    console.error("[ERROR] getKakakoInfo:", {kakao_accessToken, kakao_refreshToken, expired});
+    console.error("[ERROR] getKakakoInfo:", {kakao_accessToken, kakao_refreshToken, expired, e});
   }
 };
 
 const refreshKakaoToken = async (kakao_refreshToken: string) => {
+  console.log('refresh kakao token')
   const response = await axios.post('https://kauth.kakao.com/oauth/token', ({
     grant_type: 'refresh_token',
     client_id: process.env.REST_API_KEY, // .env 사용

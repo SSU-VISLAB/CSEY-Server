@@ -7,7 +7,8 @@ class Alarm extends Model<IAlarm, IAlarm> {
   public alarm_push!: boolean;
   public event_push!: boolean;
   public events_timer!: number;
-  public events_post!: '북마크' | '전체';
+  public events_form!: '북마크' | '전체';
+  public events_post!: boolean;
   public major_schedule_push!: boolean;
   public major_schedule_post!: boolean;
   public notice_push!: boolean;
@@ -47,6 +48,14 @@ Alarm.init(
       },
     },
     events_post: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      validate: {
+        isBoolean: true,
+      },
+    },
+    events_form: {
       type: DataTypes.ENUM('북마크', '전체'),
       allowNull: false,
       defaultValue: '전체',
