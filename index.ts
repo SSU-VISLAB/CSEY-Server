@@ -11,6 +11,7 @@ import { COMMON, EVENT, NOTICE } from "./adminPage/resources/index.ts";
 import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
 import userRouter from "./routes/user.ts";
 import eventRouter from "./routes/event.ts";
+import noticeRouter from "./routes/notice.ts";
 
 const corsOptions = {
     origin: 'http://localhost:8080',
@@ -28,6 +29,7 @@ app.use(cookieParser());
 // app.get('/login', (req, res) => res.sendFile(__dirname + '/testLogin.html'));
 app.use("/api", userRouter);
 app.use("/api",eventRouter);
+app.use("/api",noticeRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,

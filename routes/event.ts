@@ -4,8 +4,8 @@ import * as eventController from "../controllers/event/index.ts"
 const eventRouter=Router();
 
 /** 좋아요, 싫어요 */
-eventRouter.post('/posts/events/like',eventController.setLike);
-eventRouter.post('/posts/events/dislike',eventController.setDisLike);
+eventRouter.put('/posts/events/like',eventController.setLike);
+eventRouter.put('/posts/events/dislike',eventController.setDisLike);
 eventRouter.delete('/posts/events/like',eventController.deleteLike);
 eventRouter.delete('/posts/events/dislike',eventController.deleteLike);
 
