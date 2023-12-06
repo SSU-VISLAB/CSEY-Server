@@ -1,20 +1,21 @@
 import { Router } from "express";
 import * as eventController from "../controllers/event/index.ts"
+import { verifyToken } from "../controllers/jwt/index.ts";
 
-const eventRouter=Router();
+const eventRouter = Router();
 
 /** 좋아요, 싫어요 */
-eventRouter.put('/posts/events/like',eventController.setLike);
-eventRouter.put('/posts/events/dislike',eventController.setDisLike);
-eventRouter.delete('/posts/events/like',eventController.deleteLike);
-eventRouter.delete('/posts/events/dislike',eventController.deleteLike);
+eventRouter.put('/posts/events/like', verifyToken, eventController.setLike);
+eventRouter.put('/posts/events/dislike', verifyToken, eventController.setDisLike);
+eventRouter.delete('/posts/events/like', verifyToken, eventController.deleteLike);
+eventRouter.delete('/posts/events/dislike', verifyToken, eventController.deleteLike);
 
 /** 북마크 */
-eventRouter.post('/users/bookmark',eventController.setBookmark);
-eventRouter.delete('/users/bookmark',eventController.deleteBookmark);
+eventRouter.post('/users/bookmark', verifyToken, eventController.setBookmark);
+eventRouter.delete('/users/bookmark', verifyToken, eventController.deleteBookmark);
 
 /** 행사글 요청 */
-eventRouter.get('/posts/events/:eventId',eventController.getEvent)
-eventRouter.get('/posts/events',eventController.getEventAll)
+eventRouter.get('/posts/events/:eventId', eventController.getEvent)
+eventRouter.get('/posts/events', eventController.getEventAll)
 
 export default eventRouter;
