@@ -12,6 +12,7 @@ import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike,
 import alarmRouter from "./routes/alarm.ts";
 import eventRouter from "./routes/event.ts";
 import userRouter from "./routes/user.ts";
+import noticeRouter from "./routes/notice.ts";
 
 const corsOptions = {
     origin: 'http://localhost:8080',
@@ -30,6 +31,7 @@ app.use(cookieParser());
 app.use("/api", userRouter);
 app.use("/api", eventRouter);
 app.use("/api", alarmRouter);
+app.use("/api", noticeRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,

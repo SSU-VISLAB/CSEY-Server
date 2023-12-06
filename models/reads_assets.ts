@@ -9,7 +9,7 @@ const ReadAsset = sequelize.define('Read', {
     allowNull: false
   },
   fk_notice_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'notices', // 외래키가 참조하는 모델의 이름 (테이블 이름)
@@ -19,8 +19,8 @@ const ReadAsset = sequelize.define('Read', {
     onDelete: "CASCADE"
   },
   fk_read_id: {
-    type: DataTypes.BIGINT,
-    allowNull: true,
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: false,
     references: {
       model: 'reads',
       key: 'id'
@@ -31,7 +31,11 @@ const ReadAsset = sequelize.define('Read', {
 }, {
   modelName: 'ReadAsset', // 모델 이름
   tableName: 'read_assets', // 데이터베이스 테이블 이름 (선택 사항)
-  timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  timestamps: false, // createdAt 및 updatedAt 필드 생성 방지,
+  indexes: [{
+    unique: true,
+    fields: ['fk_read_id', 'fk_notice_id']
+  }]
 });
 
 export default ReadAsset;

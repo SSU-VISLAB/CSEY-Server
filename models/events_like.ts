@@ -14,7 +14,7 @@ const EventsLike = sequelize.define('EventsLike', {
     defaultValue: 'null',
   },
   fk_event_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'events',
@@ -24,7 +24,7 @@ const EventsLike = sequelize.define('EventsLike', {
     onDelete: "CASCADE"
   },
   fk_user_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'users',
@@ -37,6 +37,10 @@ const EventsLike = sequelize.define('EventsLike', {
   modelName: 'EventsLike',
   tableName: 'events_like',
   timestamps: false,
+  indexes: [{
+    unique: true,
+    fields: ['fk_event_id', 'fk_user_id']
+  }]
 });
 
 export default EventsLike;

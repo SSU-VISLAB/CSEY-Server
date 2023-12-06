@@ -30,7 +30,7 @@ export const getAlertAll = async (
         const alertList = await Notice.findAll({
             where: {
                 priority: {
-                    [Op.eq]: 'EMERGENCY'
+                    [Op.eq]: '긴급'
                 }
             }
         }) as INotice[];

@@ -16,7 +16,7 @@ noticeRouter.get('/posts/notices/:noticeId',noticeController.getNotice);
 noticeRouter.get('/posts/alerts/:noticeId',noticeController.getNotice);
 
 /** 읽음 표시 */
-noticeRouter.get('/users/read',noticeController.getUnread);
+noticeRouter.get('/users/read',noticeController.getUnread); // TODO: 토큰 제공 문제
 noticeRouter.post('/users/read',noticeController.setRead);
 
 export default noticeRouter;

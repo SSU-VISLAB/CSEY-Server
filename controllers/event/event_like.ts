@@ -26,17 +26,21 @@ async function updateLikeStatus(body: IEventUserRequest, status: { like: string 
 
         const existingLike = await EventsLike.findOne({
             where: { fk_event_id: event_id, fk_user_id: user_id },
-            transaction
+            transaction,
+            logging: console.log,
         });
 
+        console.log(existingLike);
         if (existingLike) {
-            await existingLike.update(status, { transaction });
+            console.log("whswogkqslek");
+            await existingLike.update(status, { transaction, logging: console.log});
         } else {
+            console.log("dkswhswogkqslek");
             await EventsLike.create({
                 ...status,
                 fk_event_id: event_id,
                 fk_user_id: user_id
-            }, { transaction });
+            }, { transaction,logging: console.log });
         }
 
         await transaction.commit();

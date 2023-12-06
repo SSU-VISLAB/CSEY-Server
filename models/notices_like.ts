@@ -14,7 +14,7 @@ const NoticesLike = sequelize.define('NoticesLike', {
     defaultValue: 'null', // 기본값 설정 (null)
   },
   fk_notice_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'notices', // 외래키가 참조하는 모델의 이름 (테이블 이름)
@@ -24,7 +24,7 @@ const NoticesLike = sequelize.define('NoticesLike', {
     onDelete: "CASCADE"
   },
   fk_user_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'users', // 외래키가 참조하는 모델의 이름 (테이블 이름)
@@ -37,6 +37,10 @@ const NoticesLike = sequelize.define('NoticesLike', {
   modelName: 'NoticesLike', // 모델 이름
   tableName: 'notices_like', // 데이터베이스 테이블 이름 (선택 사항)
   timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  indexes: [{
+    unique: true,
+    fields: ['fk_notice_id', 'fk_user_id']
+  }]
 });
 
 export default NoticesLike;
