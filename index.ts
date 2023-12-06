@@ -29,10 +29,10 @@ app.use(cookieParser());
 
 // app.get('/', async (req, res) => res.sendFile(__dirname + '/test.html'));
 // app.get('/login', (req, res) => res.sendFile(__dirname + '/testLogin.html'));
+app.use("/api", noticeRouter);
 app.use("/api", userRouter);
 app.use("/api", eventRouter);
 app.use("/api", alarmRouter);
-app.use("/api", noticeRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,
