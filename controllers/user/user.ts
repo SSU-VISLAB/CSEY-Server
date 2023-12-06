@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../../models/user.ts';
 import { generate } from "../jwt/index.ts";
-import { refreshTokens } from "./auth.ts";
+import { redisClient } from '../../redis/redis_server.ts';
 
 type LoginSuccess = {
     accessToken: string;
@@ -12,10 +12,10 @@ type LoginFail = {
 }
 
 // POST /users/login
-export const login = (account: string): LoginSuccess | LoginFail => {
+export const login = async (account: string): Promise<LoginSuccess | LoginFail> => {
     try {
         const { accessToken, refreshToken } = generate(account);
-        refreshTokens.add(refreshToken);
+        await redisClient.set(`refreshToken:${refreshToken}`, 'true');
         return { accessToken, refreshToken };
     } catch (error) {
         console.error(error);

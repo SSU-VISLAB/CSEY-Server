@@ -1,6 +1,6 @@
 import * as Express from 'express';
 import jwt from "jsonwebtoken";
-import { refreshTokens } from "../user/auth.ts";
+import { redisClient } from '../../redis/redis_server.ts';
 
 const ACCESS_EXPIRY = '1d';
 const REFRESH_EXPIRY = '7d';
@@ -56,7 +56,7 @@ const createToken = (id: string, tokenType: TokenType, expiresIn: string): strin
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn });
 }
 
-export const reissue = (refreshToken: string): { code: number, message: string, accessToken?: string } => {
+export const reissue = async (refreshToken: string): Promise<{ code: number; message: string; accessToken?: string; }> => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as Payload;
 
@@ -67,7 +67,9 @@ export const reissue = (refreshToken: string): { code: number, message: string, 
             };
         }
 
-        if (!refreshTokens.has(refreshToken)) {
+        const exists = await redisClient.exists(`refreshToken:${refreshToken}`);
+
+        if (!exists) {
             throw {
                 code: 500,
                 message: "로그인 되지 않은 사용자 입니다."

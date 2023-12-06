@@ -4,9 +4,9 @@ import * as express from "express";
 import { User } from "../../models/index.ts";
 import { reissue } from "../jwt/jwt.ts";
 import { login } from './index.ts';
+import { redisClient } from '../../redis/redis_server.ts';
 
 const SALT_ROUNDS = 10; // bcrypt 해싱 복잡도
-export const refreshTokens = new Set<string>();
 
 export const Kakao_login = async (req: express.Request, res: express.Response) => {
   console.log('body:',req.body)
@@ -34,7 +34,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     }
 
     // user login
-    const tokens = login(id);
+    const tokens = await login(id);
     if ('error' in tokens) {
       return res.status(500).json({ message: tokens.error });
     }
@@ -59,7 +59,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
 
 export const getRefreshToken = async (req: express.Request, res: express.Response) => {
   try {
-    const { code, message, accessToken } = reissue(req.body.refreshToken);
+    const { code, message, accessToken } = await reissue(req.body.refreshToken);
     return res.status(code).json({ message, accessToken });
   } catch ({ code, message }) {
     return res.status(code).json({ message });
@@ -73,7 +73,7 @@ export const logout = async (req: express.Request, res: express.Response) => {
     if (!kakao_accessToken) throw new Error('kakao_accessToken 없음');
     if (!refreshToken) throw new Error('refreshToken 없음');
     kakaoLogout(req.body.kakao_accessToken);
-    refreshTokens.delete(req.cookies.refreshToken);
+    await redisClient.del(`refreshToken:${req.cookies.refreshToken}`)
     return res.status(200).json({ status: 1 });
   } catch (e) {
     console.error({e})

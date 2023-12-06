@@ -13,6 +13,7 @@ import alarmRouter from "./routes/alarm.ts";
 import eventRouter from "./routes/event.ts";
 import userRouter from "./routes/user.ts";
 import noticeRouter from "./routes/notice.ts";
+import { connectRedis } from "./redis/redis_server.ts";
 
 const corsOptions = {
     origin: 'http://localhost:8080',
@@ -102,6 +103,7 @@ const start = async () => {
 	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
 	app.use(express.static(path.join(__dirname, "./public")));
 
+	await connectRedis();
 	await sequelize
 		.authenticate()
 		.then(async () => {
