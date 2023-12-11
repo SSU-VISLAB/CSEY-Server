@@ -9,11 +9,11 @@ import * as url from 'url';
 import { Components, componentLoader } from "./adminPage/components/index.ts";
 import { COMMON, EVENT, NOTICE } from "./adminPage/resources/index.ts";
 import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
+import { connectRedis, redisClient } from "./redis/redis_server.ts";
 import alarmRouter from "./routes/alarm.ts";
 import eventRouter from "./routes/event.ts";
-import userRouter from "./routes/user.ts";
 import noticeRouter from "./routes/notice.ts";
-import { connectRedis } from "./redis/redis_server.ts";
+import userRouter from "./routes/user.ts";
 
 const corsOptions = {
     origin: 'http://localhost:8080',
@@ -104,6 +104,9 @@ const start = async () => {
 	app.use(express.static(path.join(__dirname, "./public")));
 
 	await connectRedis();
+	// 연결 test
+	redisClient.set('success', 1).then((v) => console.log('redis set success:', {v}));
+	redisClient.get('success').then((v) => console.log('redis get success:', {v}));
 	await sequelize
 		.authenticate()
 		.then(async () => {
