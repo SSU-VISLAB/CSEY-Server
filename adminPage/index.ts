@@ -51,18 +51,18 @@ export const adminOptions: AdminJSOptions = {
   // 관리할 models 목록
   resources: [
     // user
-    { resource: User, options: COMMON.options },
-    { resource: Alarm, options: COMMON.options },
-    { resource: EventsLike, options: COMMON.options },
-    { resource: NoticesLike, options: COMMON.options },
+    { resource: User, ...COMMON},
+    { resource: Alarm, ...COMMON},
+    { resource: EventsLike, ...COMMON},
+    { resource: NoticesLike, ...COMMON},
     // post
-    { resource: Event, options: EVENT.options, features: EVENT.features},
-    { resource: Notice, options: NOTICE.options },
+    { resource: Event, ...EVENT},
+    { resource: Notice, ...NOTICE},
     // others
-    { resource: Read, options: COMMON.options },
-    { resource: ReadAsset, options: COMMON.options },
-    { resource: Bookmark, options: COMMON.options },
-    { resource: BookmarkAsset, options: COMMON.options }
+    { resource: Read, ...COMMON},
+    { resource: ReadAsset, ...COMMON},
+    { resource: Bookmark, ...COMMON},
+    { resource: BookmarkAsset, ...COMMON }
   ] as ResourceWithOptions[],
   componentLoader
 };

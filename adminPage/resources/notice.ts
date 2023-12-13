@@ -8,7 +8,7 @@ const noticeOptions: ResourceOptions = {
   navigation: postTab,
 
   listProperties: ['id','priority','title','date','like','dislike'],
-  showProperties: ['id','priority','expired','title', 'date','like','dislike','content','file'],
+  showProperties: ['id','priority','expired','title', 'date','like','dislike','content'],
   editProperties: ['priority', 'major_advisor', 'title', 'date', 'file', 'content'],
 
   properties: {
@@ -36,7 +36,7 @@ const noticeFeatures = [uploadFeature({
     local: {
       bucket: 'public/notices', // 저장될 경로
       opts: {
-        baseUrl: 'notices'
+        baseUrl: '/notices'
       }
     }
   },
