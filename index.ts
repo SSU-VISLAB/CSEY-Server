@@ -9,20 +9,22 @@ import { adminOptions } from "./adminPage/index.ts";
 import { sequelize } from "./models/index.ts";
 import userRouter from "./routes/user.ts";
 
-// const corsOptions = {
-//     origin: 'https://',
-//     credentials: true
-// }
+const corsOptions = {
+    origin: 'http://localhost:8080',
+    credentials: true
+}
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
 app.use(json());
 app.use(urlencoded({ extended: false }));
-app.use(cors(/*corsOptions*/));
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // app.get('/', async (req, res) => res.sendFile(__dirname + '/test.html'));
 // app.get('/login', (req, res) => res.sendFile(__dirname + '/testLogin.html'));
 app.use("/api", userRouter);
+app.use("/api",eventRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,

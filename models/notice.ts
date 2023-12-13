@@ -27,6 +27,10 @@ const Notice = sequelize.define(
       type: DataTypes.ENUM("컴퓨터", "소프트"),
       allowNull: false,
     },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     like: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,

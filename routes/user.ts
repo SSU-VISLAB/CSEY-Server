@@ -1,15 +1,17 @@
 import { Router } from "express";
 import * as alarmController from "../controllers/alarm/alarm.ts";
-import * as userController from "../controllers/user/user.ts";
+import { verifyToken } from "../controllers/jwt/jwt.ts";
+import * as userController from "../controllers/user/auth.ts";
 
 
 const userRouter = Router();
-/** url: /api/signup */
-userRouter.post('/signup', userController.signup);
 
 /** url: /api/login */
-userRouter.post('/login', userController.login);
+userRouter.post('/login', userController.Kakao_login);
+userRouter.post('/logout', verifyToken, userController.logout);
 
-userRouter.put('/:id/alarms', alarmController.setAlarm);
+userRouter.post('/getToken', userController.getRefreshToken);
+
+userRouter.put('/:id/alarms', verifyToken, alarmController.setAlarm);
 
 export default userRouter;
