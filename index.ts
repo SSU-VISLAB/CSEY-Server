@@ -1,21 +1,18 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
 import AdminJS from "adminjs";
-import cors from "cors";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
 import * as url from 'url';
-import { Components, componentLoader } from "./adminPage/components/index.ts";
-import { COMMON, EVENT, NOTICE } from "./adminPage/resources/index.ts";
-import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize } from "./models/index.ts";
+import { adminOptions } from "./adminPage/index.ts";
+import { sequelize } from "./models/index.ts";
 import { connectRedis, redisClient } from "./redis/redis_server.ts";
 import alarmRouter from "./routes/alarm.ts";
 import eventRouter from "./routes/event.ts";
 import noticeRouter from "./routes/notice.ts";
 import userRouter from "./routes/user.ts";
-import { adminOptions } from "./adminPage/index.ts";
-import { sequelize } from "./models/index.ts";
 
 const corsOptions = {
     origin: 'http://localhost:8080',
