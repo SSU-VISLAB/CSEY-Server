@@ -1,15 +1,16 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
-import { EventActionQueryParameters } from "./index.ts";
+import { NoticeActionQueryParameters } from "./index.ts";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
+  // console.log(query);
+  
   const { resource, _admin } = context; // db table
-  const unflattenQuery = flat.unflatten(query || {}) as EventActionQueryParameters;
-  let { page, perPage, type = 'ongoing' } = unflattenQuery;
-  const isOngoing = type == 'ongoing';
+  const unflattenQuery = flat.unflatten(query || {}) as NoticeActionQueryParameters;
+  let { page, perPage, type = 'urgent' } = unflattenQuery;
   // 진행중인 행사 탭에서는 시작일 내림차순 정렬
   // 종료된 행사 탭에서는 종료일 내림차순 정렬
-  const { sortBy = isOngoing ? 'start' : 'end', direction = 'desc', filters = {} } = unflattenQuery;
+  const { sortBy = 'date', direction = 'desc', filters = {} } = unflattenQuery;
 
   // adminOptions.settings.defaultPerPage, 한 페이지에 몇 행 보여줄 지
   if (perPage) {
@@ -30,14 +31,21 @@ const list: ActionHandler<any> = async (request, response, context) => {
       resource.decorate().options,
     )
   };
-  // 진행중인 행사 탭이면 expired == false인 데이터만
-  // 종료된 행사 탭이면 expired == true인 데이터만 가져오기
-  const filter = await new Filter({ ...filters, expired: isOngoing ? 'false' : 'true' }, resource).populate(context);
+
+  const noticeTypeMapper = {
+    'urgent': {priority: '긴급'},
+    'general': {priority: '일반'},
+    'expired': {expired: 'true'}
+  }
+  
+  const filter = await new Filter({ ...filters, ...noticeTypeMapper[type] }, resource).populate(context);
   const records = await resource.find(filter, {
     limit: perPage,
     offset: (page - 1) * perPage,
     sort,
   }, context);
+  // console.log(records);
+  
   const populatedRecords = await populator(records, context);
   context.records = populatedRecords;
   
@@ -56,6 +64,6 @@ const list: ActionHandler<any> = async (request, response, context) => {
   };
 }
 
-export const EventHandler = {
+export const NoticeHandler = {
   list
 }
