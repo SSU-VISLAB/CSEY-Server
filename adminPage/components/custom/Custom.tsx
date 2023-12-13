@@ -4,7 +4,7 @@ import React from 'react'
 
 const MyCustomAction = (props: ActionProps) => {
   const { record } = props
-  console.log({props})
+  // console.log({props})
   return (
     <Box flex>
       <Box variant="white" width={1 / 2} boxShadow="card" mr="xxl" flexShrink={0}>
