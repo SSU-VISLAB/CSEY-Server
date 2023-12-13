@@ -33,7 +33,7 @@ const Edit: FC<ActionProps> = (props) => {
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`
   // const value = record.params?.[property.path]
   // const error = record.errors && record.errors[property.path]
-  console.log(props)
+  // console.log(props)
   useEffect(() => {
     if (initialRecord) {
       setRecord(initialRecord);

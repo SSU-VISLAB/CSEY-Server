@@ -7,6 +7,20 @@ section[data-css="events-show-end"] {
   display: inline-block;
   margin-right: 20px;
 }
+
+section[data-css="notices-show-id"],
+section[data-css="notices-show-priority"],
+section[data-css="notices-show-title"],
+section[data-css="notices-show-expired"],
+section[data-css="notices-show-date"],
+section[data-css="notices-show-like"],
+section[data-css="notices-show-dislike"],
+section[data-css="notices-show-content"],
+section[data-css="notices-show-file"] {
+  display: inline-block;
+  margin-right: 20px;
+}
+
 .properties {
 
 }

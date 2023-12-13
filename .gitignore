@@ -88,3 +88,4 @@ web_modules/
 .parcel-cache
 firebaseKey.json
 .adminjs/
+public/
