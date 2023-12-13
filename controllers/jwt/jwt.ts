@@ -16,7 +16,7 @@ enum TokenType {
 }
 
 export const verifyToken = (req: Express.Request, res, next) => {
-    const token = req.cookies.accessToken;
+    const token = req.body.accessToken;
     const id = req.params.id || req.cookies.id;
     if (!token) {
         return res.status(401).json({
