@@ -9,7 +9,7 @@ const Read = sequelize.define('Read', {
     allowNull: false
   },
   fk_user_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
       model: 'users', // 외래키가 참조하는 모델의 이름 (테이블 이름)

@@ -49,3 +49,26 @@ export const setAlarm = async (
     return res.status(500).json({ error });
   }
 };
+
+// GET /users/:id/alarms/get
+export const getAlarms = async (
+  { params, body }: express.Request<any, any, IAlarm>,
+  res: express.Response,
+) => {
+  try {
+    const userId = params.id;
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+    }
+    const userAlarms = await Alarm.findOne({
+      where: {
+        $fk_user_id$: userId
+      }
+    });
+
+    return res.status(200).json(userAlarms);
+  } catch(e) {
+    return e
+  }
+}

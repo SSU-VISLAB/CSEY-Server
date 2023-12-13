@@ -15,7 +15,8 @@ export interface IAlarm {
   alarm_push?: boolean;
   event_push?: boolean;
   events_timer?: number;
-  events_post: '북마크' | '전체';
+  events_form: '북마크' | '전체';
+  events_post: boolean;
   major_schedule_push?: boolean;
   major_schedule_post?: boolean;
   notice_push?: boolean;

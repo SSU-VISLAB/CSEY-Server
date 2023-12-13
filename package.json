@@ -41,6 +41,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.2.0",
     "nodemon": "^3.0.1",
+    "redis": "^4.6.11",
     "sequelize": "^6.33.0",
     "ts-dotenv": "^0.9.1",
     "typescript": "^5.0.2"

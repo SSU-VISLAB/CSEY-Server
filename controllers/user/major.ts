@@ -17,7 +17,7 @@ export const setMajor = async (
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
-        const userId = parseInt(params.userId,10);
+        const userId = parseInt(params.id,10);
         const major = body.major;
 
         // 유저 정보와 전공 확인

@@ -2,17 +2,17 @@ import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import * as express from "express";
 import { User } from "../../models/index.ts";
+import { redisClient } from '../../redis/redis_server.ts';
 import { reissue } from "../jwt/jwt.ts";
 import { login } from './index.ts';
 
 const SALT_ROUNDS = 10; // bcrypt 해싱 복잡도
-export const refreshTokens = new Set<string>();
 
-export const Kakao_login = async (req: express.Request, res: express.Response, next: any) => {
+export const Kakao_login = async (req: express.Request, res: express.Response) => {
+  console.log('kakao_login body:',req.body)
   try {
-    const { kakao_accessToken, kakao_refreshToken, id: originalId, expired } = req.body;
-    const { id, access_token: new_kakao_access_token, refresh_token: new_kakao_refresh_token, expires_in: new_expires_in } =
-      await getKakaoInfo(kakao_accessToken, kakao_refreshToken, expired);
+    const { kakao_accessToken, id: originalId } = req.body;
+    const { id } = await getKakaoInfo(kakao_accessToken);
 
     if (originalId != id) throw new Error('토큰과 잘못 매치된 id');
     const cryptId = await bcrypt.hash(originalId.toString(), 10);
@@ -33,32 +33,27 @@ export const Kakao_login = async (req: express.Request, res: express.Response, n
     }
 
     // user login
-    const tokens = login(id);
+    const tokens = await login(id);
     if ('error' in tokens) {
       return res.status(500).json({ message: tokens.error });
     }
-    const cookieOptions: express.CookieOptions = {
+    const httpOnlyCookie: express.CookieOptions = {
       sameSite: 'none',
       httpOnly: true,
       secure: true,
     };
-    // TODO: access와 refresh를 cookie와 localStorage중 어느 곳에 저장할 지 정하기
-    res.cookie('accessToken', tokens.accessToken, cookieOptions);
-    res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
-    res.cookie('name', existingUser.name, {
-      sameSite: 'none',
-      secure: true,
-    });
-    res.cookie('id', id, cookieOptions);
-    return res.status(200).json({ ...tokens, id, name: existingUser.name, new_kakao_access_token, new_kakao_refresh_token, new_expires_in });
+    // access는 localStorage
+    // refresh는 http only cookie
+    res.cookie('refreshToken', tokens.refreshToken, httpOnlyCookie);
+    return res.status(200).json({ accessToken: tokens.accessToken, id, name: existingUser.name });
   } catch (e) {
     console.error({ e });
   }
 };
-
+// TODO: 만료시간 다 되어가면 refresh토큰도 refresh하는 로직 작성하기
 export const getRefreshToken = async (req: express.Request, res: express.Response) => {
   try {
-    const { code, message, accessToken } = reissue(req.body.refreshToken);
+    const { code, message, accessToken } = await reissue(req.cookies.refreshToken);
     return res.status(code).json({ message, accessToken });
   } catch ({ code, message }) {
     return res.status(code).json({ message });
@@ -66,13 +61,13 @@ export const getRefreshToken = async (req: express.Request, res: express.Respons
 }
 
 export const logout = async (req: express.Request, res: express.Response) => {
-  const {kakao_accessToken} = req.body;
+  const {accessToken} = req.body;
   const {refreshToken} = req.cookies;
   try {
-    if (!kakao_accessToken) throw new Error('kakao_accessToken 없음');
+    if (!accessToken) throw new Error('accessToken 없음');
     if (!refreshToken) throw new Error('refreshToken 없음');
-    kakaoLogout(req.body.kakao_accessToken);
-    refreshTokens.delete(req.cookies.refreshToken);
+    await redisClient.del(`refreshToken:${req.cookies.refreshToken}`);
+    res.clearCookie('refreshToken');
     return res.status(200).json({ status: 1 });
   } catch (e) {
     console.error({e})
@@ -82,20 +77,7 @@ export const logout = async (req: express.Request, res: express.Response) => {
   }
 }
 
-const kakaoLogout = async (kakao_accessToken: string) => {
-  try {
-    const id = await axios.post('https://kapi.kakao.com/v1/user/logout', {}, {
-      headers: {
-        Authorization: `Bearer ${kakao_accessToken}`
-      }
-    }).then(res => res.data);
-    return id;
-  } catch (e) {
-    throw e
-  }
-}
-
-const getKakaoInfo = async (kakao_accessToken: string, kakao_refreshToken: string, expired: number) => {
+const getKakaoInfo = async (kakao_accessToken: string) => {
   const url = "https://kapi.kakao.com/v1/user/access_token_info";
   const config = {
     headers: {
@@ -103,27 +85,14 @@ const getKakaoInfo = async (kakao_accessToken: string, kakao_refreshToken: strin
     },
   };
   try {
-    const refreshedResponse = new Date().getTime() > new Date(expired).getTime() && await refreshKakaoToken(kakao_refreshToken);
-    if (refreshedResponse) {
-      config.headers.Authorization = `Bearer ${refreshedResponse.access_token}`
-    }
     const response = await axios.get(url, config);
     const { id } = response.data;
-    const res = { id, ...refreshedResponse };
+    const res = { id };
     return res;
   } catch (e) {
-    console.error("[ERROR] getKakakoInfo:", {kakao_accessToken, kakao_refreshToken, expired});
+    console.error("[ERROR] getKakakoInfo:", {kakao_accessToken, e});
   }
 };
-
-const refreshKakaoToken = async (kakao_refreshToken: string) => {
-  const response = await axios.post('https://kauth.kakao.com/oauth/token', ({
-    grant_type: 'refresh_token',
-    client_id: process.env.REST_API_KEY, // .env 사용
-    refresh_token: kakao_refreshToken,
-  }), { headers: { "Content-Type": "application/x-www-form-urlencoded" } }).then(res => res.data);
-  return response as KakaoTokenRefreshResponse;
-}
 
 type KakaoTokenRefreshResponse = {
   token_type: 'bearer',

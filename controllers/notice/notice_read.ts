@@ -81,11 +81,21 @@ export const setRead = async (
             read = await Read.create({ fk_user_id: user_id }, { transaction }) as IRead;
         }
 
-        // ReadAsset 테이블에 항목 추가
-        await ReadAsset.create({
-            fk_notice_id: notice_id,
-            fk_read_id: read.id,
-        }, { transaction });
+        // 해당 ReadAsset 항목이 이미 있는지 확인
+        const existingReadAsset = await ReadAsset.findOne({
+            where: {
+                fk_notice_id: notice_id,
+                fk_read_id: read.id
+            }
+        });
+
+        // ReadAsset 항목이 존재하지 않으면 추가
+        if (!existingReadAsset) {
+            await ReadAsset.create({
+                fk_notice_id: notice_id,
+                fk_read_id: read.id,
+            }, { transaction });
+        }
 
         await transaction.commit();
 

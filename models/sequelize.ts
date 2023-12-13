@@ -9,5 +9,6 @@ export const sequelize = new Sequelize(
     host: config.development.DB_HOST,
     port: +config.development.DB_PORT,
     dialect: "mysql",
+    logging: console.log,
   }
 );
