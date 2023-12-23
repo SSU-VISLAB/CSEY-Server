@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './sequelize.ts';
+import Bookmark from './bookmarks.ts';
 
 const BookmarkAsset = sequelize.define('BookmarkAsset', {
   id: {
@@ -33,5 +34,7 @@ const BookmarkAsset = sequelize.define('BookmarkAsset', {
   tableName: 'bookmark_assets',
   timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
 });
+
+Bookmark.hasMany(BookmarkAsset, { as: 'BookmarkAssets', foreignKey: 'fk_bookmark_id' });
 
 export default BookmarkAsset;

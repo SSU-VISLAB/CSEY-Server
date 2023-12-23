@@ -6,8 +6,6 @@ import { redisClient } from '../../redis/redis_server.ts';
 import { reissue } from "../jwt/jwt.ts";
 import { login } from './index.ts';
 
-const SALT_ROUNDS = 10; // bcrypt 해싱 복잡도
-
 export const Kakao_login = async (req: express.Request, res: express.Response) => {
   console.log('kakao_login body:',req.body)
   try {

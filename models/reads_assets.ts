@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './sequelize.ts';
+import Read from './reads.ts';
 
 const ReadAsset = sequelize.define('Read', {
   id: {
@@ -37,5 +38,7 @@ const ReadAsset = sequelize.define('Read', {
     fields: ['fk_read_id', 'fk_notice_id']
   }]
 });
+
+Read.hasMany(ReadAsset, { as: 'ReadAssets', foreignKey: 'fk_read_id' });
 
 export default ReadAsset;
