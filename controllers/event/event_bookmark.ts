@@ -2,12 +2,15 @@ import * as express from "express";
 import { IEventUserRequest } from "./request/request.ts";
 import { IBookmark } from "../../models/types.js";
 import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.ts";
-import { findObjectByPk, validateRequestBody } from "../common_method/index.ts";
+import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.ts";
+import { redisClient } from "../../redis/redis_server.ts";
 
 const bodyList = [
     "event_id",
     "user_id",
 ]
+
+const EXPIRE = 3600; // 유효시간 1시간
 
 // POST /users/bookmark
 export const setBookmark = async (
@@ -44,6 +47,10 @@ export const setBookmark = async (
         }, { transaction });
 
         await transaction.commit();
+
+        // Redis에 있는 해당 사용자의 북마크 정보 업데이트
+        const updatedBookmarks= await getEventBookmarkInfo(user_id.toString());
+        await redisClient.set(`user:bookmarks:${user_id}`, JSON.stringify(updatedBookmarks), { EX: EXPIRE });
 
         return res.status(200).json({ message: "북마크 설정 성공했습니다." });
     } catch (error) {
@@ -96,6 +103,14 @@ export const deleteBookmark = async (
         }
 
         await transaction.commit();
+
+        // Redis에 있는 해당 사용자의 북마크 정보 삭제 또는 업데이트
+        const updatedBookmarks= await getEventBookmarkInfo(user_id.toString());
+        if (updatedBookmarks.length > 0) {
+            await redisClient.set(`user:bookmarks:${user_id}`, JSON.stringify(updatedBookmarks), { EX: EXPIRE });
+        } else {
+            await redisClient.del(`user:bookmarks:${user_id}`);
+        }
 
         return res.status(200).json({ message: "북마크 삭제 성공했습니다." });
     } catch (error) {

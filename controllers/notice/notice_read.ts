@@ -4,11 +4,15 @@ import { findObjectByPk, findUser, validateRequestBody } from "../common_method/
 import { Notice, Read, ReadAsset, sequelize } from "../../models/index.ts";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
+import { redisClient } from "../../redis/redis_server.ts";
+import { getNoticeReadInfo } from "../common_method/user_information.ts";
 
 const bodyList = [
     "notice_id",
     "user_id"
 ]
+
+const EXPIRE = 3600; // 유효시간 1시간
 
 // GET /users/read
 export const getUnread = async (
@@ -98,6 +102,10 @@ export const setRead = async (
         }
 
         await transaction.commit();
+
+        // Redis에 있는 해당 사용자의 읽음 정보 업데이트
+        const updatedReadAssets = await getNoticeReadInfo(user_id.toString());
+        await redisClient.set(`user:read:${user_id}`, JSON.stringify(updatedReadAssets), { EX: EXPIRE });
 
         return res.status(200).json({ message: "읽음 설정 성공했습니다." });
     } catch (error) {

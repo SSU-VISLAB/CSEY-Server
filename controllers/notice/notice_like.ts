@@ -2,11 +2,15 @@ import * as express from "express";
 import { INoticeUserRequest } from "./request/request.ts";
 import { NoticesLike, sequelize } from "../../models/index.ts";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
+import { getNoticeLikeInfo } from "../common_method/user_information.ts";
+import { redisClient } from "../../redis/redis_server.ts";
 
 const bodyList = [
     "notice_id",
     "user_id",
 ]
+
+const EXPIRE = 3600; // 유효시간 1시간
 
 /**
  * 좋아요 상태 바꾸기
@@ -40,6 +44,10 @@ async function updateLikeStatus(body: INoticeUserRequest, status: { like: string
         }
 
         await transaction.commit();
+
+        // Redis에 있는 해당 사용자의 공지사항 좋아요 정보 업데이트
+        const updatedLikes = await getNoticeLikeInfo(user_id.toString());
+        await redisClient.set(`user:noticeLikes:${user_id}`, JSON.stringify(updatedLikes), { EX: EXPIRE });
     } catch (error) {
         await transaction.rollback();
         throw error;
