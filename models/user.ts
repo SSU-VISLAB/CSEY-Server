@@ -9,7 +9,6 @@ export type UserCreationAttributes = Optional<IUser, "id">;
 
 class User extends Model<IUser, UserCreationAttributes> {
   public id!: number;
-  public account!: string;
   public activated!: boolean;
   public name!: string | null;
   public createdDate!: Date;
@@ -24,10 +23,6 @@ User.init(
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
-    },
-    account: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
     },
     activated: {
       type: DataTypes.BOOLEAN,

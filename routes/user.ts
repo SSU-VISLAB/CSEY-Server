@@ -13,7 +13,7 @@ userRouter.post('/getToken', getRefreshToken);
 
 userRouter.get('/users/info/:id', verifyToken, getUserInfo);
 
-userRouter.get('/users/:id', verifyToken, getUserData);
+userRouter.get('/users/:id', getUserData);
 userRouter.delete('/users/:id', verifyToken, deleteAccount);
 
 userRouter.put('/users/:id/major', verifyToken, setMajor);
