@@ -1,6 +1,7 @@
 import * as express from "express";
 import { Alarm, User } from "../../models/index.ts";
 import { IAlarm } from "../../models/types.js";
+import { redisClient } from "../../redis/redis_server.ts";
 
 const bodyList = [
   "alarm_push",
@@ -38,10 +39,12 @@ export const setAlarm = async (
     }
 
     // 사용자의 알람 설정 업데이트
-    await Alarm.update(alarms, {
+    const userAlarms: any = await Alarm.update(alarms, {
       where: { fk_user_id: userId },
       individualHooks: true,
     });
+    const redisKey = `user:alarm:${userId}`;
+    await redisClient.set(redisKey, JSON.stringify(userAlarms[1][0]), { EX: 3600 });
 
     return res.status(200).json({ message: "알람 설정이 업데이트되었습니다." });
   } catch (error) {
@@ -49,26 +52,3 @@ export const setAlarm = async (
     return res.status(500).json({ error });
   }
 };
-
-// GET /users/:id/alarms/get
-export const getAlarms = async (
-  { params, body }: express.Request<any, any, IAlarm>,
-  res: express.Response,
-) => {
-  try {
-    const userId = params.id;
-    const user = await User.findByPk(userId);
-    if (!user) {
-      throw res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
-    }
-    const userAlarms = await Alarm.findOne({
-      where: {
-        $fk_user_id$: userId
-      }
-    });
-
-    return res.status(200).json(userAlarms);
-  } catch(e) {
-    return e
-  }
-}

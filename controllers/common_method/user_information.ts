@@ -1,7 +1,26 @@
-import { User, NoticesLike, EventsLike, Bookmark, BookmarkAsset, Read, ReadAsset } from "../../models/index.ts";
+import { Alarm, Bookmark, BookmarkAsset, EventsLike, NoticesLike, Read, ReadAsset, User } from "../../models/index.ts";
 import { redisClient } from "../../redis/redis_server.ts";
 
 const EXPIRE = 3600; // 유효시간 1시간
+
+export const getAlarmInfo = async (userId: string) => {
+    const redisKey = `user:alarm:${userId}`;
+    const majorRedis = await redisClient.get(redisKey);
+    if (majorRedis) {
+        return JSON.parse(majorRedis);
+    }
+    // const user = await User.findByPk(userId);
+    // if (!user) {
+    //     throw new Error('유저 정보가 없습니다');
+    // }
+    const userAlarms = await Alarm.findOne({
+        where: {
+            $fk_user_id$: userId
+        }
+    });
+    await redisClient.set(redisKey, JSON.stringify(userAlarms), { EX: EXPIRE });
+    return userAlarms;
+}
 
 export async function getMajorInfo(userId: string) {
     const redisKey = `user:major:${userId}`;
@@ -93,7 +112,7 @@ export async function getNoticeReadInfo(userId: string) {
 
     const noticeReads = await Read.findAll({
         where: { fk_user_id: userId },
-        include: [{ model: ReadAsset, as: 'ReadAssets' }] 
+        include: [{ model: ReadAsset, as: 'ReadAssets' }]
     });
 
     if (noticeReads) {

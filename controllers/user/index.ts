@@ -1,17 +1,12 @@
 import { Kakao_login, getRefreshToken, logout } from "./auth.ts";
 import { deleteUser } from "./delete.ts";
 import { setMajor } from "./major.ts";
-import { getUserData, login, deleteAccount, getUserInfo } from "./user.ts";
+import { deleteAccount, getUserInfo, login } from "./user.ts";
 
 export {
-    Kakao_login, 
-    deleteUser, 
-    getRefreshToken, 
-    getUserData, 
-    login, 
-    logout, 
-    setMajor, 
-    deleteAccount, 
-    getUserInfo
+    Kakao_login, deleteAccount, deleteUser,
+    getRefreshToken, getUserInfo, login,
+    logout,
+    setMajor
 };
 
