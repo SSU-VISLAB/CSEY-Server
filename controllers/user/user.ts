@@ -1,8 +1,9 @@
 import express from 'express';
 import User from '../../models/user.ts';
-import { generate } from "../jwt/index.ts";
 import { redisClient } from '../../redis/redis_server.ts';
-import { getMajorInfo, getEventBookmarkInfo, getEventLikeInfo, getNoticeLikeInfo, getNoticeReadInfo } from '../common_method/index.ts'
+import { getEventBookmarkInfo, getEventLikeInfo, getNoticeLikeInfo, getNoticeReadInfo } from '../common_method/index.ts';
+import { getAlarmInfo } from '../common_method/user_information.ts';
+import { generate } from "../jwt/index.ts";
 
 type LoginSuccess = {
     accessToken: string;
@@ -23,17 +24,6 @@ export const login = async (account: string): Promise<LoginSuccess | LoginFail> 
         return { error: "토큰 생성 실패" };
     }
 };
-
-export const getUserData = async (req: express.Request, res: express.Response) => {
-    console.log("params", req.params);
-    try {
-        const userId = req.params.id;
-        const userData = await User.findOne({ where: { id: userId } });
-        return res.status(200).json(userData);
-    } catch (e) {
-        console.error({ e });
-    }
-}
 
 // DELETE /users/${userId}
 export const deleteAccount = async (req: express.Request, res: express.Response) => {
@@ -58,20 +48,20 @@ export const getUserInfo = async (req: express.Request, res: express.Response) =
     try {
         const userId = req.params.id;
 
-        const userMajor = await getMajorInfo(userId);
-        const userEventBookmark = await getEventBookmarkInfo(userId);
-        const userEventLike = await getEventLikeInfo(userId);
-        const userNoticeLike = await getNoticeLikeInfo(userId);
-        const userNoticeRead = await getNoticeReadInfo(userId);
+        const alarm = await getAlarmInfo(userId);
+        const bookmark = await getEventBookmarkInfo(userId);
+        const eventLike = await getEventLikeInfo(userId);
+        const noticeLike = await getNoticeLikeInfo(userId);
+        const noticeRead = await getNoticeReadInfo(userId);
         const userInformation = {
-            userMajor,
-            userEventBookmark,
-            userEventLike,
-            userNoticeLike,
-            userNoticeRead
+            alarm,
+            bookmark,
+            eventLike,
+            noticeLike,
+            noticeRead
         }
 
-        return res.status(200).json({ userInformation });
+        return res.status(200).json(userInformation);
     } catch (e) {
         console.log({ e });
         return res.status(500).json({ error: "서버 내부 에러" });
