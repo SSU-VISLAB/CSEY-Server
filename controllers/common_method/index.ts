@@ -1,15 +1,9 @@
-import { validateRequestBody, findUser, findObjectByPk } from "./validator.ts";
-import { getMajorInfo, getEventBookmarkInfo, getEventLikeInfo, getNoticeLikeInfo, getNoticeReadInfo } from "./user_information.ts"
-import { IGenericUserRequest } from "./validator.ts";
+import { getEventBookmarkInfo, getEventLikeInfo, getMajorInfo, getNoticeLikeInfo, getNoticeReadInfo } from "./user_information.ts";
+import { redisGetAndParse } from './utils.ts';
+import { IGenericUserRequest, findObjectByPk, findUser, validateRequestBody } from "./validator.ts";
 
 export {
-    validateRequestBody,
-    findUser,
-    findObjectByPk,
-    IGenericUserRequest,
-    getMajorInfo,
-    getEventBookmarkInfo, 
-    getEventLikeInfo, 
-    getNoticeLikeInfo, 
-    getNoticeReadInfo
+    IGenericUserRequest, findObjectByPk, findUser, getEventBookmarkInfo,
+    getEventLikeInfo, getMajorInfo, getNoticeLikeInfo,
+    getNoticeReadInfo, redisGetAndParse, validateRequestBody
 };

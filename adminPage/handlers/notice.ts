@@ -33,8 +33,8 @@ const list: ActionHandler<any> = async (request, response, context) => {
   };
 
   const noticeTypeMapper = {
-    'urgent': {priority: '긴급'},
-    'general': {priority: '일반'},
+    'urgent': {priority: '긴급', expired: 'false'},
+    'general': {priority: '일반', expired: 'false'},
     'expired': {expired: 'true'}
   }
   

@@ -8,7 +8,7 @@ import path from "path";
 import * as url from 'url';
 import { adminOptions } from "./adminPage/index.ts";
 import { sequelize } from "./models/index.ts";
-import { connectRedis, redisClient } from "./redis/redis_server.ts";
+import { initializeRedis } from "./redis/initialize.ts";
 import alarmRouter from "./routes/alarm.ts";
 import eventRouter from "./routes/event.ts";
 import noticeRouter from "./routes/notice.ts";
@@ -47,10 +47,6 @@ const start = async () => {
 	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
 	app.use(express.static(path.join(__dirname, "./public")));
 
-	await connectRedis();
-	// 연결 test
-	redisClient.set('success', 1).then((v) => console.log('redis set success:', {v}));
-	redisClient.get('success').then((v) => console.log('redis get success:', {v}));
 	await sequelize
 		.authenticate()
 		.then(async () => {
@@ -59,6 +55,8 @@ const start = async () => {
 		.catch((e) => {
 			console.log("sequelize error : ", e);
 		});
+	// 연결 test 및 게시글 캐싱
+	await initializeRedis();
 
 	app.listen(3000, () => {
 		console.log(`AdminJS started on http://localhost:${3000}${admin.options.rootPath}`);
