@@ -1,4 +1,6 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
+import Event from "../../models/events.ts";
+import { redisClient } from "../../redis/redis_server.ts";
 import { EventActionQueryParameters } from "./index.ts";
 
 const list: ActionHandler<any> = async (request, response, context) => {
@@ -56,6 +58,35 @@ const list: ActionHandler<any> = async (request, response, context) => {
   };
 }
 
+/**
+ * 게시글 create, update 후 redis에 캐싱하는 함수
+ * @param action after함수를 사용할 action
+ * @returns action 실행 후 호출할 hook 함수
+ */
+const after = (action: 'edit' | 'new') => async (originalResponse, request, context) => {
+  const isPost = request.method === 'post';
+  const isEdit = context.action.name === action;
+  const hasRecord = originalResponse?.record?.params;
+  const hasError = Object.keys(originalResponse.record.errors).length;
+  // checking if object doesn't have any errors or is a edit action
+  if ((isPost && isEdit) && (hasRecord && !hasError)) {
+    const redisKeyEach = `event:${hasRecord.id}`;
+    const redisKeyAll = 'allEvents';
+
+    await redisClient.set(redisKeyEach, JSON.stringify(hasRecord));
+    // 전체 목록 캐싱
+    const allEventsFromDb = await Event.findAll({
+      where: {
+        expired: false // 진행중인 행사만 가져오기
+      }
+    });
+    await redisClient.set(redisKeyAll, JSON.stringify(allEventsFromDb));
+  }
+
+  return originalResponse
+}
+
 export const EventHandler = {
-  list
+  list,
+  after
 }

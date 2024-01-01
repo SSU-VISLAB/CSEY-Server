@@ -1,4 +1,7 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
+import { Op } from "sequelize";
+import Notice from "../../models/notice.ts";
+import { redisClient } from "../../redis/redis_server.ts";
 import { NoticeActionQueryParameters } from "./index.ts";
 
 const list: ActionHandler<any> = async (request, response, context) => {
@@ -64,6 +67,39 @@ const list: ActionHandler<any> = async (request, response, context) => {
   };
 }
 
+/**
+ * 게시글 create, update 후 redis에 캐싱하는 함수
+ * @param action after함수를 사용할 action
+ * @returns action 실행 후 호출할 hook 함수
+ */
+const after = (action: 'edit' | 'new') => async (originalResponse, request, context) => {
+  const isPost = request.method === 'post';
+  const isEdit = context.action.name === action;
+  const hasRecord = originalResponse?.record?.params;
+  const hasError = Object.keys(originalResponse.record.errors).length;
+  // checking if object doesn't have any errors or is a edit action
+  if ((isPost && isEdit) && (hasRecord && !hasError)) {
+    const {priority, id} = hasRecord;
+    const redisKeyEach = `notice:${id}`;
+    const redisKeyAll = `alerts:${priority == '일반' ? 'general' : 'urgent'}`;
+
+    await redisClient.set(redisKeyEach, JSON.stringify(hasRecord));
+    // 전체 목록 캐싱
+    const noticesFromDB = await Notice.findAll({
+      where: {
+        expired: false, // 활성화된 공지만 가져오기
+        priority: {
+          [Op.eq]: priority
+      }
+      }
+    });
+    await redisClient.set(redisKeyAll, JSON.stringify(noticesFromDB));
+  }
+
+  return originalResponse
+}
+
 export const NoticeHandler = {
-  list
+  list,
+  after
 }

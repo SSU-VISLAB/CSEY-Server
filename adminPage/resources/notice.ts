@@ -1,7 +1,7 @@
 import uploadFeature from '@adminjs/upload';
 import { ResourceOptions } from 'adminjs';
 import { Components, componentLoader } from "../components/index.ts";
-import { Handlers } from "../handlers/index.ts";
+import { NoticeHandler } from "../handlers/index.ts";
 import { postTab } from './common.ts';
 
 const noticeOptions: ResourceOptions = {
@@ -20,13 +20,17 @@ const noticeOptions: ResourceOptions = {
   actions: {
     list: {
       component: Components.notice_list, // list action에서 사용할 react component
-      handler: Handlers.NoticeHandler.list, // list action의 데이터 로드 함수 (list에 표시할 데이터 로딩)
+      handler: NoticeHandler.list, // list action의 데이터 로드 함수 (list에 표시할 데이터 로딩)
     },
     show: {
       component: Components.notice_show // show action에서 사용할 component
     },
-    edit: {}, // 기본값 사용
-    new: {}
+    edit: {
+      after: NoticeHandler.after('edit')
+    },
+    new: {
+      after: NoticeHandler.after('new')
+    }
   }
 }
 

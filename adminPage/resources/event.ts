@@ -1,7 +1,7 @@
 import uploadFeature from '@adminjs/upload';
 import { ResourceOptions } from 'adminjs';
 import { Components, componentLoader } from "../components/index.ts";
-import { Handlers } from '../handlers/index.ts';
+import { EventHandler } from '../handlers/index.ts';
 import { postTab } from './common.ts';
 
 const eventOptions: ResourceOptions = {
@@ -23,13 +23,17 @@ const eventOptions: ResourceOptions = {
   actions: {
     list: {
       component: Components.event_list, // list action에서 사용할 react component
-      handler: Handlers.EventHandler.list, // list action의 데이터 로드 함수 (list에 표시할 데이터 로딩)
+      handler: EventHandler.list, // list action의 데이터 로드 함수 (list에 표시할 데이터 로딩)
     },
     show: {
       component: Components.event_show // show action에서 사용할 component
     },
-    edit: {}, // 기본값 사용
-    new: {}
+    edit: {
+      after: EventHandler.after('edit')
+    },
+    new: {
+      after: EventHandler.after('new')
+    }
   }
 };
 

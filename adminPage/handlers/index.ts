@@ -14,7 +14,7 @@ export interface NoticeActionQueryParameters extends ActionQueryParameters {
   type: "urgent" | "general" | "expired"
 }
 
-export const Handlers = {
+export {
   EventHandler,
   NoticeHandler
-}
+};
