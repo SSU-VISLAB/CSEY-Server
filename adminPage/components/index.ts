@@ -9,11 +9,11 @@ const add = (componentName: string, url: string): string =>
   componentLoader.add(componentName, path.join(__dirname, url));
 
 export const Components = {
-  Dashboard: add('Dashboard', './dashboard/dashboard.tsx'),
-  event_list: add('EventList', './event/EventList.tsx'),
-  event_show: add('EventShow', './event/EventShow.tsx'),
-  notice_list: add('NoticeList', './notice/NoticeList.tsx'),
-  notice_show: add('NoticeShow', './notice/NoticeShow.tsx'),
+  Dashboard: add('Dashboard', './dashboard/dashboard.js'),
+  event_list: add('EventList', './event/EventList.js'),
+  event_show: add('EventShow', './event/EventShow.js'),
+  notice_list: add('NoticeList', './notice/NoticeList.js'),
+  notice_show: add('NoticeShow', './notice/NoticeShow.js'),
   // event_edit: add('EventEdit', './event/EventEdit.tsx'),
   // custom: add('Custom', './custom/Custom.tsx')
 }
