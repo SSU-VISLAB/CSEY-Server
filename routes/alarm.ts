@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { setAlarm } from "../controllers/alarm/alarm.ts";
-import { verifyToken } from "../controllers/jwt/index.ts";
+import { setAlarm } from "../controllers/alarm/alarm.js";
+import { verifyToken } from "../controllers/jwt/index.js";
 
 const alarmRouter = Router();
 

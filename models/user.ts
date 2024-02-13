@@ -1,8 +1,8 @@
 import { DataTypes, Model, Optional } from "sequelize";
-import Alarm from "./alarms.ts";
-import Bookmark from "./bookmarks.ts";
-import Read from "./reads.ts";
-import { sequelize } from './sequelize.ts';
+import Alarm from "./alarms.js";
+import Bookmark from "./bookmarks.js";
+import Read from "./reads.js";
+import { sequelize } from './sequelize.js';
 import { IUser } from "./types.js";
 
 export type UserCreationAttributes = Optional<IUser, "id">;

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import * as eventController from "../controllers/event/index.ts"
-import { verifyToken } from "../controllers/jwt/index.ts";
+import * as eventController from "../controllers/event/index.js"
+import { verifyToken } from "../controllers/jwt/index.js";
 
 const eventRouter = Router();
 

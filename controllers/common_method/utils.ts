@@ -1,4 +1,4 @@
-import { redisClient } from "../../redis/redis_server.ts";
+import { redisClient } from "../../redis/redis_server.js";
 
 /*** redis get 결과물 parse해서 리턴
  ** get결과물이 없다면 throw error

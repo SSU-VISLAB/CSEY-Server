@@ -1,6 +1,6 @@
-import { getNoticeAll, getAlertAll, getNotice } from "./notice_search.ts";
-import { getUnread, setRead } from "./notice_read.ts";
-import { setLike, setDisLike, deleteLike } from "./notice_like.ts";
+import { getNoticeAll, getAlertAll, getNotice } from "./notice_search.js";
+import { getUnread, setRead } from "./notice_read.js";
+import { setLike, setDisLike, deleteLike } from "./notice_like.js";
 
 export {
     getNoticeAll,

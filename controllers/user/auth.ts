@@ -1,10 +1,10 @@
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import * as express from "express";
-import { User } from "../../models/index.ts";
-import { redisClient } from "../../redis/redis_server.ts";
-import { reissue } from "../jwt/jwt.ts";
-import { login } from "./index.ts";
+import { User } from "../../models/index.js";
+import { redisClient } from "../../redis/redis_server.js";
+import { reissue } from "../jwt/jwt.js";
+import { login } from "./index.js";
 
 export const Kakao_login = async (req: express.Request, res: express.Response) => {
   console.log("kakao_login body:", req.body);

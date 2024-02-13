@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from './sequelize.ts';
+import { sequelize } from './sequelize.js';
 import { IAlarm } from './types.js';
 
 class Alarm extends Model<IAlarm, IAlarm> {

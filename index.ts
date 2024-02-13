@@ -6,13 +6,13 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
 import * as url from 'url';
-import { adminOptions } from "./adminPage/index.ts";
-import { sequelize } from "./models/index.ts";
-import { initializeRedis } from "./redis/initialize.ts";
-import alarmRouter from "./routes/alarm.ts";
-import eventRouter from "./routes/event.ts";
-import noticeRouter from "./routes/notice.ts";
-import userRouter from "./routes/user.ts";
+import { adminOptions } from "./adminPage/index.js";
+import { sequelize } from "./models/index.js";
+import { initializeRedis } from "./redis/initialize.js";
+import alarmRouter from "./routes/alarm.js";
+import eventRouter from "./routes/event.js";
+import noticeRouter from "./routes/notice.js";
+import userRouter from "./routes/user.js";
 
 const corsOptions = {
     origin: 'http://localhost:8080',

@@ -1,4 +1,4 @@
-import { setAlarm } from "./alarm.ts";
+import { setAlarm } from "./alarm.js";
 
 export { setAlarm };
 

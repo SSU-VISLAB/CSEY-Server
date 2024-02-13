@@ -1,8 +1,8 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import { Op } from "sequelize";
-import Notice from "../../models/notice.ts";
-import { redisClient } from "../../redis/redis_server.ts";
-import { NoticeActionQueryParameters } from "./index.ts";
+import Notice from "../../models/notice.js";
+import { redisClient } from "../../redis/redis_server.js";
+import { NoticeActionQueryParameters } from "./index.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출

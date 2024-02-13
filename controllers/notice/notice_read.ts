@@ -1,11 +1,11 @@
 import * as express from "express";
-import { INoticeUserRequest } from "./request/request.ts";
-import { findObjectByPk, findUser, validateRequestBody } from "../common_method/validator.ts";
-import { Notice, Read, ReadAsset, sequelize } from "../../models/index.ts";
+import { INoticeUserRequest } from "./request/request.js";
+import { findObjectByPk, findUser, validateRequestBody } from "../common_method/validator.js";
+import { Notice, Read, ReadAsset, sequelize } from "../../models/index.js";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
-import { redisClient } from "../../redis/redis_server.ts";
-import { getNoticeReadInfo } from "../common_method/user_information.ts";
+import { redisClient } from "../../redis/redis_server.js";
+import { getNoticeReadInfo } from "../common_method/user_information.js";
 
 const bodyList = [
     "notice_id",

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import * as noticeController from "../controllers/notice/index.ts"
-import { verifyToken } from "../controllers/jwt/index.ts";
+import * as noticeController from "../controllers/notice/index.js"
+import { verifyToken } from "../controllers/jwt/index.js";
 
 const noticeRouter = Router();
 

@@ -1,7 +1,7 @@
 import * as express from "express";
-import { Alarm, User } from "../../models/index.ts";
+import { Alarm, User } from "../../models/index.js";
 import { IAlarm } from "../../models/types.js";
-import { redisClient } from "../../redis/redis_server.ts";
+import { redisClient } from "../../redis/redis_server.js";
 
 const bodyList = [
   "alarm_push",

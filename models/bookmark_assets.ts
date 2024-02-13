@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './sequelize.ts';
-import Bookmark from './bookmarks.ts';
+import { sequelize } from './sequelize.js';
+import Bookmark from './bookmarks.js';
 
 const BookmarkAsset = sequelize.define('BookmarkAsset', {
   id: {

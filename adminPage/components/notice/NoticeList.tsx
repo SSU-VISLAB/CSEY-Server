@@ -2,7 +2,7 @@ import { Box, Pagination, Tab, Tabs, Text } from "@adminjs/design-system";
 import { ActionProps, RecordsTable, useRecords, useSelectedRecords } from "adminjs";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { TabLabel, useTabWithPagePersistence } from "./hooks.ts";
+import { TabLabel, useTabWithPagePersistence } from "./hooks.js";
 
 const YesColor = 'rgb(194, 0, 18)'; // 붉은색
 const NoColor = 'rgb(48, 64, 214)'; // 푸른색

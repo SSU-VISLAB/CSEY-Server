@@ -1,4 +1,4 @@
-import { User, Notice, Event } from "../../models/index.ts";
+import { User, Notice, Event } from "../../models/index.js";
 
 const modelMap = new Map([
     ['user_id', User],

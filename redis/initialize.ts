@@ -1,8 +1,8 @@
 import { Op } from "sequelize";
-import Event from "../models/events.ts";
-import Notice from "../models/notice.ts";
+import Event from "../models/events.js";
+import Notice from "../models/notice.js";
 import { IEvent, INotice } from "../models/types.js";
-import { connectRedis, redisClient } from "./redis_server.ts";
+import { connectRedis, redisClient } from "./redis_server.js";
 
 const EXPIRE = 3600; // 유효시간 1시간
 

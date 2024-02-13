@@ -89,3 +89,4 @@ web_modules/
 firebaseKey.json
 .adminjs/
 public/
+dist/

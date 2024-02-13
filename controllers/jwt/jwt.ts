@@ -1,6 +1,6 @@
 import * as Express from 'express';
 import jwt from "jsonwebtoken";
-import { redisClient } from '../../redis/redis_server.ts';
+import { redisClient } from '../../redis/redis_server.js';
 
 const ACCESS_EXPIRY = '1d';
 const REFRESH_EXPIRY = '7d';

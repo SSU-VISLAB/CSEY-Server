@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './sequelize.ts';
-import Read from './reads.ts';
+import { sequelize } from './sequelize.js';
+import Read from './reads.js';
 
 const ReadAsset = sequelize.define('Read', {
   id: {

@@ -1,5 +1,5 @@
 import * as express from "express";
-import { Event } from "../../models/index.ts";
+import { Event } from "../../models/index.js";
 import { IEvent } from "../../models/types.js";
 
 // GET /posts/schedule

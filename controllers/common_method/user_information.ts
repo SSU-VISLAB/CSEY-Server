@@ -1,5 +1,5 @@
-import { Alarm, Bookmark, BookmarkAsset, EventsLike, NoticesLike, Read, ReadAsset, User } from "../../models/index.ts";
-import { redisClient } from "../../redis/redis_server.ts";
+import { Alarm, Bookmark, BookmarkAsset, EventsLike, NoticesLike, Read, ReadAsset, User } from "../../models/index.js";
+import { redisClient } from "../../redis/redis_server.js";
 
 const EXPIRE = 3600; // 유효시간 1시간
 

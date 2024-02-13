@@ -1,4 +1,4 @@
-import { verifyToken, generate, reissue } from "./jwt.ts"
+import { verifyToken, generate, reissue } from "./jwt.js"
 
 export {
     verifyToken,

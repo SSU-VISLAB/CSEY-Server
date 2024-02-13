@@ -1,9 +1,9 @@
 import * as express from "express";
-import { IEventUserRequest } from "./request/request.ts";
+import { IEventUserRequest } from "./request/request.js";
 import { IBookmark } from "../../models/types.js";
-import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.ts";
-import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.ts";
-import { redisClient } from "../../redis/redis_server.ts";
+import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.js";
+import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.js";
+import { redisClient } from "../../redis/redis_server.js";
 
 const bodyList = [
     "event_id",

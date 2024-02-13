@@ -1,8 +1,8 @@
 import * as express from "express";
-import { findObjectByPk, validateRequestBody } from "../common_method/validator.ts";
-import { User } from "../../models/index.ts";
-import { getMajorInfo } from "../common_method/user_information.ts";
-import { redisClient } from "../../redis/redis_server.ts";
+import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
+import { User } from "../../models/index.js";
+import { getMajorInfo } from "../common_method/user_information.js";
+import { redisClient } from "../../redis/redis_server.js";
 
 const bodyList = [
     "major"

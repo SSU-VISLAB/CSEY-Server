@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './sequelize.ts';
+import { sequelize } from './sequelize.js';
 
 const NoticesLike = sequelize.define('NoticesLike', {
   id: {

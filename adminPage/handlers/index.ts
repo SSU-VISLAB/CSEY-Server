@@ -1,6 +1,6 @@
 import { ActionQueryParameters } from 'adminjs';
-import { EventHandler } from './event.ts';
-import { NoticeHandler } from './notice.ts';
+import { EventHandler } from './event.js';
+import { NoticeHandler } from './notice.js';
 
 export interface EventActionQueryParameters extends ActionQueryParameters {
   /** tab

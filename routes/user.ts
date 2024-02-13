@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyToken } from "../controllers/jwt/jwt.ts";
-import { Kakao_login, deleteAccount, getRefreshToken, getUserInfo, logout, setMajor } from "../controllers/user/index.ts";
+import { verifyToken } from "../controllers/jwt/jwt.js";
+import { Kakao_login, deleteAccount, getRefreshToken, getUserInfo, logout, setMajor } from "../controllers/user/index.js";
 
 
 const userRouter = Router();

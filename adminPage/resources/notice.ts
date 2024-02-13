@@ -1,8 +1,8 @@
 import uploadFeature from '@adminjs/upload';
 import { ResourceOptions } from 'adminjs';
-import { Components, componentLoader } from "../components/index.ts";
-import { NoticeHandler } from "../handlers/index.ts";
-import { postTab } from './common.ts';
+import { Components, componentLoader } from "../components/index.js";
+import { NoticeHandler } from "../handlers/index.js";
+import { postTab } from './common.js';
 
 const noticeOptions: ResourceOptions = {
   navigation: postTab,

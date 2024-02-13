@@ -1,9 +1,9 @@
 import { AdminJSOptions, ResourceWithOptions } from "adminjs";
-import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.ts";
-import { Components, componentLoader } from "./components/index.ts";
-import { COMMON } from "./resources/common.ts";
-import { EVENT } from "./resources/event.ts";
-import { NOTICE } from "./resources/notice.ts";
+import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
+import { Components, componentLoader } from "./components/index.js";
+import { COMMON } from "./resources/common.js";
+import { EVENT } from "./resources/event.js";
+import { NOTICE } from "./resources/notice.js";
 
 export const adminOptions: AdminJSOptions = {
   dashboard: {

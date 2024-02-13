@@ -1,4 +1,4 @@
-import { getSchedule } from "./schedule_search.ts";
+import { getSchedule } from "./schedule_search.js";
 
 export{
     getSchedule

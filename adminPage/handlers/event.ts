@@ -1,7 +1,7 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
-import Event from "../../models/events.ts";
-import { redisClient } from "../../redis/redis_server.ts";
-import { EventActionQueryParameters } from "./index.ts";
+import Event from "../../models/events.js";
+import { redisClient } from "../../redis/redis_server.js";
+import { EventActionQueryParameters } from "./index.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출

@@ -2,7 +2,7 @@ import { Box, Pagination, Tab, Tabs, Text } from "@adminjs/design-system";
 import { ActionProps, RecordsTable, useRecords, useSelectedRecords } from "adminjs";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { TabLabel, useTabWithPagePersistence } from "./hooks.ts";
+import { TabLabel, useTabWithPagePersistence } from "./hooks.js";
 
 export const List: React.FC<ActionProps> = (props) => {
   const { resource, setTag } = props
