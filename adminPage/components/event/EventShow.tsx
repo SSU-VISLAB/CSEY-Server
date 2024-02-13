@@ -15,7 +15,7 @@ const Show: React.FC<ActionProps> = (props) => {
   const contentTag = getActionElementCss(resource.id, action.name, 'drawer-content');
   useEffect(() => {
     // expired 속성의 chip 색상 적용
-    const expiredMarker = window.document.querySelector('section[data-css="events-show-expired"] > section > span');
+    const expiredMarker: HTMLSpanElement = window.document.querySelector('section[data-css="events-show-expired"] > section > span');
     const color = record.params.expired ? YesColor : NoColor;
     expiredMarker.style.setProperty('color', color, 'important');
     expiredMarker.style.setProperty('border-color', color, 'important');

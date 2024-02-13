@@ -22,7 +22,7 @@ export const List: React.FC<ActionProps> = (props) => {
 
   useEffect(() => {
     // ended 속성의 chip 색상 적용
-    const priorityMarker = window.document.querySelectorAll('section[data-css="notices-list-priority"] > span');      
+    const priorityMarker: NodeListOf<HTMLSpanElement> = window.document.querySelectorAll('section[data-css="notices-list-priority"] > span');      
     priorityMarker.forEach(element => {
       const color = element.innerText == '긴급' ? YesColor : NoColor;
       element.style.setProperty('color', color, 'important');

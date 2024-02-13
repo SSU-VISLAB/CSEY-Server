@@ -7,7 +7,7 @@ const foldersToCreate = [
   '/public/events',
   '/public/notices'
 ];
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('./dist', import.meta.url));
 // 각 폴더를 생성하는 함수
 async function createFolder(folderPath) {
   try {
