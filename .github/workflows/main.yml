@@ -36,5 +36,5 @@ jobs:
           script: |
             cd ${{ secrets.REMOTE_TARGET }}
             git pull
-            git reset --hard ${{ github.ref_name }}
+            git reset --hard ${{ github.ref }}
             node createFolders.js && npx nodemon
