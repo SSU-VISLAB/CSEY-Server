@@ -19,6 +19,7 @@ export const initializeRedis = async () => {
  */
 const initAllOngoingEvents = async () => {
   const redisKey = 'allEvents';
+  const eachEvents = await redisClient.keys(`event:*`);
   const eventsFromDb = await Event.findAll({
     where: {
       expired: false // 진행중인 행사만 가져오기
@@ -26,16 +27,20 @@ const initAllOngoingEvents = async () => {
   }) as IEvent[];
 
   // 개별 이벤트 캐싱
+  // 과거 캐싱 기록 제거
+  if (eachEvents.length > 0) {
+    await redisClient.del(eachEvents);
+  }
   for (const event of eventsFromDb) {
     const eventRedisKey = `event:${event.id}`;
     await redisClient.set(eventRedisKey, JSON.stringify(event), { EX: EXPIRE });
   }
-
+  
   // 전체 목록 캐싱
   await redisClient.set(redisKey, JSON.stringify(eventsFromDb), { EX: EXPIRE });
-
+  
   console.log("전체 행사:", await redisClient.get(redisKey));
-  console.log("진행중인 행사 개수:", await redisClient.keys(`event:*`));
+  console.log("진행중인 행사:", eachEvents);
 }
 
 /** 공지 글 전부 캐싱
@@ -44,6 +49,7 @@ const initAllOngoingEvents = async () => {
  */
 const initAllOngoingNotices = async (priority: '일반' | '긴급') => {
   const redisKey = `alerts:${priority == '일반' ? 'general' : 'urgent'}`;
+  const eachNotices = await redisClient.keys(`notice:*`);
   const noticesFromDB = await Notice.findAll({
     where: {
       expired: false, // 활성화된 공지만 가져오기
@@ -54,6 +60,10 @@ const initAllOngoingNotices = async (priority: '일반' | '긴급') => {
   }) as INotice[];
 
   // 개별 공지 캐싱
+  // 과거 캐싱 기록 제거
+  if (eachNotices.length) {
+    await redisClient.del(eachNotices);
+  }
   for (const notice of noticesFromDB) {
     const redisKey = `notice:${notice.id}`;
     await redisClient.set(redisKey, JSON.stringify(notice), { EX: EXPIRE });
@@ -61,5 +71,5 @@ const initAllOngoingNotices = async (priority: '일반' | '긴급') => {
   // 전체 공지 캐싱
   await redisClient.set(redisKey, JSON.stringify(noticesFromDB), { EX: EXPIRE });
 
-  priority == '긴급' && console.log(`진행중인 공지: `, await redisClient.keys(`notice:*`));
+  priority == '긴급' && console.log(`진행중인 공지: `, eachNotices);
 }
