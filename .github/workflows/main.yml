@@ -40,5 +40,6 @@ jobs:
             git pull --force origin ${{ github.ref }}
             npm ci
             npm run build
+            pkill -f "node dist/index.js"
             node createFolders.js
             nohup node dist/index.js > ../app.log 2>&1 &
