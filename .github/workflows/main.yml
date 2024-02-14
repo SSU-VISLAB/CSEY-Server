@@ -2,8 +2,7 @@ name: GitHub Action
 
 on:
   push:
-    branches:
-      - feat-CICD
+    tags: v*
 jobs:
   build:
     runs-on: ubuntu-latest

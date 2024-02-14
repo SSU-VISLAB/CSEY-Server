@@ -14,6 +14,7 @@ import eventRouter from "./routes/event.js";
 import noticeRouter from "./routes/notice.js";
 import userRouter from "./routes/user.js";
 
+const port = 7070;
 const corsOptions = {
     origin: 'http://localhost:8080',
     credentials: true
@@ -58,8 +59,8 @@ const start = async () => {
 	// 연결 test 및 게시글 캐싱
 	await initializeRedis();
 
-	app.listen(3000, () => {
-		console.log(`AdminJS started on http://localhost:${3000}${admin.options.rootPath}`);
+	app.listen(port, () => {
+		console.log(`AdminJS started on http://localhost:${port}${admin.options.rootPath}`);
 	});
 };
 start();
