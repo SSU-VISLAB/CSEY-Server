@@ -1,13 +1,13 @@
 AdminJS.UserComponents = {}
-import Dashboard from '../adminPage/components/dashboard/dashboard'
+import Dashboard from '../dist/adminPage/components/dashboard/Dashboard'
 AdminJS.UserComponents.Dashboard = Dashboard
-import EventList from '../adminPage/components/event/EventList'
+import EventList from '../dist/adminPage/components/event/EventList'
 AdminJS.UserComponents.EventList = EventList
-import EventShow from '../adminPage/components/event/EventShow'
+import EventShow from '../dist/adminPage/components/event/EventShow'
 AdminJS.UserComponents.EventShow = EventShow
-import NoticeList from '../adminPage/components/notice/NoticeList'
+import NoticeList from '../dist/adminPage/components/notice/NoticeList'
 AdminJS.UserComponents.NoticeList = NoticeList
-import NoticeShow from '../adminPage/components/notice/NoticeShow'
+import NoticeShow from '../dist/adminPage/components/notice/NoticeShow'
 AdminJS.UserComponents.NoticeShow = NoticeShow
 import UploadEditComponent from '../node_modules/@adminjs/upload/build/features/upload-file/components/UploadEditComponent'
 AdminJS.UserComponents.UploadEditComponent = UploadEditComponent
