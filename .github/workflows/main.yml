@@ -40,4 +40,5 @@ jobs:
             git pull --force origin ${{ github.ref }}
             npm ci
             npm run build
-            node createFolders.js && nohup node dist/index.js > ../app.log 2>&1 &
+            node createFolders.js
+            nohup node dist/index.js > ../app.log 2>&1 &
