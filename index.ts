@@ -1,13 +1,14 @@
 import AdminJSExpress from "@adminjs/express";
 import * as AdminJSSequelize from '@adminjs/sequelize';
 import AdminJS from "adminjs";
+import { compare } from "bcrypt";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
 import * as url from 'url';
 import { adminOptions } from "./adminPage/index.js";
-import { sequelize } from "./models/index.js";
+import { Admin, sequelize } from "./models/index.js";
 import { initializeRedis } from "./redis/initialize.js";
 import alarmRouter from "./routes/alarm.js";
 import eventRouter from "./routes/event.js";
@@ -22,8 +23,6 @@ const corsOptions = {
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
-app.use(json());
-app.use(urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(cookieParser());
 
@@ -41,11 +40,28 @@ AdminJS.registerAdapter({
 
 const start = async () => {
 	const admin = new AdminJS(adminOptions);
-	const adminRouter = AdminJSExpress.buildRouter(admin);
+	const adminRouter = AdminJSExpress.buildAuthenticatedRouter(admin, {
+		authenticate: async (account, password) => {
+			const adminModel = await Admin.findOne({ where: { account } })
+			if (adminModel) {
+				const matched = await compare(password, adminModel.password)
+				if (matched) {
+					return adminModel
+				}
+			}
+			return false
+		},
+		cookiePassword: 'ss-cookie-pass',
+	});
 	// admin page router 설정
+	// const adminRouter = AdminJSExpress.buildRouter(admin);
+
 	app.use(admin.options.rootPath, adminRouter);
-	app.use(express.static(path.join(__dirname, "./adminPage/components/css")));
-	app.use(express.static(path.join(__dirname, "./public")));
+	app.use(json());
+	app.use(urlencoded({ extended: false }));
+	app.use(express.static(path.join(__dirname, "./../adminPage/components/css")));
+	app.use(express.static(path.join(__dirname + '/admin', "./../public")));
+	app.use(express.static(path.join(__dirname, "./../public")));
 
 	await sequelize
 		.authenticate()

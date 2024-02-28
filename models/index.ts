@@ -1,3 +1,4 @@
+import Admin from "./admin.js";
 import Alarm from "./alarms.js";
 import BookmarkAsset from "./bookmark_assets.js";
 import Bookmark from "./bookmarks.js";
@@ -10,5 +11,5 @@ import ReadAsset from "./reads_assets.js";
 import { sequelize } from "./sequelize.js";
 import User from "./user.js";
 
-export { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize };
+export { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize };
 

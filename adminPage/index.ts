@@ -1,6 +1,7 @@
 import { AdminJSOptions, ResourceWithOptions } from "adminjs";
-import { Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
+import { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
 import { Components, componentLoader } from "./components/index.js";
+import { ADMIN } from './resources/admin.js';
 import { COMMON } from "./resources/common.js";
 import { EVENT } from "./resources/event.js";
 import { NOTICE } from "./resources/notice.js";
@@ -59,6 +60,7 @@ export const adminOptions: AdminJSOptions = {
     { resource: Event, ...EVENT},
     { resource: Notice, ...NOTICE},
     // others
+    { resource: Admin, ...ADMIN},
     { resource: Read, ...COMMON},
     { resource: ReadAsset, ...COMMON},
     { resource: Bookmark, ...COMMON},
