@@ -23,15 +23,9 @@ const corsOptions = {
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express();
-app.use(cors(corsOptions));
-app.use(cookieParser());
 
 // app.get('/', async (req, res) => res.sendFile(__dirname + '/test.html'));
 // app.get('/login', (req, res) => res.sendFile(__dirname + '/testLogin.html'));
-app.use("/api", noticeRouter);
-app.use("/api", userRouter);
-app.use("/api", eventRouter);
-app.use("/api", alarmRouter);
 
 AdminJS.registerAdapter({
 	Resource: AdminJSSequelize.Resource,
@@ -55,14 +49,19 @@ const start = async () => {
 	});
 	// admin page router 설정
 	// const adminRouter = AdminJSExpress.buildRouter(admin);
-
+	// adminRouter 설정 전에 json, urlendcoded를 거치면 오류 발생함
 	app.use(admin.options.rootPath, adminRouter);
+	app.use(cors(corsOptions));
+	app.use(cookieParser());
 	app.use(json());
 	app.use(urlencoded({ extended: false }));
 	app.use(express.static(path.join(__dirname, "./../adminPage/components/css")));
 	app.use(express.static(path.join(__dirname + '/admin', "./../public")));
 	app.use(express.static(path.join(__dirname, "./../public")));
-
+	app.use("/api", noticeRouter);
+	app.use("/api", userRouter);
+	app.use("/api", eventRouter);
+	app.use("/api", alarmRouter);
 	await sequelize
 		.authenticate()
 		.then(async () => {
