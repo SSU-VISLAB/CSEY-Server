@@ -33,11 +33,11 @@ const initAllOngoingEvents = async () => {
   }
   for (const event of eventsFromDb) {
     const eventRedisKey = `event:${event.id}`;
-    await redisClient.set(eventRedisKey, JSON.stringify(event), { EX: EXPIRE });
+    await redisClient.set(eventRedisKey, JSON.stringify(event));
   }
   
   // 전체 목록 캐싱
-  await redisClient.set(redisKey, JSON.stringify(eventsFromDb), { EX: EXPIRE });
+  await redisClient.set(redisKey, JSON.stringify(eventsFromDb));
   
   console.log("전체 행사:", await redisClient.get(redisKey));
   console.log("진행중인 행사:", eachEvents);
@@ -66,10 +66,10 @@ const initAllOngoingNotices = async (priority: '일반' | '긴급') => {
   }
   for (const notice of noticesFromDB) {
     const redisKey = `notice:${notice.id}`;
-    await redisClient.set(redisKey, JSON.stringify(notice), { EX: EXPIRE });
+    await redisClient.set(redisKey, JSON.stringify(notice));
   }
   // 전체 공지 캐싱
-  await redisClient.set(redisKey, JSON.stringify(noticesFromDB), { EX: EXPIRE });
+  await redisClient.set(redisKey, JSON.stringify(noticesFromDB));
 
   priority == '긴급' && console.log(`진행중인 공지: `, eachNotices);
 }
