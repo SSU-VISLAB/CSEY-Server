@@ -40,6 +40,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     // refresh는 http only cookie
     res.cookie("refreshToken", tokens.refreshToken, httpOnlyCookie);
     res.cookie("accessToken", tokens.accessToken, httpOnlyCookie);
+    res.cookie("id", id, httpOnlyCookie);
     return res.status(200).json(user)
   } catch (e) {
     console.error({ e });
