@@ -90,3 +90,4 @@ firebaseKey.json
 .adminjs/
 public/
 dist/
+.npmrc
