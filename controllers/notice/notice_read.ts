@@ -4,7 +4,7 @@ import { findObjectByPk, findUser, validateRequestBody } from "../common_method/
 import { Notice, Read, ReadAsset, sequelize } from "../../models/index.js";
 import { IRead, IReadAsset } from "../../models/types.js";
 import { Op } from "sequelize";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { getNoticeReadInfo } from "../common_method/user_information.js";
 
 const bodyList = [

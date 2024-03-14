@@ -1,6 +1,6 @@
 {
-    "watch": ["*"],
-    "ext": ".ts,.js",
-    "ignore": ["/dist"],
-    "exec": "npm run build && node --loader ts-node/esm ./dist/index.js"
-  }
+  "watch": ["*"],
+  "ext": ".ts,.js",
+  "ignore": ["/dist"],
+  "exec": "node --loader ts-node/esm index.ts"
+}

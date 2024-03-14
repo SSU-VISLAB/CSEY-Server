@@ -6,7 +6,6 @@
     "esm":true
   },
   "compilerOptions": {
-    "jsx": "react",
     "target": "ES2017",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -14,6 +13,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "exclude": ["./node_modules","./dist", "./adminjs"],
+  "exclude": ["./node_modules","./dist", "./adminjs", "./adminPage/components/**"],
   "include": ["./**/*"]
 }

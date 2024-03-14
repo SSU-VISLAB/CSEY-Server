@@ -1,6 +1,6 @@
 import express from 'express';
 import User from '../../models/user.js';
-import { redisClient } from '../../redis/redis_server.js';
+import { redisClient } from '../../redis/connect.js';
 import { getEventBookmarkInfo, getEventLikeInfo, getNoticeLikeInfo, getNoticeReadInfo } from '../common_method/index.js';
 import { getAlarmInfo } from '../common_method/user_information.js';
 import { generate } from "../jwt/index.js";

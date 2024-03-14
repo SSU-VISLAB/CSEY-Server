@@ -1,8 +1,10 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import { Op } from "sequelize";
 import Notice from "../../models/notice.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { NoticeActionQueryParameters } from "./index.js";
+import { setNoticeSchedule } from "../../redis/schedule.js";
+import { INotice } from "../../models/types.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
@@ -80,10 +82,19 @@ const after = (action: 'edit' | 'new') => async (originalResponse, request, cont
   // checking if object doesn't have any errors or is a edit action
   if ((isPost && isEdit) && (hasRecord && !hasError)) {
     const {priority, id} = hasRecord;
+    const isGeneral = priority == '일반'
     const redisKeyEach = `notice:${id}`;
-    const redisKeyAll = `alerts:${priority == '일반' ? 'general' : 'urgent'}`;
+    const redisKeyAll = `alerts:${isGeneral ? 'general' : 'urgent'}`;
 
+    // 이 글 캐싱
     await redisClient.set(redisKeyEach, JSON.stringify(hasRecord));
+    // 긴급일 경우 스케쥴러 등록
+    if (!isGeneral) {
+      const recordModel = await Notice.findOne({
+        where: { id }
+      }) as INotice;
+      await setNoticeSchedule(recordModel);
+    }
     // 전체 목록 캐싱
     const noticesFromDB = await Notice.findAll({
       where: {

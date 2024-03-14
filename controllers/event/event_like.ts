@@ -2,7 +2,7 @@ import * as express from "express";
 import { IEventUserRequest } from "./request/request.js";
 import { EventsLike,sequelize } from "../../models/index.js";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { getEventLikeInfo } from "../common_method/user_information.js";
 
 const bodyList = [

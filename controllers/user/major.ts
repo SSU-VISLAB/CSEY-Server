@@ -2,7 +2,7 @@ import * as express from "express";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
 import { User } from "../../models/index.js";
 import { getMajorInfo } from "../common_method/user_information.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 
 const bodyList = [
     "major"

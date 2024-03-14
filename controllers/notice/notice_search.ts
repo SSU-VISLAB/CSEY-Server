@@ -1,7 +1,7 @@
 import * as express from "express";
 import { Notice } from "../../models/index.js";
 import { INotice } from "../../models/types.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { redisGetAndParse } from "../common_method/utils.js";
 
 const EXPIRE = 3600; // 유효시간 1시간

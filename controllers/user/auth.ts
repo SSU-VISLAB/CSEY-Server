@@ -2,7 +2,7 @@ import axios from "axios";
 import bcrypt from "bcryptjs";
 import * as express from "express";
 import { User } from "../../models/index.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { reissue } from "../jwt/jwt.js";
 import { login } from "./index.js";
 

@@ -1,6 +1,6 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import Event from "../../models/events.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 import { EventActionQueryParameters } from "./index.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {

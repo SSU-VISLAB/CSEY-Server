@@ -3,7 +3,7 @@ import { INoticeUserRequest } from "./request/request.js";
 import { NoticesLike, sequelize } from "../../models/index.js";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
 import { getNoticeLikeInfo } from "../common_method/user_information.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 
 const bodyList = [
     "notice_id",

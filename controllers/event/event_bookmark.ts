@@ -3,7 +3,7 @@ import { IEventUserRequest } from "./request/request.js";
 import { IBookmark } from "../../models/types.js";
 import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.js";
 import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.js";
-import { redisClient } from "../../redis/redis_server.js";
+import { redisClient } from "../../redis/connect.js";
 
 const bodyList = [
     "event_id",

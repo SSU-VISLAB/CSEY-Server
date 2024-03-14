@@ -37,7 +37,4 @@ jobs:
             git reset --hard ${{ github.ref }}
             git pull --force origin ${{ github.ref }}
             npm i
-            npm run build
-            node createFolders.js
-            lsof -i :7070 | awk 'NR!=1 {print $2}' | xargs -r kill
-            nohup node dist/index.js > ../app.log 2>&1 &
+            npm run start:prod
