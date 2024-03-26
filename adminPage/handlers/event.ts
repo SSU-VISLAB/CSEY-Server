@@ -66,10 +66,16 @@ const list: ActionHandler<any> = async (request, response, context) => {
 const after = (action: 'edit' | 'new') => async (originalResponse, request, context) => {
   const isPost = request.method === 'post';
   const isEdit = context.action.name === action;
+  const {currentAdmin: {role}} = context;
   const hasRecord = originalResponse?.record?.params;
   const hasError = Object.keys(originalResponse.record.errors).length;
   // checking if object doesn't have any errors or is a edit action
   if ((isPost && isEdit) && (hasRecord && !hasError)) {
+    // 학과는 로그인한 관리자의 것으로 적용
+    if (role != '관리자') {
+      hasRecord.major_advisor = role;
+    }
+    // redis 캐싱
     const redisKeyEach = `event:${hasRecord.id}`;
     const redisKeyAll = 'allEvents';
 

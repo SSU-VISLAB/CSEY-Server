@@ -17,8 +17,9 @@ export const Components = {
   Dashboard: add('Dashboard', './dashboard/Dashboard.tsx'),
   event_list: add('EventList', './event/EventList.tsx'),
   event_show: add('EventShow', './event/EventShow.tsx'),
+  event_edit: add('EventEdit', './event/EventEdit.tsx'),
   notice_list: add('NoticeList', './notice/NoticeList.tsx'),
   notice_show: add('NoticeShow', './notice/NoticeShow.tsx'),
-  // event_edit: add('EventEdit', './event/EventEdit.tsx'),
+  notice_edit: add('NoticeEdit', './notice/NoticeEdit.tsx'),
   // custom: add('Custom', './custom/Custom.tsx')
 }

@@ -14,6 +14,9 @@ const noticeOptions: ResourceOptions = {
   properties: {
     content: {
       type: 'richtext'
+    },
+    major_advisor: {
+      isRequired: true
     }
   },
 
@@ -26,10 +29,12 @@ const noticeOptions: ResourceOptions = {
       component: Components.notice_show // show action에서 사용할 component
     },
     edit: {
-      after: NoticeHandler.after('edit')
+      after: NoticeHandler.after('edit'),
+      component: Components.notice_edit
     },
     new: {
-      after: NoticeHandler.after('new')
+      after: NoticeHandler.after('new'),
+      component: Components.notice_edit
     }
   }
 }

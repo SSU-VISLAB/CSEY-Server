@@ -16,7 +16,10 @@ const eventOptions: ResourceOptions = {
       type: 'richtext' // content 속성을 richtext모드로 설정
     },
     calendar_content: {
-      type: 'textarea'
+      type: 'textarea',
+    },
+    major_advisor: {
+      isRequired: true
     }
   },
   // action별 front단 관련 작업 설정
@@ -29,10 +32,13 @@ const eventOptions: ResourceOptions = {
       component: Components.event_show // show action에서 사용할 component
     },
     edit: {
-      after: EventHandler.after('edit')
+      after: EventHandler.after('edit'),
+      component: Components.event_edit
     },
     new: {
-      after: EventHandler.after('new')
+      after: EventHandler.after('new'),
+      component: Components.event_edit
+
     }
   }
 };
