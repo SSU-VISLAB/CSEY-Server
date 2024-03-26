@@ -21,9 +21,6 @@ section[data-css="notices-show-file"] {
   margin-right: 20px;
 }
 
-.properties {
-
-}
 .image {
   margin: 0 auto;
   width: fit-content;
@@ -37,4 +34,15 @@ img {
 }
 .react-datepicker-time__input {
   width: 90%!important;
+}
+section[data-css="notices-show-priority"] {
+  .adminjs_Badge {
+    background-color: unset!important;
+  }
+}
+
+section.login__Wrapper {
+  .adminjs_Text {
+    white-space: pre
+  }
 }

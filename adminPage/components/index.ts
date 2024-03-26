@@ -1,8 +1,11 @@
 import { ComponentLoader } from 'adminjs';
 import path from 'path';
 import * as url from 'url';
+export const mode: "development" | "test" | "production" = process.env.NODE_ENV as any;
+export const isRunOnDist = mode == "production" || mode == "test";
 
-const __url = process.env.NODE_ENV === 'development' ? '.' : '../../../adminPage/components';
+const __url = isRunOnDist ? `../../../adminPage/components` : '.';
+
 const __dirname = url.fileURLToPath(new URL(__url, import.meta.url));
 console.log({__url, __dirname, env: process.env.NODE_ENV});
 export const componentLoader = new ComponentLoader();

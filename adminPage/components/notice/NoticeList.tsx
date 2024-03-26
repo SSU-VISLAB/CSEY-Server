@@ -1,5 +1,5 @@
 import { Box, Pagination, Tab, Tabs, Text } from "@adminjs/design-system";
-import { ActionProps, RecordsTable, useRecords, useSelectedRecords } from "adminjs";
+import { ActionProps, RecordsTable, useCurrentAdmin, useRecords, useSelectedRecords } from "adminjs";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { TabLabel, useTabWithPagePersistence } from "./hooks.js";
@@ -10,6 +10,8 @@ const NoColor = 'rgb(48, 64, 214)'; // 푸른색
 export const List: React.FC<ActionProps> = (props) => {
   const { resource, setTag } = props
   // console.log(props);
+  const [currentAdmin] = useCurrentAdmin();
+  console.log({currentAdmin});
   const data = useRecords(resource.id);
   const { records, loading, direction, sortBy, page, total, fetchData, perPage } = data;
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);

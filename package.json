@@ -9,7 +9,8 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "start:dev": "node createFolders.js && cross-env NODE_ENV=development npx nodemon",
-    "start:prod": "npm run build && node createFolders.js && lsof -i :7070 | awk 'NR!=1 {print $2}' | xargs -r kill && nohup cross-env NODE_ENV=production node dist/index.js > ../app.log 2>&1 &"
+    "dev:prod": "npm run clean && npm run build && node createFolders.js && cross-env NODE_ENV=test node dist/index.js",
+    "start:prod": "npm run build && node createFolders.js && lsof -i :7070 | awk 'NR!=1 {print $2}' | xargs -r kill && nohup cross-env NODE_ENV=production node dist/index.js > ./app.log 2>&1 &"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
     "typescript": "^5.4.2"
   },
   "devDependencies": {
+    "@adminjs/design-system": "^4.1.1",
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",

@@ -1,18 +1,40 @@
-import { AdminJSOptions, ResourceWithOptions } from "adminjs";
+import { AdminJSOptions, DefaultAuthProvider, DefaultAuthProviderConfig, LoginHandlerOptions, ResourceWithOptions } from "adminjs";
 import { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
-import { Components, componentLoader } from "./components/index.js";
+import { Components, componentLoader, isRunOnDist } from "./components/index.js";
 import { ADMIN } from './resources/admin.js';
 import { COMMON } from "./resources/common.js";
 import { EVENT } from "./resources/event.js";
 import { NOTICE } from "./resources/notice.js";
+import { compare } from "bcrypt";
+import * as url from "url";
+import path from "path";
 
+const authenticate = async (payload, context) => {
+  const {email, role} = payload;
+  return {email, role};
+}
+
+export const authProvider = new DefaultAuthProvider({
+  componentLoader,
+  authenticate
+});
+authProvider.handleLogin = async function({data: {email, password}}: LoginHandlerOptions, context?: any) {
+  const adminModel = await Admin.findOne({ where: { account: email } });
+  if (adminModel) {
+    const matched = await compare(password, adminModel.password);
+    if (matched) {
+      return this.authenticate({email, role: adminModel.role}, context);
+    }
+  }
+  return false;
+}
 export const adminOptions: AdminJSOptions = {
   dashboard: {
     component: Components.Dashboard
   },
   branding: {
     companyName: "CSEY",
-    logo: "./CseyLogo.png",
+    logo: "../CseyLogo.png",
     favicon: "./CseyLogo.png",
     withMadeWithLove: false
   },
@@ -25,6 +47,12 @@ export const adminOptions: AdminJSOptions = {
     language: 'en',
     translations: {
       en: {
+        components: {
+          Login: {
+            welcomeHeader: '환영합니다',
+            welcomeMessage: `관리자용 계정 정보와 비밀번호를 입력하여\n로그인 후, 행사/공지 글을 관리하세요.\n\n문의: viskkh@vis.ssu.ac.kr`
+          }
+        },
         actions: {
           list: '목록',
           search: '검색',

@@ -7,7 +7,7 @@ import {
   Text,
 } from "@adminjs/design-system";
 import { styled } from "@adminjs/design-system/styled-components";
-import { useTranslation } from "adminjs";
+import { ApiClient, useCurrentAdmin, useTranslation } from "adminjs";
 import React from "react";
 import { useNavigate } from "react-router";
 type BoxType = {
@@ -89,10 +89,12 @@ Card.defaultProps = {
   variant: "container",
   boxShadow: "card",
 };
-
+const api = new ApiClient();
 export const Dashboard = () => {
   const { translateLabel } = useTranslation();
   const navigate = useNavigate();
+  const [currentAdmin, setCurrentAdmin] = useCurrentAdmin();
+  console.log({currentAdmin});
   return (
     <Box>
       <DashboardHeader />
@@ -128,6 +130,7 @@ export const Dashboard = () => {
                 <Text>{box.subtitle}</Text>
               </Text>
             </Card>
+            
           </Box>
         ))}
       </Box>

@@ -88,6 +88,8 @@ web_modules/
 .parcel-cache
 firebaseKey.json
 .adminjs/
+.adminjs/.entry.js
 public/
 dist/
 .npmrc
+app.log
