@@ -154,7 +154,7 @@ export const Dashboard = (props) => {
                   const lineNumber = `${index + 1}`.padEnd(maxLineNumberLength, ' ');
                   return (
                     <div key={index} className="log-wrapper" style={{gap: `${maxLineNumberLength * 8}px`}}>
-                      <div style={{color: 'gray'}}>{`${lineNumber}`   }</div>
+                      <div style={{color: 'gray', userSelect: 'none'}}>{`${lineNumber}`   }</div>
                       <div className="log-line">{`${line}`}</div>
                     </div>
                   );

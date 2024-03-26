@@ -10,12 +10,13 @@ const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
   // console.log(query);
   
-  const { resource, _admin } = context; // db table
+  const { resource, _admin, currentAdmin } = context; // db table
+  const {role} = currentAdmin;
   const unflattenQuery = flat.unflatten(query || {}) as NoticeActionQueryParameters;
   let { page, perPage, type = 'urgent' } = unflattenQuery;
   // 진행중인 행사 탭에서는 시작일 내림차순 정렬
   // 종료된 행사 탭에서는 종료일 내림차순 정렬
-  const { sortBy = 'date', direction = 'desc', filters = {} } = unflattenQuery;
+  const { sortBy = 'date', direction = 'desc', filters = { major_advisor: role } } = unflattenQuery;
 
   // adminOptions.settings.defaultPerPage, 한 페이지에 몇 행 보여줄 지
   if (perPage) {
@@ -55,7 +56,6 @@ const list: ActionHandler<any> = async (request, response, context) => {
   context.records = populatedRecords;
   
   // 메타데이터 및 가져온 데이터 return
-  const { currentAdmin } = context;
   const total = await resource.count(filter, context);
   return {
     meta: {
