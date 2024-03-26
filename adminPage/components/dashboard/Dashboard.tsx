@@ -148,14 +148,14 @@ export const Dashboard = (props) => {
           <Card>
             <Text textAlign="left">
               Log
-              <Text ref={logRef} as="pre" height={200}>
+              <Text ref={logRef} as="pre" height={400}>
                 {lines.map((line, index) => {
                   // 라인 번호 포맷팅: 번호를 문자열로 변환하고, 필요한 만큼 공백으로 채움
                   const lineNumber = `${index + 1}`.padEnd(maxLineNumberLength, ' ');
                   return (
-                    <div key={index} style={{display: "flex", gap: `${maxLineNumberLength * 8}px`}}>
-                      <div>{`${lineNumber}`   }</div>
-                      <div style={{ overflowWrap: 'anywhere', whiteSpace: 'normal' }}>{`${line}`}</div>
+                    <div key={index} className="log-wrapper" style={{gap: `${maxLineNumberLength * 8}px`}}>
+                      <div style={{color: 'gray'}}>{`${lineNumber}`   }</div>
+                      <div className="log-line">{`${line}`}</div>
                     </div>
                   );
                 })}
