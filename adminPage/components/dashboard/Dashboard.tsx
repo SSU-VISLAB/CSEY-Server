@@ -7,9 +7,10 @@ import {
   Text,
 } from "@adminjs/design-system";
 import { styled } from "@adminjs/design-system/styled-components";
-import { ApiClient, useCurrentAdmin, useTranslation } from "adminjs";
-import React from "react";
+import { useCurrentAdmin, useTranslation } from "adminjs";
+import React, {useEffect, useRef} from "react";
 import { useNavigate } from "react-router";
+import { useLog } from "./hook";
 type BoxType = {
   variant: string;
   title: string;
@@ -89,12 +90,22 @@ Card.defaultProps = {
   variant: "container",
   boxShadow: "card",
 };
-const api = new ApiClient();
-export const Dashboard = () => {
+export const Dashboard = (props) => {
   const { translateLabel } = useTranslation();
   const navigate = useNavigate();
   const [currentAdmin, setCurrentAdmin] = useCurrentAdmin();
-  console.log({currentAdmin});
+  const log = useLog();
+  const lines = log.split('\n');
+  const logRef = useRef<HTMLPreElement>(null);
+  const maxLineNumberLength = String(lines.length).length;
+
+  useEffect(() => {
+    // logRef가 현재 가리키는 요소의 스크롤을 맨 밑으로 설정
+    if (logRef.current && log) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [log]);
+
   return (
     <Box>
       <DashboardHeader />
@@ -133,6 +144,25 @@ export const Dashboard = () => {
             
           </Box>
         ))}
+        <Box width={[1]} p="lg">
+          <Card>
+            <Text textAlign="left">
+              Log
+              <Text ref={logRef} as="pre" height={200}>
+                {lines.map((line, index) => {
+                  // 라인 번호 포맷팅: 번호를 문자열로 변환하고, 필요한 만큼 공백으로 채움
+                  const lineNumber = `${index + 1}`.padEnd(maxLineNumberLength, ' ');
+                  return (
+                    <div key={index} style={{display: "flex", gap: `${maxLineNumberLength * 8}px`}}>
+                      <div>{`${lineNumber}`   }</div>
+                      <div style={{ overflowWrap: 'anywhere', whiteSpace: 'normal' }}>{`${line}`}</div>
+                    </div>
+                  );
+                })}
+              </Text>
+            </Text>
+          </Card>
+        </Box>
       </Box>
     </Box>
   );

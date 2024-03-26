@@ -13,7 +13,6 @@ import alarmRouter from "./routes/alarm.js";
 import eventRouter from "./routes/event.js";
 import noticeRouter from "./routes/notice.js";
 import userRouter from "./routes/user.js";
-import { logRouter } from "./routes/log.js";
 import { isRunOnDist, mode } from "./adminPage/components/index.js";
 
 const port = 7070;
@@ -67,7 +66,6 @@ const start = async () => {
   app.use("/api", userRouter);
   app.use("/api", eventRouter);
   app.use("/api", alarmRouter);
-  app.use("/api", logRouter);
   await sequelize
     .authenticate()
     .then(async () => {

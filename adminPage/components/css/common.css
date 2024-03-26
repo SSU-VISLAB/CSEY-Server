@@ -40,9 +40,18 @@ section[data-css="notices-show-priority"] {
     background-color: unset!important;
   }
 }
-
+section[data-css="app-content"] {
+  pre {
+    padding: 12px;
+    margin: 0;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+}
 section.login__Wrapper {
   .adminjs_Text {
-    white-space: pre
+    white-space: pre;
   }
 }

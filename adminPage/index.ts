@@ -8,6 +8,7 @@ import { NOTICE } from "./resources/notice.js";
 import { compare } from "bcrypt";
 import * as url from "url";
 import path from "path";
+import fs from "fs";
 
 const authenticate = async (payload, context) => {
   const {email, role} = payload;
@@ -30,7 +31,12 @@ authProvider.handleLogin = async function({data: {email, password}}: LoginHandle
 }
 export const adminOptions: AdminJSOptions = {
   dashboard: {
-    component: Components.Dashboard
+    component: Components.Dashboard,
+    handler: async (req, res, ctx) => {
+      const __dirname = url.fileURLToPath(new URL(`${isRunOnDist ? '../../' : '../'}`, import.meta.url));
+      const log = fs.readFileSync(__dirname + './app.log').toString()
+      return log
+    }
   },
   branding: {
     companyName: "CSEY",
