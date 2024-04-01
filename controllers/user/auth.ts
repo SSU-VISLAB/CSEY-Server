@@ -10,7 +10,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
   console.log("kakao_login body:", req.body);
   try {
     const { kakao_accessToken, id: reqID } = req.body;
-    const { id } = await getKakaoInfo(kakao_accessToken);
+    const { id, nickname } = await getKakaoInfo(kakao_accessToken);
 
     if (reqID != id) throw new Error("토큰과 잘못 매치된 id");
     const cryptId = await bcrypt.hash(reqID.toString(), 10);
@@ -19,7 +19,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     let user = exist || (await User.create({
         id,
         activated: true,
-        name: null,
+        name: nickname,
         createdDate: new Date(),
         lastAccess: new Date(),
         major: null,
@@ -73,16 +73,17 @@ export const logout = async (req: express.Request, res: express.Response) => {
 };
 
 const getKakaoInfo = async (kakao_accessToken: string) => {
-  const url = "https://kapi.kakao.com/v1/user/access_token_info";
+  const getNameUrl = "https://kapi.kakao.com/v2/user/me";
   const config = {
     headers: {
       Authorization: `Bearer ${kakao_accessToken}`,
     },
   };
   try {
-    const response = await axios.get(url, config);
-    const { id } = response.data;
-    const res = { id };
+    const nameResponse = await axios.get(getNameUrl, config);
+    const { id, properties: {nickname} } = nameResponse.data;
+    console.log("data2:::", nameResponse.data)
+    const res = { id, nickname };
     return res;
   } catch (e) {
     console.error("[ERROR] getKakakoInfo:", { kakao_accessToken, e });
