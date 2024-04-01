@@ -2,7 +2,7 @@ import { AdminJSOptions, DefaultAuthProvider, DefaultAuthProviderConfig, LoginHa
 import { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
 import { Components, componentLoader, isRunOnDist } from "./components/index.js";
 import { ADMIN } from './resources/admin.js';
-import { COMMON } from "./resources/common.js";
+import { COMMON, TEST } from "./resources/common.js";
 import { EVENT } from "./resources/event.js";
 import { NOTICE } from "./resources/notice.js";
 import { compare } from "bcrypt";
@@ -86,7 +86,7 @@ export const adminOptions: AdminJSOptions = {
   // 관리할 models 목록
   resources: [
     // user
-    { resource: User, ...COMMON},
+    { resource: User, ...TEST},
     { resource: Alarm, ...COMMON},
     { resource: EventsLike, ...COMMON},
     { resource: NoticesLike, ...COMMON},

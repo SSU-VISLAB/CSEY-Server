@@ -10,3 +10,10 @@ export const COMMON = {
    * */
   options: { navigation: false }
 }
+
+export const TEST = {
+  /**
+   * @returns options: { navigation: false }
+   * */
+  options: { navigation: 'account' }
+}

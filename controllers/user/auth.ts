@@ -15,9 +15,8 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     if (reqID != id) throw new Error("토큰과 잘못 매치된 id");
     const cryptId = await bcrypt.hash(reqID.toString(), 10);
 
-    let user =
-      (await User.findOne({ where: { id } })) ||
-      (await User.create({
+    const exist = await User.findOne({ where: { id } });
+    let user = exist || (await User.create({
         id,
         activated: true,
         name: null,
@@ -41,7 +40,7 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     res.cookie("refreshToken", tokens.refreshToken, httpOnlyCookie);
     res.cookie("accessToken", tokens.accessToken, httpOnlyCookie);
     res.cookie("id", id, httpOnlyCookie);
-    return res.status(200).json(user)
+    return res.status(200).json({create: !exist, user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken})
   } catch (e) {
     console.error({ e });
   }
