@@ -62,7 +62,7 @@ export const initAllOngoingNotices = async (priority: "일반" | "긴급") => {
     const redisKey = `notice:${notice.id}`;
     const noticeNextDay = getNextDay(new Date(notice.date));
     if (!isGeneral && (noticeNextDay > currentDate.getTime())) {
-      await setNoticeSchedule(notice);
+      setNoticeSchedule(notice);
       eachNotices.push(redisKey);
     } else {
       notice.update({ ...notice, priority: "일반" })

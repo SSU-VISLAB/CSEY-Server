@@ -18,7 +18,7 @@ const Show: React.FC<ActionProps> = (props) => {
     const color = record.params.priority == '긴급' ? YesColor : NoColor;
     priorityMarker.style.setProperty('color', color, 'important');
     priorityMarker.style.setProperty('border-color', color, 'important');
-    priorityMarker.style.setProperty('backgound-color', 'white', 'important')
+    priorityMarker.style.setProperty('background-color', 'white', 'important')
   }, []);
   useEffect(() => {
     // ended 속성의 chip 색상 적용

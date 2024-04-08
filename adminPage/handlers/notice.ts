@@ -1,10 +1,10 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import { Op } from "sequelize";
 import Notice from "../../models/notice.js";
-import { redisClient } from "../../redis/connect.js";
-import { NoticeActionQueryParameters } from "./index.js";
-import { setNoticeSchedule } from "../../redis/schedule.js";
 import { INotice } from "../../models/types.js";
+import { redisClient } from "../../redis/connect.js";
+import { setNoticeSchedule } from "../../redis/schedule.js";
+import { NoticeActionQueryParameters } from "./index.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
@@ -98,7 +98,7 @@ const after = (action: 'edit' | 'new') => async (originalResponse, request, cont
       const recordModel = await Notice.findOne({
         where: { id }
       }) as INotice;
-      await setNoticeSchedule(recordModel);
+      setNoticeSchedule(recordModel);
     }
     // 전체 목록 캐싱
     const noticesFromDB = await Notice.findAll({
