@@ -43,30 +43,27 @@ section[data-css="notices-show-priority"] {
 section[data-css="app-content"] {
   pre {
     padding: 0;
-    margin: 0;
     word-wrap: break-word;
     white-space: pre-wrap;
     overflow-x: hidden;
     overflow-y: auto;
-    :nth-last-child(1) {
-      border-bottom: 1px solid lightgrey;
-    }
+  }
+  .log-wrapper {
+    display: flex;
+    border: 1px solid lightgrey;
+    border-bottom: unset;
+    padding: 8px!important;
+  }
+  .log-wrapper:last-child {
+    border-bottom: 1px solid lightgrey;
+  }
+  .log-line {
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 }
 section.login__Wrapper {
   .adminjs_Text {
     white-space: pre;
   }
-}
-
-.log-wrapper {
-  display: flex;
-  border: 1px solid lightgrey;
-  border-bottom: unset;
-  padding: 8px!important;
-}
-.log-line {
-  overflow-wrap: anywhere;
-  white-space: normal;
-  border: unset!important;
 }
