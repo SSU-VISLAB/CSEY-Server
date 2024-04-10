@@ -35,6 +35,9 @@ const noticeOptions: ResourceOptions = {
     new: {
       after: NoticeHandler.after('new'),
       component: Components.notice_edit
+    },
+    delete: {
+      after: NoticeHandler.deleteAfter()
     }
   }
 }
@@ -56,7 +59,7 @@ const noticeFeatures = [uploadFeature({
   // 저장할 파일의 각종 정보들을 테이블의 어떤 속성에 저장할 지 설정
   properties: {
     key: "image", // 저장된 경로를 image 속성에 저장
-  }
+  },
 })];
 
 export const NOTICE = {

@@ -2,8 +2,9 @@ import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import { Op } from "sequelize";
 import Notice from "../../models/notice.js";
 import { INotice } from "../../models/types.js";
+import { cachingAllNotices } from "../../redis/caching.js";
 import { redisClient } from "../../redis/connect.js";
-import { setNoticeSchedule } from "../../redis/schedule.js";
+import { delNoticeSchedule, setNoticeSchedule } from "../../redis/schedule.js";
 import { NoticeActionQueryParameters } from "./index.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
@@ -76,12 +77,12 @@ const list: ActionHandler<any> = async (request, response, context) => {
  */
 const after = (action: 'edit' | 'new') => async (originalResponse, request, context) => {
   const isPost = request.method === 'post';
-  const isEdit = context.action.name === action;
+  const isAction = context.action.name === action;
   const {currentAdmin: {role}} = context;
   const hasRecord = originalResponse?.record?.params;
   const hasError = Object.keys(originalResponse.record.errors).length;
   // checking if object doesn't have any errors or is a edit action
-  if ((isPost && isEdit) && (hasRecord && !hasError)) {
+  if ((isPost && isAction) && (hasRecord && !hasError)) {
     // 학과는 로그인한 관리자의 것으로 적용
     if (role != '관리자') {
       hasRecord.major_advisor = role;
@@ -115,7 +116,33 @@ const after = (action: 'edit' | 'new') => async (originalResponse, request, cont
   return originalResponse
 }
 
+// delete -> 삭제 후 redis 업데이트(개별 공지 제거, 전체 공지 업데이트)
+const deleteAfter = () => async (originalResponse, request, context) => {
+  const isPost = request.method === 'post';
+  const isAction = context.action.name === 'delete';
+  const hasRecord = originalResponse?.record?.params;
+  const hasError = Object.keys(originalResponse.record.errors).length;
+  // checking if object doesn't have any errors or is a edit action
+  if ((isPost && isAction) && (hasRecord && !hasError)) {
+    const {priority, id} = hasRecord;
+    const isGeneral = priority == '일반'
+    const redisKeyEach = `notice:${id}`;
+
+    // 해당 글의 캐싱데이터 제거
+    await redisClient.del(redisKeyEach);
+    // 긴급일 경우 스케쥴에서 제거
+    if (!isGeneral) {
+      delNoticeSchedule(hasRecord);
+    }
+    // 전체 목록 캐싱
+    await cachingAllNotices();
+  }
+
+  return originalResponse
+}
+
 export const NoticeHandler = {
   list,
-  after
+  after,
+  deleteAfter
 }

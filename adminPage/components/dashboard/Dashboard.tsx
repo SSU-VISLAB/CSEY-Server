@@ -8,7 +8,7 @@ import {
 } from "@adminjs/design-system";
 import { styled } from "@adminjs/design-system/styled-components";
 import { useCurrentAdmin, useTranslation } from "adminjs";
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { useLog } from "./hook";
 type BoxType = {
@@ -148,7 +148,7 @@ export const Dashboard = (props) => {
           <Card>
             <Text textAlign="left">
               Log
-              <Text ref={logRef} as="pre" height={400}>
+              <Text ref={logRef} as="pre" height={400} className="log-box">
                 {lines.map((line, index) => {
                   // 라인 번호 포맷팅: 번호를 문자열로 변환하고, 필요한 만큼 공백으로 채움
                   const lineNumber = `${index + 1}`.padEnd(maxLineNumberLength, ' ');

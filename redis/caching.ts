@@ -1,4 +1,3 @@
-import { Op } from "sequelize";
 import Event from "../models/events.js";
 import Notice from "../models/notice.js";
 import { IEvent, INotice } from "../models/types.js";
@@ -39,38 +38,54 @@ export const initAllOngoingEvents = async () => {
  ** 전체 공지글 redisKey - 일반 ? alerts:general : alerts:urgent
  ** 개별 공지글 redisKey - notice:id
  */
-export const initAllOngoingNotices = async (priority: "일반" | "긴급") => {
-  const isGeneral = priority == "일반";
-  const redisKey = `alerts:${isGeneral ? "general" : "urgent"}`;
+export const initAllOngoingNotices = async () => {
   const currentDate = new Date();
   const eachNotices = await redisClient.keys(`notice:*`);
-  const noticesFromDB = await Notice.findAll({
-    where: {
-      expired: false, // 활성화된 공지만 가져오기
-      priority: {
-        [Op.eq]: priority,
-      },
-    },
-  });
-  // 개별 공지 캐싱
+  const [urgent, general] = await getAllNotices();
   // 과거 캐싱 기록 제거
   if (eachNotices.length) {
     await redisClient.del(eachNotices);
     eachNotices.splice(0, eachNotices.length);
   }
-  for (const notice of noticesFromDB as INotice[]) {
+
+  for (const notice of urgent as INotice[]) {
     const redisKey = `notice:${notice.id}`;
+    // 일반 공지로 이동해야할 긴급 공지가 있는지 체크
     const noticeNextDay = getNextDay(new Date(notice.date));
-    if (!isGeneral && (noticeNextDay > currentDate.getTime())) {
+    if (noticeNextDay > currentDate.getTime()) {
       setNoticeSchedule(notice);
       eachNotices.push(redisKey);
     } else {
       notice.update({ ...notice, priority: "일반" })
     }
+    // 개별 공지 캐싱
     await redisClient.set(redisKey, JSON.stringify(notice));
   }
-  // 전체 공지 캐싱
-  await redisClient.set(redisKey, JSON.stringify(noticesFromDB));
-
-  priority == "긴급" && console.log(`진행중인 공지: `, eachNotices);
+  for (const notice of general as INotice[]) {
+    const redisKey = `notice:${notice.id}`;
+    await redisClient.set(redisKey, JSON.stringify(notice));
+  }
+  await cachingAllNotices(urgent, general);
 };
+
+export const cachingAllNotices = async (urgent?, general?) => {
+  if (!urgent && !general) [urgent, general] = await getAllNotices();
+  await redisClient.set(`alerts:urgent`, JSON.stringify(urgent));
+  await redisClient.set(`alerts:general`, JSON.stringify(general));
+}
+/**
+ * @returns [urgent, general]
+ */
+const getAllNotices = async () => {
+  // 전체 긴급 공지 목록 캐싱
+  const [urgent, general] = (await Notice.findAll({
+    where: {
+      expired: false, // 활성화된 공지만 가져오기
+    }
+  })).reduce((acc, val: INotice) => {
+    acc[+(val.priority == '일반')].push(val);
+    return acc;
+  }, [[], []]);
+
+  return [urgent, general] as [INotice[], INotice[]];
+}
