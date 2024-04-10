@@ -1,14 +1,13 @@
-import { AdminJSOptions, DefaultAuthProvider, DefaultAuthProviderConfig, LoginHandlerOptions, ResourceWithOptions } from "adminjs";
+import { AdminJSOptions, DefaultAuthProvider, LoginHandlerOptions, ResourceWithOptions } from "adminjs";
+import { compare } from "bcrypt";
+import fs from "fs";
+import * as url from "url";
 import { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User } from "../models/index.js";
 import { Components, componentLoader, isRunOnDist } from "./components/index.js";
 import { ADMIN } from './resources/admin.js';
 import { COMMON, TEST } from "./resources/common.js";
 import { EVENT } from "./resources/event.js";
 import { NOTICE } from "./resources/notice.js";
-import { compare } from "bcrypt";
-import * as url from "url";
-import path from "path";
-import fs from "fs";
 
 const authenticate = async (payload, context) => {
   const {email, role} = payload;
@@ -45,7 +44,7 @@ export const adminOptions: AdminJSOptions = {
     withMadeWithLove: false
   },
   version: {
-    app: "1.0.0",
+    app: "update at " + new Date().toLocaleString(),
     admin: true
   },
   // 번역(기본 - en)

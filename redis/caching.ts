@@ -30,7 +30,6 @@ export const initAllOngoingEvents = async () => {
   // 전체 목록 캐싱
   await redisClient.set(redisKey, JSON.stringify(eventsFromDb));
 
-  console.log("전체 행사:", await redisClient.get(redisKey));
   console.log("진행중인 행사:", eachEvents);
 };
 
@@ -61,10 +60,13 @@ export const initAllOngoingNotices = async () => {
     // 개별 공지 캐싱
     await redisClient.set(redisKey, JSON.stringify(notice));
   }
+  console.log('진행중인 긴급공지:', eachNotices)
   for (const notice of general as INotice[]) {
     const redisKey = `notice:${notice.id}`;
+    eachNotices.push(redisKey);
     await redisClient.set(redisKey, JSON.stringify(notice));
   }
+  console.log('진행중인 일반공지:', eachNotices)
   await cachingAllNotices(urgent, general);
 };
 
