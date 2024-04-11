@@ -28,7 +28,7 @@ const Notice = sequelize.define(
       allowNull: false,
     },
     image: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
       allowNull: true,
     },
     like: {
@@ -49,7 +49,7 @@ const Notice = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-    }
+    },
   },
   {
     modelName: "Notice", // 모델 이름

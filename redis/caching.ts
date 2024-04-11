@@ -44,7 +44,6 @@ export const initAllOngoingNotices = async () => {
   // 과거 캐싱 기록 제거
   if (eachNotices.length) {
     await redisClient.del(eachNotices);
-    eachNotices.splice(0, eachNotices.length);
   }
 
   for (const notice of urgent as INotice[]) {
@@ -53,20 +52,18 @@ export const initAllOngoingNotices = async () => {
     const noticeNextDay = getNextDay(new Date(notice.date));
     if (noticeNextDay > currentDate.getTime()) {
       setNoticeSchedule(notice);
-      eachNotices.push(redisKey);
     } else {
       notice.update({ ...notice, priority: "일반" })
     }
     // 개별 공지 캐싱
     await redisClient.set(redisKey, JSON.stringify(notice));
   }
-  console.log('진행중인 긴급공지:', eachNotices)
+  console.log('진행중인 긴급공지:', urgent.map(n => n.id))
   for (const notice of general as INotice[]) {
     const redisKey = `notice:${notice.id}`;
-    eachNotices.push(redisKey);
     await redisClient.set(redisKey, JSON.stringify(notice));
   }
-  console.log('진행중인 일반공지:', eachNotices)
+  console.log('진행중인 일반공지:', general.map(n => n.id))
   await cachingAllNotices(urgent, general);
 };
 
