@@ -1,6 +1,7 @@
 import { ActionQueryParameters } from 'adminjs';
 import { EventHandler } from './event.js';
 import { NoticeHandler } from './notice.js';
+import { LinktreeHandler } from './linktree.js';
 
 export interface EventActionQueryParameters extends ActionQueryParameters {
   /** tab
@@ -16,5 +17,6 @@ export interface NoticeActionQueryParameters extends ActionQueryParameters {
 
 export {
   EventHandler,
-  NoticeHandler
+  NoticeHandler,
+  LinktreeHandler
 };

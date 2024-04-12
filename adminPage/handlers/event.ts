@@ -84,7 +84,10 @@ const after = (action: 'edit' | 'new') => async (originalResponse, request, cont
     const allEventsFromDb = await Event.findAll({
       where: {
         expired: false // 진행중인 행사만 가져오기
-      }
+      },
+      order: [
+        ['start', 'ASC']
+      ]
     });
     await redisClient.set(redisKeyAll, JSON.stringify(allEventsFromDb));
   }

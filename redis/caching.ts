@@ -15,13 +15,15 @@ export const initAllLinktrees = async () => {
     },
     [[], []]
   );
+  computer.sort((a, b) => a.order - b.order)
+  soft.sort((a, b) => a.order - b.order)
   if (eachLinks.length) {
     await redisClient.del(eachLinks);
   }
   await redisClient.set(`${redisKey}:컴퓨터`, JSON.stringify(computer));
   await redisClient.set(`${redisKey}:소프트`, JSON.stringify(soft));
-  console.log("컴터 linktree 리스트:", computer.map(c => c.dataValues));
-  console.log("소프트 linktree 리스트:", soft.map(s => s.dataValues));
+  console.log("컴터 linktree 리스트:", computer.map(c => c.dataValues.text));
+  console.log("소프트 linktree 리스트:", soft.map(s => s.dataValues.text));
 };
 
 /** 행사 글 전부 캐싱
@@ -35,8 +37,10 @@ export const initAllOngoingEvents = async () => {
     where: {
       expired: false, // 진행중인 행사만 가져오기
     },
+    order: [
+      ['start', 'ASC']
+    ]
   })) as IEvent[];
-
   // 개별 이벤트 캐싱
   // 과거 캐싱 기록 제거
   if (eachEvents.length > 0) {
@@ -93,7 +97,7 @@ export const initAllOngoingNotices = async () => {
   await cachingAllNotices(urgent, general);
 };
 
-export const cachingAllNotices = async (urgent?, general?) => {
+export const cachingAllNotices = async (urgent?: INotice[], general?: INotice[]) => {
   if (!urgent && !general) [urgent, general] = await getAllNotices();
   await redisClient.set(`alerts:urgent`, JSON.stringify(urgent));
   await redisClient.set(`alerts:general`, JSON.stringify(general));
@@ -116,6 +120,7 @@ const getAllNotices = async () => {
     },
     [[], []]
   );
-
+  urgent.sort((a, b) => a.date - b.date);
+  general.sort((a, b) => a.date - b.date);
   return [urgent, general] as [INotice[], INotice[]];
 };
