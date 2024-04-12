@@ -27,7 +27,7 @@
     "@adminjs/express": "^6.1.0",
     "@adminjs/sequelize": "^4.1.1",
     "@adminjs/upload": "^4.0.2",
-    "adminjs": "^7.7.2",
+    "adminjs": "^7.8.1",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

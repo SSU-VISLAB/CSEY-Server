@@ -10,7 +10,7 @@ const noticeOptions: ResourceOptions = {
   navigation: postTab,
 
   listProperties: ['id', 'priority', 'title', 'date', 'like', 'dislike'],
-  showProperties: ['id', 'priority', 'expired', 'title', 'date', 'like', 'dislike', 'content'],
+  showProperties: ['id', 'priority', 'expired', 'title', 'date', 'like', 'dislike', 'content', 'file'],
   editProperties: ['priority', 'major_advisor', 'title', 'date', 'file', 'content'],
 
   properties: {
@@ -78,14 +78,15 @@ localProvider.delete = async function (key, bucket) {
 const noticeFeatures = [uploadFeature({
   provider: localProvider,
   validation: {
-    mimeTypes: ['image/png', 'image/jpeg', 'image/bmp', 'image/x-png', 'image/webp', 'image/jpg'],
+    mimeTypes: ['image/png', 'image/jpeg', 'image/bmp', 'image/x-png', 'image/webp'],
   },
   componentLoader,
   // 저장할 파일의 각종 정보들을 테이블의 어떤 속성에 저장할 지 설정
   properties: {
     key: "image", // 저장된 경로를 image 속성에 저장
+    mimeType: 'image',
   },
-  // multiple: true
+  multiple: true
 })];
 
 export const NOTICE = {
