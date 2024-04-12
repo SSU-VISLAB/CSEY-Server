@@ -20,7 +20,7 @@ const Event = sequelize.define<IEvent>(
       allowNull: false,
     },
     image: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSONB,
       allowNull: true,
     },
     start: {
@@ -64,7 +64,11 @@ const Event = sequelize.define<IEvent>(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
-    }
+    },
+    mimeType: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
   },
   {
     modelName: "Event",

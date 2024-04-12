@@ -28,7 +28,7 @@ const Notice = sequelize.define(
       allowNull: false,
     },
     image: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
       allowNull: true,
     },
     like: {
@@ -49,6 +49,10 @@ const Notice = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    mimeType: {
+      type: DataTypes.STRING(20),
+      allowNull: true
     },
   },
   {
