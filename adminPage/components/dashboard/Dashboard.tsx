@@ -70,6 +70,11 @@ const boxes = ({ translateLabel }): Array<BoxType> => [
     title: translateLabel("notices"),
     href: "/admin/resources/notices",
   },
+  {
+    variant: "Folders",
+    title: translateLabel("linktrees"),
+    href: "/admin/resources/linktrees",
+  },
 ];
 
 const Card = styled(Box)`

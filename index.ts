@@ -9,11 +9,8 @@ import * as url from "url";
 import { adminOptions, authProvider } from "./adminPage/index.js";
 import { sequelize } from "./models/index.js";
 import { initializeRedis } from "./redis/initialize.js";
-import alarmRouter from "./routes/alarm.js";
-import eventRouter from "./routes/event.js";
-import noticeRouter from "./routes/notice.js";
-import userRouter from "./routes/user.js";
 import { isRunOnDist, mode } from "./adminPage/components/index.js";
+import { alarmRouter, eventRouter, linktreeRouter, noticeRouter, userRouter } from "./routes/index.js";
 
 const port = 7070;
 const corsOptions = {
@@ -66,6 +63,7 @@ const start = async () => {
   app.use("/api", userRouter);
   app.use("/api", eventRouter);
   app.use("/api", alarmRouter);
+  app.use("/api", linktreeRouter);
   await sequelize
     .authenticate()
     .then(async () => {

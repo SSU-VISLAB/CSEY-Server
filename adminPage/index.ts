@@ -8,6 +8,8 @@ import { ADMIN } from './resources/admin.js';
 import { COMMON, TEST } from "./resources/common.js";
 import { EVENT } from "./resources/event.js";
 import { NOTICE } from "./resources/notice.js";
+import Linktree from "../models/linktree.js";
+import { LINKTREE } from "./resources/linktree.js";
 
 const authenticate = async (payload, context) => {
   const {email, role} = payload;
@@ -69,6 +71,7 @@ export const adminOptions: AdminJSOptions = {
         labels: {
           events: '행사',
           notices: '공지',
+          linktrees: '링크트리',
           navigation: '',
         },
       }
@@ -92,6 +95,7 @@ export const adminOptions: AdminJSOptions = {
     // post
     { resource: Event, ...EVENT},
     { resource: Notice, ...NOTICE},
+    { resource: Linktree, ...LINKTREE},
     // others
     { resource: Admin, ...ADMIN},
     { resource: Read, ...COMMON},

@@ -3,7 +3,11 @@ export const postTab = {
   icon: 'Edit',
   // icon name list: https://feathericons.com/
 };
-
+export const linktreeTab = {
+  name: '링크트리 관리',
+  icon: 'Edit',
+  // icon name list: https://feathericons.com/
+};
 export const COMMON = {
   /**
    * @returns options: { navigation: false }

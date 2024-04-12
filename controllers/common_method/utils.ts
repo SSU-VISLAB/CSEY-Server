@@ -8,5 +8,5 @@ import { redisClient } from "../../redis/connect.js";
 export const redisGetAndParse = async (key: string) => {
   const get = await redisClient.get(key);
   if (get) return JSON.parse(get);
-  throw new Error(`${key}: 캐싱된 데이터 없음`);
+  throw new Error(`${key.split(':')[1]}: 캐싱된 데이터 없음`);
 }

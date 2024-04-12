@@ -21,5 +21,6 @@ export const Components = {
   notice_list: add('NoticeList', './notice/NoticeList.tsx'),
   notice_show: add('NoticeShow', './notice/NoticeShow.tsx'),
   notice_edit: add('NoticeEdit', './notice/NoticeEdit.tsx'),
+  linktree_edit: add('LinktreeEdit', './linktree/LinktreeEdit.tsx'),
   // custom: add('Custom', './custom/Custom.tsx')
 }

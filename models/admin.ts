@@ -39,7 +39,7 @@ Admin.init(
   {
     sequelize, // assuming you have a Sequelize instance named 'sequelize'
     modelName: 'Admin',
-    tableName: 'admin',
+    tableName: 'admins',
     timestamps: false,
   }
 );
