@@ -44,15 +44,14 @@ async function updateLikeStatus(body: IEventUserRequest) {
         });
         const prevLike = existingLike.like;
         const isSame = prevLike == like;
-        await existingLike.update({like: isSame ? null : like}, { transaction, logging: console.log });
+        await existingLike.update({like: !created && isSame ? null : like}, { transaction, logging: console.log });
         const event = await Event.findOne({ where: { id: event_id }, transaction });
-        console.log({prevLike, like})
-
-        if (prevLike == null) {
+        // console.log({prevLike, like})
+        if (created || prevLike == null) {
             await event.increment(like, { transaction });
         } else if (isSame) {
             await event.decrement(like, { transaction });
-        } else if (created || !isSame) {
+        } else if (!isSame) {
             await event.increment(like, { transaction });
             await event.decrement(prevLike, { transaction });
         }
@@ -88,49 +87,6 @@ export const setLike = async (
         }
 
         return res.status(200).json({ message: `like: ${body.like} 설정 성공했습니다.` });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "서버 내부 에러" });
-    }
-};
-
-// PUT /posts/events/dislike
-export const setDisLike = async (
-    { params, body }: express.Request<any, any, IEventUserRequest>,
-    res: express.Response,
-    next: any
-) => {
-    try {
-        // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body, bodyList)) {
-            return res.status(404).json({ error: "잘못된 key 입니다." });
-        }
-
-        const result = await updateLikeStatus(body);
-        if (result && result.error) {
-            return res.status(400).json({ error: result.error });
-        }
-
-        return res.status(200).json({ message: "싫어요 설정 성공했습니다." });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "서버 내부 에러" });
-    }
-};
-
-// DELETE /posts/events/like  &  /posts/events/dislike
-export const deleteLike = async (
-    { params, body }: express.Request<any, any, IEventUserRequest>,
-    res: express.Response,
-    next: any
-) => {
-    try {
-        const result = await updateLikeStatus(body);
-        if (result && result.error) {
-            return res.status(400).json({ error: result.error });
-        }
-
-        return res.status(200).json({ message: "좋아요 삭제를 성공했습니다." });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: "서버 내부 에러" });

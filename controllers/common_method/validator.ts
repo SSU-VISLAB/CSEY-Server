@@ -1,9 +1,9 @@
-import { User, Notice, Event } from "../../models/index.js";
+import { Event, Notice, User } from "../../models/index.js";
 
 const modelMap = new Map([
     ['user_id', User],
     ['notice_id', Notice],
-    ['event_id', Event]
+    ['event_id', Event as any]
 ]);
 
 export interface IGenericUserRequest {
