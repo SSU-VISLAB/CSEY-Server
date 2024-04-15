@@ -33,7 +33,6 @@ export const getEvent = async (
                 return res.status(400).json({ message: "해당 행사를 찾을 수 없습니다." });
             }
         }
-
         return res.status(200).json(event);
     } catch (error) {
         console.log(error);
