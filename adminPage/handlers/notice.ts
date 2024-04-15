@@ -123,11 +123,11 @@ const after = (action: "edit" | "new") => async (originalResponse, request, cont
           priority: {
             [Op.eq]: priority,
           },
-          order: [
-            ['date', 'ASC']
-          ]
         },
-      });
+        order: [
+          ['date', 'ASC']
+        ]
+      }).catch(e => console.log(e));
       await redisClient.set(redisKeyAll, JSON.stringify(noticesFromDB));
     }
 
