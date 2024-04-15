@@ -12,11 +12,11 @@ const list: ActionHandler<any> = async (request, response, context) => {
   // console.log(query);
 
   const { resource, _admin, currentAdmin } = context; // db table
-  const { role } = currentAdmin;
+  const role = currentAdmin?.role;
   const unflattenQuery = flat.unflatten(
     query || {}
   ) as NoticeActionQueryParameters;
-  let { page, perPage, type = "urgent" } = unflattenQuery;
+  let { page = 0, perPage, type = "urgent" } = unflattenQuery;
   // 진행중인 행사 탭에서는 시작일 내림차순 정렬
   // 종료된 행사 탭에서는 종료일 내림차순 정렬
   const {
@@ -133,7 +133,7 @@ const after = (action: "edit" | "new") => async (originalResponse, request, cont
 
     return originalResponse;
   };
-
+  
 // delete -> 삭제 후 redis 업데이트(개별 공지 제거, 전체 공지 업데이트)
 const deleteAfter = () => async (originalResponse, request, context) => {
   const isPost = request.method === "post";

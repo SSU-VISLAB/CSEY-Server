@@ -1,6 +1,5 @@
 import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
-import { redisClient } from "../../redis/connect.js";
-import Linktree from "../../models/linktree.js";
+import { initAllLinktrees } from "../../redis/caching.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
@@ -84,16 +83,7 @@ const after = (action: "edit" | "new") => async (originalResponse, request, cont
         hasRecord.major_advisor = role;
       }
       const { major } = hasRecord;
-      const redisKey = `linktree:${major}`;
-
-      // 전체 목록 캐싱
-      const linktreesFromDB = await Linktree.findAll({
-        where: {
-          major,
-        },
-      });
-      await redisClient.set(redisKey, JSON.stringify(linktreesFromDB));
-      console.log(linktreesFromDB.map(c => c.dataValues.text));
+      await initAllLinktrees();
     }
 
     return originalResponse;
@@ -107,17 +97,7 @@ const deleteAfter = () => async (originalResponse, request, context) => {
   const hasError = Object.keys(originalResponse.record?.errors).length;
   // checking if object doesn't have any errors or is a edit action
   if (isPost && isAction && hasRecord && !hasError) {
-    const { major } = hasRecord;
-    const redisKey = `linktree:${major}`;
-
-    // 전체 목록 캐싱
-    const linktreesFromDB = await Linktree.findAll({
-      where: {
-        major,
-      },
-    });
-    await redisClient.set(redisKey, JSON.stringify(linktreesFromDB));
-    console.log(linktreesFromDB.map(c => c.dataValues.text));
+    await initAllLinktrees();
   }
   return originalResponse;
 };
