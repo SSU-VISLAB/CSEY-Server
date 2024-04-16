@@ -47,12 +47,13 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
 export const getUserInfo = async (req: express.Request, res: express.Response) => {
     try {
         const userId = req.params.id;
-
-        const alarm = await getAlarmInfo(userId);
-        const bookmark = await getEventBookmarkInfo(userId);
-        const eventLike = await getEventLikeInfo(userId);
-        const noticeLike = await getNoticeLikeInfo(userId);
-        const noticeRead = await getNoticeReadInfo(userId);
+        const [alarm, bookmark, eventLike, noticeLike, noticeRead] = await Promise.all([
+            getAlarmInfo(userId),
+            getEventBookmarkInfo(userId),
+            getEventLikeInfo(userId),
+            getNoticeLikeInfo(userId),
+            getNoticeReadInfo(userId)
+        ])
         const userInformation = {
             alarm,
             bookmark,

@@ -1,9 +1,9 @@
 import * as express from "express";
-import { IEventUserRequest } from "./request/request.js";
-import { IBookmark } from "../../models/types.js";
 import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.js";
-import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.js";
+import { IBookmark } from "../../models/types.js";
 import { redisClient } from "../../redis/connect.js";
+import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.js";
+import { IEventUserRequest } from "./request/request.js";
 
 const bodyList = [
     "event_id",
@@ -25,7 +25,6 @@ export const setBookmark = async (
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
         const { user_id, event_id } = body;
-
         // DB에서 행사와 유저 찾기
         const errorMessage = await findObjectByPk(body);
         if (errorMessage) {
@@ -33,23 +32,22 @@ export const setBookmark = async (
         }
 
         // 북마크에 이미 추가되어 있는지 확인
-        let bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
-
-        // 북마크가 없다면 새로 생성
-        if (!bookmark) {
-            bookmark = await Bookmark.create({ fk_user_id: user_id }, { transaction }) as IBookmark;
-        }
-
+        let [bookmark, created] = await Bookmark.findOrCreate({
+            where: { fk_user_id: user_id },
+            defaults: { fk_user_id: user_id },
+            transaction,
+            logging: console.log
+        })
         // BookmarkAsset 테이블에 항목 추가
         await BookmarkAsset.create({
             fk_event_id: event_id,
             fk_bookmark_id: bookmark.id,
-        }, { transaction });
+        }, { transaction, ignoreDuplicates: true });
 
         await transaction.commit();
 
         // Redis에 있는 해당 사용자의 북마크 정보 업데이트
-        const updatedBookmarks= await getEventBookmarkInfo(user_id.toString());
+        const updatedBookmarks = await getEventBookmarkInfo(user_id.toString());
         await redisClient.set(`user:bookmarks:${user_id}`, JSON.stringify(updatedBookmarks), { EX: EXPIRE });
 
         return res.status(200).json({ message: "북마크 설정 성공했습니다." });
@@ -105,7 +103,7 @@ export const deleteBookmark = async (
         await transaction.commit();
 
         // Redis에 있는 해당 사용자의 북마크 정보 삭제 또는 업데이트
-        const updatedBookmarks= await getEventBookmarkInfo(user_id.toString());
+        const updatedBookmarks = await getEventBookmarkInfo(user_id.toString());
         if (updatedBookmarks.length > 0) {
             await redisClient.set(`user:bookmarks:${user_id}`, JSON.stringify(updatedBookmarks), { EX: EXPIRE });
         } else {
