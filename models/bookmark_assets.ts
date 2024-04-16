@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './sequelize.js';
 import Bookmark from './bookmarks.js';
+import Event from './events.js';
+import { sequelize } from './sequelize.js';
 
 const BookmarkAsset = sequelize.define('BookmarkAsset', {
   id: {
@@ -13,7 +14,7 @@ const BookmarkAsset = sequelize.define('BookmarkAsset', {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'events',
+      model: Event,
       key: 'id',
     },
     onUpdate: "CASCADE",
@@ -23,7 +24,7 @@ const BookmarkAsset = sequelize.define('BookmarkAsset', {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'bookmarks',
+      model: Bookmark,
       key: 'id'
     },
     onUpdate: "CASCADE",
@@ -33,8 +34,17 @@ const BookmarkAsset = sequelize.define('BookmarkAsset', {
   modelName: 'BookmarkAsset',
   tableName: 'bookmark_assets',
   timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  indexes: [{
+    unique: true,
+    fields: ['fk_bookmark_id', 'fk_event_id']
+  }]
 });
 
-Bookmark.hasMany(BookmarkAsset, { as: 'BookmarkAssets', foreignKey: 'fk_bookmark_id' });
+// Event와 BookmarkAsset 간의 관계
+Event.hasMany(BookmarkAsset, { foreignKey: 'fk_event_id' });
+BookmarkAsset.belongsTo(Event, { foreignKey: 'fk_event_id' });
 
+// Bookmark와 BookmarkAsset 간의 관계
+Bookmark.hasMany(BookmarkAsset, { foreignKey: 'fk_bookmark_id' });
+BookmarkAsset.belongsTo(Bookmark, { foreignKey: 'fk_bookmark_id' });
 export default BookmarkAsset;
