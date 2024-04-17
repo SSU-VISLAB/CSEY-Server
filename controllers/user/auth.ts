@@ -31,7 +31,6 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
       return res.status(500).json({ message: tokens.error });
     }
     const httpOnlyCookie: express.CookieOptions = {
-      sameSite: 'none',
       httpOnly: true,
     };
     // access는 localStorage
