@@ -33,7 +33,6 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     const httpOnlyCookie: express.CookieOptions = {
       sameSite: 'none',
       httpOnly: true,
-      secure: true,
     };
     // access는 localStorage
     // refresh는 http only cookie
