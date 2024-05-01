@@ -14,7 +14,8 @@ export const setNoticeSchedule = (row: INotice) => {
     await cachingAllNotices();
     jobArray.splice(existJobIndex, 1);
   });
-  const existJobIndex = jobArray.findIndex(j => j.name == `${id}`);
+  console.log({jobArray})
+  const existJobIndex = jobArray.findIndex(j => j?.name == `${id}`);
   if (existJobIndex > -1) {
     jobArray[existJobIndex].cancel();
     jobArray[existJobIndex] = job;
