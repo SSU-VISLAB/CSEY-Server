@@ -27,6 +27,7 @@ const eventOptions: ResourceOptions = {
     "start",
     "end",
     "major_advisor",
+    "expired",
     "file",
     "title",
     "content",
