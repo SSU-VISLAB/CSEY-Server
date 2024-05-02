@@ -76,5 +76,4 @@ const Event = sequelize.define<IEvent>(
     timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
   }
 );
-
 export default Event

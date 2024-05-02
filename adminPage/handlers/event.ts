@@ -2,6 +2,8 @@ import { ActionHandler, Filter, SortSetter, flat, populator } from "adminjs";
 import Event from "../../models/events.js";
 import { redisClient } from "../../redis/connect.js";
 import { EventActionQueryParameters } from "./index.js";
+import { IEvent } from "../../models/types.js";
+import { delEventSchedule, setEventSchedule } from "../../redis/schedule.js";
 
 const list: ActionHandler<any> = async (request, response, context) => {
   const { query } = request; // 요청 url의 query 부분 추출
@@ -85,15 +87,24 @@ const after = (action: "edit" | "new") => async (originalResponse, request, cont
     const hasError = Object.keys(originalResponse.record.errors).length;
     // checking if object doesn't have any errors or is a edit action
     if (isPost && isEdit && hasRecord && !hasError) {
+      const {id, end} = hasRecord
       // 학과는 로그인한 관리자의 것으로 적용
       if (role != "관리자") {
         hasRecord.major_advisor = role;
       }
       // redis 캐싱
-      const redisKeyEach = `event:${hasRecord.id}`;
+      const redisKeyEach = `event:${id}`;
       const redisKeyAll = "allEvents";
-
       await redisClient.set(redisKeyEach, JSON.stringify(hasRecord));
+      // end날이 아직 안 지났다면
+      if (end > new Date()) {
+        // 종료 변경하는 스케쥴 등록
+        console.log("has update::?",hasRecord.update);
+        const recordModel = (await Event.findOne({
+          where: {id}
+        })) as IEvent;
+        setEventSchedule(recordModel);
+      }
       // 전체 목록 캐싱
       const allEventsFromDb = await Event.findAll({
         where: {
@@ -114,9 +125,14 @@ const deleteAfter = () => async (originalResponse, request, context) => {
 
   // checking if object doesn't have any errors or is a edit action
   if (isPost && isAction && record) {
-    await redisClient.del(`event:${record.id}`);
-
+    const {id, end} = record;
     const redisKeyAll = "allEvents";
+    
+    await redisClient.del(`event:${id}`);
+
+    if (end > new Date()) {
+      delEventSchedule(record);
+    }
     // 전체 목록 캐싱
     const allEventsFromDb = await Event.findAll({
       where: {
@@ -140,17 +156,21 @@ const bulkDelete = () => async (originalResponse, request, context) => {
     records.forEach(async ({params: record}) => {
       // redis 캐싱 제거
       await redisClient.del(`event:${record.id}`);
+      if (record.end > new Date()) {
+        // 스케쥴에 등록된 행사들 제거
+        delEventSchedule(record);
+      }
     });
+    const redisKeyAll = "allEvents";
+    // 전체 목록 캐싱
+    const allEventsFromDb = await Event.findAll({
+      where: {
+        expired: false, // 진행중인 행사만 가져오기
+      },
+      order: [["start", "ASC"]],
+    });
+    await redisClient.set(redisKeyAll, JSON.stringify(allEventsFromDb));
   }
-  const redisKeyAll = "allEvents";
-  // 전체 목록 캐싱
-  const allEventsFromDb = await Event.findAll({
-    where: {
-      expired: false, // 진행중인 행사만 가져오기
-    },
-    order: [["start", "ASC"]],
-  });
-  await redisClient.set(redisKeyAll, JSON.stringify(allEventsFromDb));
   return originalResponse;
 };
 

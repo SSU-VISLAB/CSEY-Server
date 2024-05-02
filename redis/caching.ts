@@ -3,7 +3,7 @@ import Linktree from "../models/linktree.js";
 import Notice from "../models/notice.js";
 import { IEvent, INotice } from "../models/types.js";
 import { redisClient } from "./connect.js";
-import { getNextDay, setNoticeSchedule } from "./schedule.js";
+import { getNextDay, setEventSchedule, setNoticeSchedule } from "./schedule.js";
 
 export const initAllLinktrees = async () => {
   const redisKey = "linktrees";
@@ -33,6 +33,7 @@ export const initAllLinktrees = async () => {
 export const initAllOngoingEvents = async () => {
   const redisKey = "allEvents";
   const eachEvents = await redisClient.keys(`event:*`);
+  const currentDate = new Date();
   const eventsFromDb = (await Event.findAll({
     where: {
       expired: false, // 진행중인 행사만 가져오기
@@ -48,6 +49,14 @@ export const initAllOngoingEvents = async () => {
   }
   for (const event of eventsFromDb) {
     const eventRedisKey = `event:${event.id}`;
+    // 종료 전이면
+    if (event.end > currentDate) {
+      // 종료 날에 종료되도록 스케쥴링
+      setEventSchedule(event);
+    } else { // 종료 됐으면
+      // 종료로 변경
+      event.update({...event, expired: true});
+    }
     await redisClient.set(eventRedisKey, JSON.stringify(event));
   }
 
