@@ -1,7 +1,8 @@
 import { Box, Pagination, Tab, Tabs, Text } from "@adminjs/design-system";
 import { ActionProps, RecordsTable, useCurrentAdmin, useRecords, useSelectedRecords } from "adminjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
+import {useSearchParams} from "react-router-dom";
 import { TabLabel, useTabWithPagePersistence } from "./hooks.js";
 
 const YesColor = 'rgb(194, 0, 18)'; // 붉은색
@@ -17,6 +18,8 @@ export const List: React.FC<ActionProps> = (props) => {
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // custom css 부착용
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`
   const contentTag = getActionElementCss(resource.id, "list", "table-wrapper");
@@ -32,6 +35,14 @@ export const List: React.FC<ActionProps> = (props) => {
       element.style.setProperty('background-color', 'white', 'important')
       });
   }, [data]);
+
+  useLayoutEffect(() => {
+    if (location.search.includes("refresh=true")) {
+      searchParams.delete("refresh");
+      setSearchParams(searchParams);
+    }
+  }, [location])
+
   /** list 제목 옆에 chip형태로 나오는 행 수 업데이트 */
   useEffect(() => {
     if (setTag) {
@@ -49,9 +60,8 @@ export const List: React.FC<ActionProps> = (props) => {
 
   /** 페이지 변경 핸들러 함수 */
   const handlePaginationChange = (pageNumber: number): void => {
-    const search = new URLSearchParams(location.search);
-    search.set("page", pageNumber.toString());
-    navigate({ search: search.toString() });
+    searchParams.set("page", pageNumber.toString());
+    setSearchParams(searchParams);
   };
 
   return (

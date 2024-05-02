@@ -2,7 +2,7 @@ import { useLocalStorage } from "adminjs";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router';
 
-export type TabLabel = 'ongoing' | 'expired'
+export type TabLabel = 'ongoing' | 'expired' | string
 
 /** tab 전환 후 그 tab의 page를 불러오기 위한 커스텀 훅
  * @param {TabLabel} initialTab - 초기 Tab 설정

@@ -39,6 +39,8 @@ const Edit: FC<ActionProps> = (props) => {
   useEffect(() => {
     if (initialRecord) {
       setRecord(initialRecord);
+    } else {
+      setRecord({...record, params: {major_advisor: role}})
     }
   }, [initialRecord]);
   if (role != "관리자") {

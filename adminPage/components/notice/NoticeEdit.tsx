@@ -39,8 +39,11 @@ const Edit: FC<ActionProps> = (props) => {
   useEffect(() => {
     if (initialRecord) {
       setRecord(initialRecord);
+    } else {
+      setRecord({...record, params: {major_advisor: role, date: new Date().toISOString()}})
     }
   }, [initialRecord]);
+
   if (role != "관리자") {
     const majorProp = resource.editProperties.find(p => p.name == 'major_advisor');
     if (majorProp && majorProp.availableValues) {
