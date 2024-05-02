@@ -65,6 +65,12 @@ const eventOptions: ResourceOptions = {
       after: EventHandler.after("new"),
       component: Components.event_edit,
     },
+    delete: {
+      after: EventHandler.deleteAfter()
+    },
+    bulkDelete: {
+      after: EventHandler.bulkDelete()
+    }
   },
 };
 

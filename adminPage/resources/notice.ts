@@ -61,6 +61,9 @@ const noticeOptions: ResourceOptions = {
     delete: {
       after: NoticeHandler.deleteAfter(),
     },
+    bulkDelete: {
+      after: NoticeHandler.bulkDelete()
+    }
   },
 };
 const localProvider = new LocalProvider({

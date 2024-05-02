@@ -159,8 +159,32 @@ const deleteAfter = () => async (originalResponse, request, context) => {
   return originalResponse;
 };
 
+const bulkDelete = () => async (originalResponse, request, context) => {
+  const isPost = request?.method === "post";
+  const isAction = context?.action.name === "bulkDelete";
+  const {records} = originalResponse;
+  // checking if object doesn't have any errors or is a edit action
+  if (isPost && isAction && records) {
+    records.forEach(async ({params: record}) => {
+      const { priority, id } = record;
+      const isGeneral = priority == "일반";
+      const redisKeyEach = `notice:${id}`;
+      // 해당 글의 캐싱데이터 제거
+      await redisClient.del(redisKeyEach);
+      // 긴급일 경우 스케쥴에서 제거
+      if (!isGeneral) {
+        delNoticeSchedule(record);
+      }
+    })
+    // 전체 목록 캐싱
+    await cachingAllNotices();
+  }
+  return originalResponse;
+};
+
 export const NoticeHandler = {
   list,
   after,
   deleteAfter,
+  bulkDelete
 };
