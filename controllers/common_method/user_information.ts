@@ -63,29 +63,37 @@ export async function getEventBookmarkInfo(userId: string) {
 }
 
 export async function getEventLikeInfo(userId: string) {
-    const redisKey = `user:eventLikes:${userId}`;
+    const key = `user:eventLikes:${userId}`;
 
-    const eventLikesRedis = await redisClient.get(redisKey);
-    if (eventLikesRedis) {
-        return JSON.parse(eventLikesRedis);
+    const eventLikesRedis = await redisClient.hGetAll(key);
+    const redisKeys = Object.keys(eventLikesRedis);
+    if (redisKeys.length) {
+        return eventLikesRedis;
     }
 
     const eventLikes = await EventsLike.findAll({
-        where: { fk_user_id: userId }
+        where: { fk_user_id: userId },
     });
-
     if (eventLikes) {
-        await redisClient.set(redisKey, JSON.stringify(eventLikes), { EX: EXPIRE });
-        return eventLikes;
+        // redis 캐싱
+        eventLikes.forEach(async ({fk_event_id, like}) => {
+            like
+                ? await redisClient.hSet(`user:eventLikes:${userId}`, fk_event_id, like)
+                : await redisClient.hDel(`user:eventLikes:${userId}`, fk_event_id.toString());
+        });
+        return eventLikes.reduce((acc, {fk_event_id, like}) => {
+            acc[fk_event_id] = like;
+            return acc;
+        }, {});
     } else {
         return [];
     }
 }
 
 export async function getNoticeLikeInfo(userId: string) {
-    const redisKey = `user:noticeLikes:${userId}`;
+    const key = `user:noticeLikes:${userId}`;
 
-    const noticeLikesRedis = await redisClient.get(redisKey);
+    const noticeLikesRedis = await redisClient.get(key);
     if (noticeLikesRedis) {
         return JSON.parse(noticeLikesRedis);
     }
@@ -95,7 +103,7 @@ export async function getNoticeLikeInfo(userId: string) {
     });
 
     if (noticeLikes) {
-        await redisClient.set(redisKey, JSON.stringify(noticeLikes), { EX: EXPIRE });
+        await redisClient.set(key, JSON.stringify(noticeLikes), { EX: EXPIRE });
         return noticeLikes;
     } else {
         return [];

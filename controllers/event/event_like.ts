@@ -1,7 +1,6 @@
 import * as express from "express";
 import { Event, EventsLike, sequelize } from "../../models/index.js";
 import { redisClient } from "../../redis/connect.js";
-import { getEventLikeInfo } from "../common_method/user_information.js";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
 import { IEventUserRequest } from "./request/request.js";
 
@@ -44,24 +43,30 @@ async function updateLikeStatus(body: IEventUserRequest) {
         });
         const prevLike = existingLike.like;
         const isSame = prevLike == like;
-        await existingLike.update({like: !created && isSame ? null : like}, { transaction, logging: console.log });
+        const updatedEventLike = await existingLike.update(
+            { like: (!created && isSame) ? null : like },
+            { transaction, logging: console.log }
+        );
         const event = await Event.findOne({ where: { id: event_id }, transaction });
-        // console.log({prevLike, like})
         if (created || prevLike == null) {
             await event.increment(like, { transaction });
+            event[like]++;
         } else if (isSame) {
             await event.decrement(like, { transaction });
+            event[like]--;
         } else if (!isSame) {
             await event.increment(like, { transaction });
             await event.decrement(prevLike, { transaction });
+            event[like]++;
+            event[prevLike]--;
         }
         await transaction.commit();
-        const _event = await Event.findOne({ where: { id: event_id }});
         // redis event 업데이트
-        await redisClient.set(`event:${event_id}`, JSON.stringify(_event));
+        await redisClient.set(`event:${event_id}`, JSON.stringify(event));
         // Redis에 있는 해당 사용자의 이벤트 좋아요 정보 업데이트
-        const updatedLikes = await getEventLikeInfo(user_id.toString());
-        await redisClient.set(`user:eventLikes:${user_id}`, JSON.stringify(updatedLikes), { EX: EXPIRE });
+        updatedEventLike.like
+            ? await redisClient.hSet(`user:eventLikes:${user_id}`, event_id, like)
+            : await redisClient.hDel(`user:eventLikes:${user_id}`, event_id.toString());
     } catch (error) {
         await transaction.rollback();
         console.log(error);
