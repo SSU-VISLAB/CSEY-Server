@@ -1,9 +1,21 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import Bookmark from './bookmarks.js';
 import Event from './events.js';
 import { sequelize } from './sequelize.js';
 
-const BookmarkAsset = sequelize.define('BookmarkAsset', {
+interface BookmarkAssetAttributes {
+  id: number;
+  fk_event_id: number;
+  fk_bookmark_id: number;
+}
+
+class BookmarkAsset extends Model<BookmarkAssetAttributes> {
+  public id!: number;
+  public fk_event_id!: number;
+  public fk_bookmark_id!: number;
+}
+
+BookmarkAsset.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -11,29 +23,30 @@ const BookmarkAsset = sequelize.define('BookmarkAsset', {
     allowNull: false
   },
   fk_event_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
-      model: Event,
+      model: 'events', // Note: model name should match the table name
       key: 'id',
     },
     onUpdate: "CASCADE",
     onDelete: "CASCADE"
   },
   fk_bookmark_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
-      model: Bookmark,
+      model: 'bookmarks', // Note: model name should match the table name
       key: 'id'
     },
     onUpdate: "CASCADE",
     onDelete: "CASCADE"
   },
 }, {
+  sequelize,
   modelName: 'BookmarkAsset',
   tableName: 'bookmark_assets',
-  timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  timestamps: false,
   indexes: [{
     unique: true,
     fields: ['fk_bookmark_id', 'fk_event_id']

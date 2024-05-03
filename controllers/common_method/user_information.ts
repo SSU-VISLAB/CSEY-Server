@@ -43,20 +43,21 @@ export async function getMajorInfo(userId: string) {
 export async function getEventBookmarkInfo(userId: string) {
     const redisKey = `user:bookmarks:${userId}`;
 
-    const bookmarksRedis = await redisClient.get(redisKey);
+    const bookmarksRedis = await redisClient.sMembers(redisKey);
 
-    if (bookmarksRedis) {
-        return JSON.parse(bookmarksRedis);
+    if (bookmarksRedis.length) {
+        return bookmarksRedis;
     }
 
-    const bookmarks = await Bookmark.findAll({
+    const bookmarks = await Bookmark.findOne({
         where: { fk_user_id: userId },
         include: [{ model: BookmarkAsset, as: 'BookmarkAssets' }]
     });
 
     if (bookmarks) {
-        await redisClient.set(redisKey, JSON.stringify(bookmarks), { EX: EXPIRE });
-        return bookmarks;
+        const ret = bookmarks.BookmarkAssets.map(ba => ba.fk_event_id.toString());
+        await redisClient.sAdd(redisKey, ret);
+        return ret;
     } else {
         return [];
     }
@@ -76,12 +77,12 @@ export async function getEventLikeInfo(userId: string) {
     });
     if (eventLikes) {
         // redis 캐싱
-        eventLikes.forEach(async ({fk_event_id, like}) => {
+        eventLikes.forEach(async ({ fk_event_id, like }) => {
             like
                 ? await redisClient.hSet(`user:eventLikes:${userId}`, fk_event_id, like)
                 : await redisClient.hDel(`user:eventLikes:${userId}`, fk_event_id.toString());
         });
-        return eventLikes.reduce((acc, {fk_event_id, like}) => {
+        return eventLikes.reduce((acc, { fk_event_id, like }) => {
             acc[fk_event_id] = like;
             return acc;
         }, {});
@@ -93,18 +94,25 @@ export async function getEventLikeInfo(userId: string) {
 export async function getNoticeLikeInfo(userId: string) {
     const key = `user:noticeLikes:${userId}`;
 
-    const noticeLikesRedis = await redisClient.get(key);
-    if (noticeLikesRedis) {
-        return JSON.parse(noticeLikesRedis);
+    const noticeLikesRedis = await redisClient.hGetAll(key);
+    const redisKeys = Object.keys(noticeLikesRedis);
+    if (redisKeys.length) {
+        return noticeLikesRedis;
     }
 
     const noticeLikes = await NoticesLike.findAll({
         where: { fk_user_id: userId }
     });
-
     if (noticeLikes) {
-        await redisClient.set(key, JSON.stringify(noticeLikes), { EX: EXPIRE });
-        return noticeLikes;
+        noticeLikes.forEach(async ({ fk_notice_id, like }) => {
+            like
+            ? await redisClient.hSet(`user:eventLikes:${userId}`, fk_notice_id, like)
+            : await redisClient.hDel(`user:eventLikes:${userId}`, fk_notice_id.toString());
+        })
+        return noticeLikes.reduce((acc, { fk_notice_id, like }) => {
+            acc[fk_notice_id] = like;
+            return acc;
+        }, {});
     } else {
         return [];
     }

@@ -1,6 +1,5 @@
 import * as express from "express";
 import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.js";
-import { IBookmark } from "../../models/types.js";
 import { redisClient } from "../../redis/connect.js";
 import { findObjectByPk, getEventBookmarkInfo, validateRequestBody } from "../common_method/index.js";
 import { IEventUserRequest } from "./request/request.js";
@@ -47,8 +46,7 @@ export const setBookmark = async (
         await transaction.commit();
 
         // Redis에 있는 해당 사용자의 북마크 정보 업데이트
-        const updatedBookmarks = await getEventBookmarkInfo(user_id.toString());
-        await redisClient.set(`user:bookmarks:${user_id}`, JSON.stringify(updatedBookmarks), { EX: EXPIRE });
+        await redisClient.sAdd(`user:bookmarks:${user_id}`, event_id.toString());
 
         return res.status(200).json({ message: "북마크 설정 성공했습니다." });
     } catch (error) {
@@ -79,7 +77,7 @@ export const deleteBookmark = async (
         }
 
         // 북마크에 이미 추가되어 있는지 확인
-        const bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } }) as IBookmark | null;
+        const bookmark = await Bookmark.findOne({ where: { fk_user_id: user_id } });
 
         if (bookmark) {
             // BookmarkAsset 테이블 삭제

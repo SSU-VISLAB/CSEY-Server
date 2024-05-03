@@ -1,7 +1,6 @@
 import * as express from "express";
 import { Notice, NoticesLike, sequelize } from "../../models/index.js";
 import { redisClient } from "../../redis/connect.js";
-import { getNoticeLikeInfo } from "../common_method/user_information.js";
 import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
 import { INoticeUserRequest } from "./request/request.js";
 
@@ -44,25 +43,30 @@ async function updateLikeStatus(body: INoticeUserRequest) {
         });
         const prevLike = existingLike.like;
         const isSame = prevLike == like;
-        await existingLike.update({like: !created && isSame ? null : like}, {transaction, logging: console.log});
-        const notice = await Notice.findOne({ where: {id: notice_id }, transaction});
-        // console.log({created, prevLike, like})
+        const updatedNoticeLike = await existingLike.update(
+            { like: !created && isSame ? null : like },
+            { transaction, logging: console.log }
+        );
+        const notice = await Notice.findOne({ where: { id: notice_id }, transaction });
         if (created || prevLike == null) {
             await notice.increment(like, { transaction });
+            notice[like]++;
         } else if (isSame) {
             await notice.decrement(like, { transaction });
+            notice[like]--;
         } else if (!isSame) {
             await notice.increment(like, { transaction });
             await notice.decrement(prevLike, { transaction });
+            notice[like]++;
+            notice[prevLike]--;
         }
         await transaction.commit();
-        const _notice = await Notice.findOne({ where: {id: notice_id }});
-        // console.log(notice.like, notice.dislike, _notice.like, _notice.dislike);
         // redis notice 업데이트
-        await redisClient.set(`notice:${notice_id}`, JSON.stringify(_notice));
+        await redisClient.set(`notice:${notice_id}`, JSON.stringify(notice));
         // Redis에 있는 해당 사용자의 공지사항 좋아요 정보 업데이트
-        const updatedLikes = await getNoticeLikeInfo(user_id.toString());
-        await redisClient.set(`user:noticeLikes:${user_id}`, JSON.stringify(updatedLikes), { EX: EXPIRE });
+        updatedNoticeLike.like
+            ? await redisClient.hSet(`user:eventLikes:${user_id}`, notice_id, like)
+            : await redisClient.hDel(`user:eventLikes:${user_id}`, notice_id.toString());
     } catch (error) {
         await transaction.rollback();
         throw error;
@@ -85,7 +89,7 @@ export const setLike = async (
         if (result && result.error) {
             return res.status(400).json({ error: result.error });
         }
-        
+
         return res.status(200).json({ message: "좋아요 설정 성공했습니다." });
     } catch (error) {
         console.log(error);
