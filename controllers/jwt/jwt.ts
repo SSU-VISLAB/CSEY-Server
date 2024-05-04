@@ -17,7 +17,7 @@ enum TokenType {
 
 export const verifyToken = (req: Express.Request, res, next) => {
     const token = req.cookies.accessToken;
-    const id = req.params.id || req.cookies.id;
+    const id = req.cookies.id;
     if (!token) {
         return res.status(401).json({
             code: 401,
@@ -27,7 +27,6 @@ export const verifyToken = (req: Express.Request, res, next) => {
 
     try {
         const payload = jwt.verify(token, process.env.SECRET_KEY) as Payload;
-        console.log({payload, id});
         if (payload.id != id) {
             throw new Error('토큰과 다른 사용자.')
         }

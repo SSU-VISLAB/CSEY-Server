@@ -8,8 +8,8 @@ const eventRouter = Router();
 eventRouter.put('/posts/events/like', verifyToken, eventController.setLike);
 
 /** 북마크 */
-eventRouter.post('/users/bookmark', verifyToken, eventController.setBookmark);
-eventRouter.delete('/users/bookmark', verifyToken, eventController.deleteBookmark);
+eventRouter.post('/users/bookmark/add', verifyToken, eventController.setBookmark);
+eventRouter.post('/users/bookmark/remove', verifyToken, eventController.deleteBookmark);
 
 /** 행사글 요청 */
 eventRouter.get('/posts/events/:eventId', eventController.getEvent)
