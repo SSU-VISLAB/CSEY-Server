@@ -14,7 +14,7 @@ noticeRouter.get('/posts/notices/:noticeId', noticeController.getNotice);
 noticeRouter.get('/posts/alerts/:noticeId', noticeController.getNotice);
 
 /** 읽음 표시 */
-noticeRouter.get('/users/read', verifyToken, noticeController.getUnread);
+noticeRouter.get('/users/read', verifyToken, noticeController.getRead);
 noticeRouter.post('/users/read', verifyToken, noticeController.setRead);
 
 export default noticeRouter;

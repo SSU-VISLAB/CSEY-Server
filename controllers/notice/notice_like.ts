@@ -35,8 +35,8 @@ async function updateLikeStatus(body: INoticeUserRequest) {
             },
             defaults: { // 새로 생성될 때 사용할 기본 값들
                 like,
-                fk_notice_id: notice_id,
-                fk_user_id: user_id
+                fk_notice_id: +notice_id,
+                fk_user_id: +user_id
             },
             transaction,
             logging: console.log

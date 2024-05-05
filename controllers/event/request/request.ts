@@ -1,5 +1,5 @@
 export interface IEventUserRequest {
-    event_id: number;
-    user_id: number;
+    event_id: string;
+    user_id: string;
     like: "like" | "dislike" | null;
 }

@@ -1,5 +1,6 @@
 import * as Express from 'express';
 import jwt from "jsonwebtoken";
+import { mode } from '../../adminPage/components/index.js';
 import { redisClient } from '../../redis/connect.js';
 
 const ACCESS_EXPIRY = '1d';
@@ -16,6 +17,7 @@ enum TokenType {
 }
 
 export const verifyToken = (req: Express.Request, res, next) => {
+    if (mode == 'development') next();
     const token = req.cookies.accessToken;
     const id = req.cookies.id;
     if (!token) {

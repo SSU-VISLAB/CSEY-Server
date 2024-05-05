@@ -7,9 +7,9 @@ const modelMap = new Map([
 ]);
 
 export interface IGenericUserRequest {
-    user_id?: number;
-    notice_id?: number;
-    event_id?: number;
+    user_id?: string;
+    notice_id?: string;
+    event_id?: string;
 }
 
 // Request body 검증 함수
@@ -36,7 +36,7 @@ export async function findObjectByPk(body: IGenericUserRequest) {
             const Model = modelMap.get(key);
             const object = await Model.findByPk(body[key]);
             if (!object) {
-                errors.push(`${key}에 해당하는 객체를 찾을 수 없습니다.`);
+                errors.push(`${body[key]}:${key}에 해당하는 객체를 찾을 수 없습니다.`);
             }
         }
     }

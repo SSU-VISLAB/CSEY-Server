@@ -121,20 +121,21 @@ export async function getNoticeLikeInfo(userId: string) {
 export async function getNoticeReadInfo(userId: string) {
     const redisKey = `user:noticeReads:${userId}`;
 
-    const noticeReadsRedis = await redisClient.get(redisKey);
+    const noticeReadsRedis = await redisClient.sMembers(redisKey);
     if (noticeReadsRedis) {
-        return JSON.parse(noticeReadsRedis);
+        return noticeReadsRedis;
     }
 
-    const noticeReads = await Read.findAll({
+    const noticeReads = await Read.findOne({
         where: { fk_user_id: userId },
         include: [{ model: ReadAsset, as: 'ReadAssets' }]
     });
-
-    if (noticeReads) {
-        await redisClient.set(redisKey, JSON.stringify(noticeReads), { EX: EXPIRE });
-        return noticeReads;
-    } else {
-        return [];
+    if (!noticeReads) {
+        // 없을 경우 잘못된 body
+        throw new Error(`잘못된 userId:${userId} 입니다.`)
     }
+    const list = noticeReads.ReadAssets.map(ra => ra.fk_notice_id.toString());
+    await redisClient.sAdd(`user:noticeReads:${userId}`, list);
+    
+    return list
 }

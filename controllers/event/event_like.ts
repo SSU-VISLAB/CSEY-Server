@@ -35,8 +35,8 @@ async function updateLikeStatus(body: IEventUserRequest) {
             },
             defaults: { // 새로 생성될 때 사용할 기본 값들
                 like,
-                fk_event_id: event_id,
-                fk_user_id: user_id
+                fk_event_id: +event_id,
+                fk_user_id: +user_id
             },
             transaction,
             logging: console.log

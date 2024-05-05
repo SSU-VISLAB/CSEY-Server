@@ -1,5 +1,5 @@
 export interface INoticeUserRequest {
-    notice_id: number;
-    user_id: number;
+    notice_id: string;
+    user_id: string;
     like: 'like' | 'dislike' | null
 }

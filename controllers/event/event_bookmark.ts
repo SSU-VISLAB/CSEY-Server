@@ -33,13 +33,13 @@ export const setBookmark = async (
         // 북마크에 이미 추가되어 있는지 확인
         let [bookmark, created] = await Bookmark.findOrCreate({
             where: { fk_user_id: user_id },
-            defaults: { fk_user_id: user_id },
+            defaults: { fk_user_id: +user_id },
             transaction,
             logging: console.log
         })
         // BookmarkAsset 테이블에 항목 추가
         await BookmarkAsset.create({
-            fk_event_id: event_id,
+            fk_event_id: +event_id,
             fk_bookmark_id: bookmark.id,
         }, { transaction, ignoreDuplicates: true });
 

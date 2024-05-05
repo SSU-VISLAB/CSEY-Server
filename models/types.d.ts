@@ -80,11 +80,12 @@ export interface IBookmarkAsset {
 export interface IRead extends Model {
   id: number;
   fk_user_id: number;
+  ReadAssets?: IReadAsset[];
 }
 
 export interface IReadAsset extends Model {
-  id?: number;
-  fk_notice_id?: number;
-  fk_read_id?: number;
+  id: number;
+  fk_notice_id: number;
+  fk_read_id: number;
 }
 
