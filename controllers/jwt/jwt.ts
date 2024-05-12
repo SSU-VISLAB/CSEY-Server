@@ -87,7 +87,6 @@ export const reissue = async (refreshToken: string): Promise<{ code: number; mes
             accessToken: newAccessToken
         };
     } catch (error) {
-        console.error(error);
         throw error;
     }
 }
