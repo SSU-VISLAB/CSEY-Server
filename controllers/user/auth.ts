@@ -58,13 +58,14 @@ export const getRefreshToken = async (req: express.Request, res: express.Respons
 };
 
 export const logout = async (req: express.Request, res: express.Response) => {
-  const { accessToken, refreshToken } = req.cookies;
+  const { accessToken } = req.cookies;
+  const { refreshToken } = req.body;
   try {
     if (!accessToken) throw new Error("accessToken 없음");
     if (!refreshToken) throw new Error("refreshToken 없음");
-    await redisClient.del(`refreshToken:${req.cookies.refreshToken}`);
+    await redisClient.del(`refreshToken:${refreshToken}`);
     res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    res.clearCookie("id");
     return res.status(200).json({ status: 1 });
   } catch (e) {
     console.error({ e });

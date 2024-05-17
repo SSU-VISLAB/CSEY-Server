@@ -64,7 +64,6 @@ export const getUserInfo = async (req: express.Request, res: express.Response) =
 
         return res.status(200).json(userInformation);
     } catch (e) {
-        console.log({ e });
-        return res.status(500).json({ error: "서버 내부 에러" });
+        return res.status(500).json({ error: "서버 내부 에러", message: e });
     }
 }

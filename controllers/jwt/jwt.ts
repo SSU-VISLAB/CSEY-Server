@@ -30,7 +30,7 @@ export const verifyToken = (req: Express.Request, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.SECRET_KEY) as Payload;
         if (payload.id != id) {
-            throw new Error('토큰과 다른 사용자.')
+            throw new Error(`토큰과 다른 사용자. payloadID:${payload.id}, ID:${id}`)
         }
         next();
     } catch (error) {
@@ -38,7 +38,7 @@ export const verifyToken = (req: Express.Request, res, next) => {
             return res.status(419).json({ message: '토큰이 만료되었습니다.' });
         }
         // TODO: error.message 수정하기
-        return res.status(401).json({ message: '유효하지 않은 토큰입니다.' + ' ' + error.message });
+        return res.status(401).json({ message: '유효하지 않은 토큰입니다:' + error.message });
     }
 }
 
