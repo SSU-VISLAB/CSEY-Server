@@ -58,7 +58,7 @@ const createToken = (id: string, tokenType: TokenType, expiresIn: string): strin
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn });
 }
 
-export const reissue = async (refreshToken: string): Promise<{ code: number; message: string; accessToken?: string; }> => {
+export const reissue = async (refreshToken: string): Promise<{ code: number; message: string; accessToken?: string; id: string}> => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.SECRET_KEY) as Payload;
 
@@ -84,7 +84,8 @@ export const reissue = async (refreshToken: string): Promise<{ code: number; mes
         return {
             code: 200,
             message: "새로운 access token이 발급되었습니다.",
-            accessToken: newAccessToken
+            accessToken: newAccessToken,
+            id
         };
     } catch (error) {
         throw error;

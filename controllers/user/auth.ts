@@ -48,8 +48,10 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
 export const getRefreshToken = async (req: express.Request, res: express.Response) => {
   try {
     const refreshToken = req.body.refreshToken;
-    const { code, message, accessToken } = await reissue(refreshToken);
+    const { code, message, accessToken, id } = await reissue(refreshToken);
     res.cookie("accessToken", accessToken, httpOnlyCookie);
+    res.cookie("id", id, httpOnlyCookie);
+
     return res.status(code).json({ message });
   } catch (e) {
     const code = e.code || 403;
