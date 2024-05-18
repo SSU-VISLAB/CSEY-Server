@@ -13,9 +13,9 @@ interface BookmarkCreationAttributes {
 }
 
 class Bookmark extends Model<BookmarkAttributes, BookmarkCreationAttributes> {
-  public id!: number;
-  public fk_user_id!: number;
-  public BookmarkAssets?: BookmarkAsset[];
+  declare id: number;
+  declare fk_user_id: number;
+  declare BookmarkAssets?: BookmarkAsset[];
   // Static model name declaration
 }
 

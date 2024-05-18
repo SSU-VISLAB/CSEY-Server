@@ -10,9 +10,9 @@ interface BookmarkAssetAttributes {
 }
 
 class BookmarkAsset extends Model<BookmarkAssetAttributes> {
-  public id!: number;
-  public fk_event_id!: number;
-  public fk_bookmark_id!: number;
+  declare id: number;
+  declare fk_event_id: number;
+  declare fk_bookmark_id: number;
 }
 
 BookmarkAsset.init({

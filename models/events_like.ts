@@ -14,15 +14,15 @@ interface EventsLikeAttributes {
 interface EventsLikeCreationAttributes extends Optional<EventsLikeAttributes, 'id'> { }
 
 class EventsLike extends Model<EventsLikeAttributes, EventsLikeCreationAttributes> implements EventsLikeAttributes {
-  public id!: number;
-  public like: 'like' | 'dislike' | null;
-  public fk_event_id!: number;
-  public fk_user_id!: number;
+  declare id: number;
+  declare like: 'like' | 'dislike' | null;
+  declare fk_event_id: number;
+  declare fk_user_id: number;
 
   // 여기서 Event 모델을 포함하는 타입을 명시합니다.
-  public readonly Event?: IEvent;
+  declare readonly Event?: IEvent;
 
-  public static associations: {
+  declare static associations: {
     Event: Association<EventsLike, IEvent>;
   };
 }

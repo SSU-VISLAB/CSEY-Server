@@ -3,17 +3,17 @@ import { sequelize } from './sequelize.js';
 import { IAlarm } from './types.js';
 
 class Alarm extends Model<IAlarm, IAlarm> {
-  public id!: number;
-  public alarm_push!: boolean;
-  public event_push!: boolean;
-  public events_timer!: number;
-  public events_form!: '북마크' | '전체';
-  public events_post!: boolean;
-  public major_schedule_push!: boolean;
-  public major_schedule_post!: boolean;
-  public notice_push!: boolean;
-  public alerts_push!: boolean;
-  public fk_user_id!: number;
+  declare id: number;
+  declare alarm_push: boolean;
+  declare event_push: boolean;
+  declare events_timer: number;
+  declare events_form: '북마크' | '전체';
+  declare events_post: boolean;
+  declare major_schedule_push: boolean;
+  declare major_schedule_post: boolean;
+  declare notice_push: boolean;
+  declare alerts_push: boolean;
+  declare fk_user_id: number;
 }
 
 Alarm.init(

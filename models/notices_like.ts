@@ -13,15 +13,15 @@ interface NoticesLikeAttributes {
 interface NoticesLikeCreationAttributes extends Optional<NoticesLikeAttributes, 'id'> { }
 
 class NoticesLike extends Model<NoticesLikeAttributes, NoticesLikeCreationAttributes> implements NoticesLikeAttributes {
-  public id!: number;
-  public like: 'like' | 'dislike' | null;
-  public fk_notice_id!: number;
-  public fk_user_id!: number;
+  declare id: number;
+  declare like: 'like' | 'dislike' | null;
+  declare fk_notice_id: number;
+  declare fk_user_id: number;
 
   // 여기서 Notice 모델을 포함하는 타입을 명시합니다.
-  public readonly Notice?: INotice;
+  declare readonly Notice?: INotice;
 
-  public static associations: {
+  declare static associations: {
     Notice: Association<NoticesLike, INotice>;
   };
 }

@@ -14,5 +14,6 @@ eventRouter.post('/users/bookmark/remove', verifyToken, eventController.deleteBo
 /** 행사글 요청 */
 eventRouter.get('/posts/events/:eventId', eventController.getEvent)
 eventRouter.get('/posts/events', eventController.getEventAll)
+eventRouter.get('/posts/events/date', eventController.getEventsByDate)
 
 export default eventRouter;

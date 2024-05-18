@@ -8,12 +8,12 @@ import { IUser } from "./types.js";
 export type UserCreationAttributes = Optional<IUser, "id">;
 
 class User extends Model<IUser, UserCreationAttributes> {
-  public id!: number;
-  public activated!: boolean;
-  public name!: string | null;
-  public createdDate!: Date;
-  public lastAccess!: Date;
-  public major!: "컴퓨터" | "소프트";
+  declare id: number;
+  declare activated: boolean;
+  declare name: string | null;
+  declare createdDate: Date;
+  declare lastAccess: Date;
+  declare major: "컴퓨터" | "소프트";
 }
 
 User.init(
