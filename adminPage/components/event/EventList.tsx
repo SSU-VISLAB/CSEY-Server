@@ -1,7 +1,8 @@
 import { Box, Pagination, Tab, Tabs, Text } from "@adminjs/design-system";
 import { ActionProps, RecordsTable, useRecords, useSelectedRecords } from "adminjs";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
+import {useSearchParams} from "react-router-dom";
 import { TabLabel, useTabWithPagePersistence } from "./hooks.js";
 
 export const List: React.FC<ActionProps> = (props) => {
@@ -11,17 +12,24 @@ export const List: React.FC<ActionProps> = (props) => {
   const { selectedRecords, handleSelect, handleSelectAll, setSelectedRecords } = useSelectedRecords(records);
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // custom css 부착용
   const getActionElementCss = (resourceId: string, actionName: string, suffix: string) => `${resourceId}-${actionName}-${suffix}`
   const contentTag = getActionElementCss(resource.id, "list", "table-wrapper");
   const [ currentTab, handleTabChange ] = useTabWithPagePersistence('ongoing');
-
   /** list 제목 옆에 chip형태로 나오는 행 수 업데이트 */
   useEffect(() => {
     if (setTag) {
       setTag(total.toString());
     }
   }, [total]);
+
+  useLayoutEffect(() => {
+    if (location.search.includes("refresh=true")) {
+      searchParams.delete("refresh");
+      setSearchParams(searchParams);
+    }
+  }, [location])
 
   /** 탭 변경시 선택 데이터 초기화 */
   useEffect(() => {
@@ -33,9 +41,8 @@ export const List: React.FC<ActionProps> = (props) => {
 
   /** 페이지 변경 핸들러 함수 */
   const handlePaginationChange = (pageNumber: number): void => {
-    const search = new URLSearchParams(location.search);
-    search.set("page", pageNumber.toString());
-    navigate({ search: search.toString() });
+    searchParams.set("page", pageNumber.toString());
+    setSearchParams(searchParams);
   };
 
   return (

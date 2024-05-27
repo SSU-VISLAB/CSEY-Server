@@ -1,7 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from './sequelize.js';
+import { INotice } from "./types.js";
 
-const Notice = sequelize.define(
+const Notice = sequelize.define<INotice>(
   "Notice",
   {
     id: {

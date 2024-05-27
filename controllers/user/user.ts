@@ -47,12 +47,13 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
 export const getUserInfo = async (req: express.Request, res: express.Response) => {
     try {
         const userId = req.params.id;
-
-        const alarm = await getAlarmInfo(userId);
-        const bookmark = await getEventBookmarkInfo(userId);
-        const eventLike = await getEventLikeInfo(userId);
-        const noticeLike = await getNoticeLikeInfo(userId);
-        const noticeRead = await getNoticeReadInfo(userId);
+        const [alarm, bookmark, eventLike, noticeLike, noticeRead] = await Promise.all([
+            getAlarmInfo(userId),
+            getEventBookmarkInfo(userId),
+            getEventLikeInfo(userId),
+            getNoticeLikeInfo(userId),
+            getNoticeReadInfo(userId)
+        ])
         const userInformation = {
             alarm,
             bookmark,
@@ -63,7 +64,6 @@ export const getUserInfo = async (req: express.Request, res: express.Response) =
 
         return res.status(200).json(userInformation);
     } catch (e) {
-        console.log({ e });
-        return res.status(500).json({ error: "서버 내부 에러" });
+        return res.status(500).json({ error: "서버 내부 에러", message: e });
     }
 }

@@ -6,15 +6,15 @@ import cors from "cors";
 import express, { json, urlencoded } from "express";
 import path from "path";
 import * as url from "url";
+import { isRunOnDist, mode } from "./adminPage/components/index.js";
 import { adminOptions, authProvider } from "./adminPage/index.js";
 import { sequelize } from "./models/index.js";
 import { initializeRedis } from "./redis/initialize.js";
-import { isRunOnDist, mode } from "./adminPage/components/index.js";
 import { alarmRouter, eventRouter, linktreeRouter, noticeRouter, userRouter } from "./routes/index.js";
 
 const port = 7070;
 const corsOptions = {
-  origin: "http://localhost:8080",
+  origin: mode == "production" ? "http://203.253.21.193:8080" : "http://localhost:8080",
   credentials: true,
 };
 

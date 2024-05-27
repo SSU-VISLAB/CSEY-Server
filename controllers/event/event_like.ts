@@ -1,13 +1,13 @@
 import * as express from "express";
-import { IEventUserRequest } from "./request/request.js";
-import { EventsLike,sequelize } from "../../models/index.js";
-import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
+import { Event, EventsLike, sequelize } from "../../models/index.js";
 import { redisClient } from "../../redis/connect.js";
-import { getEventLikeInfo } from "../common_method/user_information.js";
+import { findObjectByPk, validateRequestBody } from "../common_method/validator.js";
+import { IEventUserRequest } from "./request/request.js";
 
 const bodyList = [
     "event_id",
     "user_id",
+    "like"
 ];
 
 const EXPIRE = 3600; // 유효시간 1시간
@@ -17,10 +17,10 @@ const EXPIRE = 3600; // 유효시간 1시간
  * @param body "event_id","user_id",
  * @param status 'like','dislike','null'
  */
-async function updateLikeStatus(body: IEventUserRequest, status: { like: string }) {
+async function updateLikeStatus(body: IEventUserRequest) {
     const transaction = await sequelize.transaction();
     try {
-        const { event_id, user_id } = body;
+        const { event_id, user_id, like } = body;
 
         // DB에서 행사와 유저 찾기
         const errorMessage = await findObjectByPk(body);
@@ -28,30 +28,45 @@ async function updateLikeStatus(body: IEventUserRequest, status: { like: string 
             return { error: errorMessage };
         }
 
-        const existingLike = await EventsLike.findOne({
-            where: { fk_event_id: event_id, fk_user_id: user_id },
-            transaction,
-            logging: console.log,
-        });
-
-        console.log(existingLike);
-        if (existingLike) {
-            console.log("whswogkqslek");
-            await existingLike.update(status, { transaction, logging: console.log});
-        } else {
-            console.log("dkswhswogkqslek");
-            await EventsLike.create({
-                ...status,
+        const [existingLike, created] = await EventsLike.findOrCreate({
+            where: {
                 fk_event_id: event_id,
                 fk_user_id: user_id
-            }, { transaction,logging: console.log });
+            },
+            defaults: { // 새로 생성될 때 사용할 기본 값들
+                like,
+                fk_event_id: +event_id,
+                fk_user_id: +user_id
+            },
+            transaction,
+            logging: console.log
+        });
+        const prevLike = existingLike.like;
+        const isSame = prevLike == like;
+        const updatedEventLike = await existingLike.update(
+            { like: (!created && isSame) ? null : like },
+            { transaction, logging: console.log }
+        );
+        const event = await Event.findOne({ where: { id: event_id }, transaction });
+        if (created || prevLike == null) {
+            await event.increment(like, { transaction });
+            event[like]++;
+        } else if (isSame) {
+            await event.decrement(like, { transaction });
+            event[like]--;
+        } else if (!isSame) {
+            await event.increment(like, { transaction });
+            await event.decrement(prevLike, { transaction });
+            event[like]++;
+            event[prevLike]--;
         }
-
         await transaction.commit();
-
+        // redis event 업데이트
+        await redisClient.set(`event:${event_id}`, JSON.stringify(event));
         // Redis에 있는 해당 사용자의 이벤트 좋아요 정보 업데이트
-        const updatedLikes = await getEventLikeInfo(user_id.toString());
-        await redisClient.set(`user:eventLikes:${user_id}`, JSON.stringify(updatedLikes), { EX: EXPIRE });
+        updatedEventLike.like
+            ? await redisClient.hSet(`user:eventLikes:${user_id}`, event_id, like)
+            : await redisClient.hDel(`user:eventLikes:${user_id}`, event_id.toString());
     } catch (error) {
         await transaction.rollback();
         console.log(error);
@@ -68,58 +83,15 @@ export const setLike = async (
     try {
         // body값이 잘못됐는지 확인
         if (!validateRequestBody(body, bodyList)) {
-            return res.status(404).json({ error: "잘못된 key 입니다." });
+            return res.status(404).json({ error: "잘못된 key 입니다.", body, bodyList });
         }
 
-        const result = await updateLikeStatus(body, { like: 'like' });
+        const result = await updateLikeStatus(body);
         if (result && result.error) {
             return res.status(400).json({ error: result.error });
         }
 
-        return res.status(200).json({ message: "좋아요 설정 성공했습니다." });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "서버 내부 에러" });
-    }
-};
-
-// PUT /posts/events/dislike
-export const setDisLike = async (
-    { params, body }: express.Request<any, any, IEventUserRequest>,
-    res: express.Response,
-    next: any
-) => {
-    try {
-        // body값이 잘못됐는지 확인
-        if (!validateRequestBody(body, bodyList)) {
-            return res.status(404).json({ error: "잘못된 key 입니다." });
-        }
-
-        const result = await updateLikeStatus(body, { like: 'dislike' });
-        if (result && result.error) {
-            return res.status(400).json({ error: result.error });
-        }
-
-        return res.status(200).json({ message: "싫어요 설정 성공했습니다." });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "서버 내부 에러" });
-    }
-};
-
-// DELETE /posts/events/like  &  /posts/events/dislike
-export const deleteLike = async (
-    { params, body }: express.Request<any, any, IEventUserRequest>,
-    res: express.Response,
-    next: any
-) => {
-    try {
-        const result = await updateLikeStatus(body, { like: 'null' });
-        if (result && result.error) {
-            return res.status(400).json({ error: result.error });
-        }
-
-        return res.status(200).json({ message: "좋아요 삭제를 성공했습니다." });
+        return res.status(200).json({ message: `like: ${body.like} 설정 성공했습니다.` });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: "서버 내부 에러" });

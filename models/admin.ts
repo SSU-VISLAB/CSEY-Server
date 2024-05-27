@@ -9,10 +9,10 @@ interface AdminAttributes {
 }
 
 class Admin extends Model<AdminAttributes> implements AdminAttributes {
-  public id!: number;
-  public account!: string;
-  public password?: string;
-  public role!: '컴퓨터' | '소프트' | '관리자';
+  declare id: number;
+  declare account: string;
+  declare password: string;
+  declare role: '컴퓨터' | '소프트' | '관리자';
 }
 
 Admin.init(

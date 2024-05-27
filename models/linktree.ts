@@ -10,11 +10,11 @@ interface LinktreeAttributes {
 }
 
 class Linktree extends Model<LinktreeAttributes> implements LinktreeAttributes {
-  public id!: number;
-  public src!: string;
-  public text!: string;
-  public major!: '컴퓨터' | '소프트';
-  public order!: number;
+  declare id: number;
+  declare src: string;
+  declare text: string;
+  declare major: '컴퓨터' | '소프트';
+  declare order: number;
 }
 
 Linktree.init(

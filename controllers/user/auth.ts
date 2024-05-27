@@ -6,6 +6,10 @@ import { redisClient } from "../../redis/connect.js";
 import { reissue } from "../jwt/jwt.js";
 import { login } from "./index.js";
 
+const httpOnlyCookie: express.CookieOptions = {
+  httpOnly: true,
+};
+
 export const Kakao_login = async (req: express.Request, res: express.Response) => {
   console.log("kakao_login body:", req.body);
   try {
@@ -30,14 +34,9 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
     if ("error" in tokens) {
       return res.status(500).json({ message: tokens.error });
     }
-    const httpOnlyCookie: express.CookieOptions = {
-      sameSite: 'none',
-      httpOnly: true,
-      secure: true,
-    };
-    // access는 localStorage
-    // refresh는 http only cookie
-    res.cookie("refreshToken", tokens.refreshToken, httpOnlyCookie);
+
+    // access는 http only cookie
+    // refresh는 localStorage
     res.cookie("accessToken", tokens.accessToken, httpOnlyCookie);
     res.cookie("id", id, httpOnlyCookie);
     return res.status(200).json({create: !exist, user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken})
@@ -48,21 +47,27 @@ export const Kakao_login = async (req: express.Request, res: express.Response) =
 // TODO: 만료시간 다 되어가면 refresh토큰도 refresh하는 로직 작성하기
 export const getRefreshToken = async (req: express.Request, res: express.Response) => {
   try {
-    const { code, message, accessToken } = await reissue(req.cookies.refreshToken);
-    return res.status(code).json({ message, accessToken });
-  } catch ({ code, message }) {
+    const refreshToken = req.body.refreshToken;
+    const { code, message, accessToken, id } = await reissue(refreshToken);
+    res.cookie("accessToken", accessToken, httpOnlyCookie);
+    res.cookie("id", id, httpOnlyCookie);
+
     return res.status(code).json({ message });
+  } catch (e) {
+    const code = e.code || 403;
+    return res.status(code).json({ message: e.message });
   }
 };
 
 export const logout = async (req: express.Request, res: express.Response) => {
-  const { accessToken, refreshToken } = req.cookies;
+  const { accessToken } = req.cookies;
+  const { refreshToken } = req.body;
   try {
     if (!accessToken) throw new Error("accessToken 없음");
     if (!refreshToken) throw new Error("refreshToken 없음");
-    await redisClient.del(`refreshToken:${req.cookies.refreshToken}`);
+    await redisClient.del(`refreshToken:${refreshToken}`);
     res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    res.clearCookie("id");
     return res.status(200).json({ status: 1 });
   } catch (e) {
     console.error({ e });

@@ -1,7 +1,8 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './sequelize.js';
+import { IRead } from './types.js';
 
-const Read = sequelize.define('Read', {
+const Read = sequelize.define<IRead>('Read', {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,

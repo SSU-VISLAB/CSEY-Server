@@ -1,8 +1,9 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './sequelize.js';
 import Read from './reads.js';
+import { sequelize } from './sequelize.js';
+import { IReadAsset } from './types.js';
 
-const ReadAsset = sequelize.define('Read', {
+const ReadAsset = sequelize.define<IReadAsset>('Read', {
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -40,5 +41,5 @@ const ReadAsset = sequelize.define('Read', {
 });
 
 Read.hasMany(ReadAsset, { as: 'ReadAssets', foreignKey: 'fk_read_id' });
-
+ReadAsset.belongsTo(Read, {foreignKey: 'fk_read_id'});
 export default ReadAsset;

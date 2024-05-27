@@ -1,7 +1,25 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
+import BookmarkAsset from './bookmark_assets.js';
 import { sequelize } from './sequelize.js';
+import User from './user.js';
 
-const Bookmark = sequelize.define('Bookmark', {
+interface BookmarkAttributes {
+  id: number;
+  fk_user_id: number;
+}
+
+interface BookmarkCreationAttributes {
+  fk_user_id: number;
+}
+
+class Bookmark extends Model<BookmarkAttributes, BookmarkCreationAttributes> {
+  declare id: number;
+  declare fk_user_id: number;
+  declare BookmarkAssets?: BookmarkAsset[];
+  // Static model name declaration
+}
+
+Bookmark.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
     primaryKey: true,
@@ -9,19 +27,23 @@ const Bookmark = sequelize.define('Bookmark', {
     allowNull: false
   },
   fk_user_id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER.UNSIGNED,
     allowNull: false,
     references: {
-      model: 'users',
+      model: User,
       key: 'id',
     },
     onUpdate: "CASCADE",
     onDelete: "CASCADE"
   },
 }, {
+  sequelize,
   modelName: 'Bookmark',
   tableName: 'bookmarks',
-  timestamps: false, // createdAt 및 updatedAt 필드 생성 방지
+  timestamps: false,
 });
 
+// User와 Bookmark 간의 관계
+User.hasMany(Bookmark, { foreignKey: 'fk_user_id' });
+Bookmark.belongsTo(User, { foreignKey: 'fk_user_id' });
 export default Bookmark;

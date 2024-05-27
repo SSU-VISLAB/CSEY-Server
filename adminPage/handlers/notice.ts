@@ -12,11 +12,11 @@ const list: ActionHandler<any> = async (request, response, context) => {
   // console.log(query);
 
   const { resource, _admin, currentAdmin } = context; // db table
-  const { role } = currentAdmin;
+  const role = currentAdmin?.role;
   const unflattenQuery = flat.unflatten(
     query || {}
   ) as NoticeActionQueryParameters;
-  let { page, perPage, type = "urgent" } = unflattenQuery;
+  let { page = 0, perPage, type = "urgent" } = unflattenQuery;
   // 진행중인 행사 탭에서는 시작일 내림차순 정렬
   // 종료된 행사 탭에서는 종료일 내림차순 정렬
   const {
@@ -123,17 +123,17 @@ const after = (action: "edit" | "new") => async (originalResponse, request, cont
           priority: {
             [Op.eq]: priority,
           },
-          order: [
-            ['date', 'ASC']
-          ]
         },
-      });
+        order: [
+          ['date', 'ASC']
+        ]
+      }).catch(e => console.log(e));
       await redisClient.set(redisKeyAll, JSON.stringify(noticesFromDB));
     }
 
     return originalResponse;
   };
-
+  
 // delete -> 삭제 후 redis 업데이트(개별 공지 제거, 전체 공지 업데이트)
 const deleteAfter = () => async (originalResponse, request, context) => {
   const isPost = request.method === "post";
@@ -159,8 +159,32 @@ const deleteAfter = () => async (originalResponse, request, context) => {
   return originalResponse;
 };
 
+const bulkDelete = () => async (originalResponse, request, context) => {
+  const isPost = request?.method === "post";
+  const isAction = context?.action.name === "bulkDelete";
+  const {records} = originalResponse;
+  // checking if object doesn't have any errors or is a edit action
+  if (isPost && isAction && records) {
+    records.forEach(async ({params: record}) => {
+      const { priority, id } = record;
+      const isGeneral = priority == "일반";
+      const redisKeyEach = `notice:${id}`;
+      // 해당 글의 캐싱데이터 제거
+      await redisClient.del(redisKeyEach);
+      // 긴급일 경우 스케쥴에서 제거
+      if (!isGeneral) {
+        delNoticeSchedule(record);
+      }
+    })
+    // 전체 목록 캐싱
+    await cachingAllNotices();
+  }
+  return originalResponse;
+};
+
 export const NoticeHandler = {
   list,
   after,
   deleteAfter,
+  bulkDelete
 };

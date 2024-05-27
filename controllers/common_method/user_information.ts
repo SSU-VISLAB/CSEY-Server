@@ -43,60 +43,76 @@ export async function getMajorInfo(userId: string) {
 export async function getEventBookmarkInfo(userId: string) {
     const redisKey = `user:bookmarks:${userId}`;
 
-    const bookmarksRedis = await redisClient.get(redisKey);
+    const bookmarksRedis = await redisClient.sMembers(redisKey);
 
-    if (bookmarksRedis) {
-        return JSON.parse(bookmarksRedis);
+    if (bookmarksRedis.length) {
+        return bookmarksRedis;
     }
 
-    const bookmarks = await Bookmark.findAll({
+    const bookmarks = await Bookmark.findOne({
         where: { fk_user_id: userId },
         include: [{ model: BookmarkAsset, as: 'BookmarkAssets' }]
     });
 
     if (bookmarks) {
-        await redisClient.set(redisKey, JSON.stringify(bookmarks), { EX: EXPIRE });
-        return bookmarks;
+        const ret = bookmarks.BookmarkAssets.map(ba => ba.fk_event_id.toString());
+        await redisClient.sAdd(redisKey, ret);
+        return ret;
     } else {
         return [];
     }
 }
 
 export async function getEventLikeInfo(userId: string) {
-    const redisKey = `user:eventLikes:${userId}`;
+    const key = `user:eventLikes:${userId}`;
 
-    const eventLikesRedis = await redisClient.get(redisKey);
-    if (eventLikesRedis) {
-        return JSON.parse(eventLikesRedis);
+    const eventLikesRedis = await redisClient.hGetAll(key);
+    const redisKeys = Object.keys(eventLikesRedis);
+    if (redisKeys.length) {
+        return eventLikesRedis;
     }
 
     const eventLikes = await EventsLike.findAll({
-        where: { fk_user_id: userId }
+        where: { fk_user_id: userId },
     });
-
     if (eventLikes) {
-        await redisClient.set(redisKey, JSON.stringify(eventLikes), { EX: EXPIRE });
-        return eventLikes;
+        // redis 캐싱
+        eventLikes.forEach(async ({ fk_event_id, like }) => {
+            like
+                ? await redisClient.hSet(`user:eventLikes:${userId}`, fk_event_id, like)
+                : await redisClient.hDel(`user:eventLikes:${userId}`, fk_event_id.toString());
+        });
+        return eventLikes.reduce((acc, { fk_event_id, like }) => {
+            acc[fk_event_id] = like;
+            return acc;
+        }, {});
     } else {
         return [];
     }
 }
 
 export async function getNoticeLikeInfo(userId: string) {
-    const redisKey = `user:noticeLikes:${userId}`;
+    const key = `user:noticeLikes:${userId}`;
 
-    const noticeLikesRedis = await redisClient.get(redisKey);
-    if (noticeLikesRedis) {
-        return JSON.parse(noticeLikesRedis);
+    const noticeLikesRedis = await redisClient.hGetAll(key);
+    const redisKeys = Object.keys(noticeLikesRedis);
+    if (redisKeys.length) {
+        return noticeLikesRedis;
     }
 
     const noticeLikes = await NoticesLike.findAll({
         where: { fk_user_id: userId }
     });
-
     if (noticeLikes) {
-        await redisClient.set(redisKey, JSON.stringify(noticeLikes), { EX: EXPIRE });
-        return noticeLikes;
+        noticeLikes.forEach(async ({ fk_notice_id, like }) => {
+            like
+            ? await redisClient.hSet(`user:eventLikes:${userId}`, fk_notice_id, like)
+            : await redisClient.hDel(`user:eventLikes:${userId}`, fk_notice_id.toString());
+        })
+        return noticeLikes.reduce((acc, { fk_notice_id, like }) => {
+            acc[fk_notice_id] = like;
+            return acc;
+        }, {});
     } else {
         return [];
     }
@@ -105,20 +121,21 @@ export async function getNoticeLikeInfo(userId: string) {
 export async function getNoticeReadInfo(userId: string) {
     const redisKey = `user:noticeReads:${userId}`;
 
-    const noticeReadsRedis = await redisClient.get(redisKey);
+    const noticeReadsRedis = await redisClient.sMembers(redisKey);
     if (noticeReadsRedis) {
-        return JSON.parse(noticeReadsRedis);
+        return noticeReadsRedis;
     }
 
-    const noticeReads = await Read.findAll({
+    const noticeReads = await Read.findOne({
         where: { fk_user_id: userId },
         include: [{ model: ReadAsset, as: 'ReadAssets' }]
     });
-
-    if (noticeReads) {
-        await redisClient.set(redisKey, JSON.stringify(noticeReads), { EX: EXPIRE });
-        return noticeReads;
-    } else {
-        return [];
+    if (!noticeReads) {
+        // 없을 경우 잘못된 body
+        throw new Error(`잘못된 userId:${userId} 입니다.`)
     }
+    const list = noticeReads.ReadAssets.map(ra => ra.fk_notice_id.toString());
+    await redisClient.sAdd(`user:noticeReads:${userId}`, list);
+    
+    return list
 }

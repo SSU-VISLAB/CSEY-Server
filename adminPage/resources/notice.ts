@@ -2,10 +2,10 @@ import uploadFeature, { LocalProvider } from "@adminjs/upload";
 import { ResourceOptions } from "adminjs";
 import * as fs from "fs";
 import path from "path";
+import Notice from "../../models/notice.js";
 import { Components, componentLoader } from "../components/index.js";
 import { NoticeHandler } from "../handlers/index.js";
 import { postTab } from "./common.js";
-import Notice from "../../models/notice.js";
 
 const noticeOptions: ResourceOptions = {
   navigation: postTab,
@@ -61,6 +61,9 @@ const noticeOptions: ResourceOptions = {
     delete: {
       after: NoticeHandler.deleteAfter(),
     },
+    bulkDelete: {
+      after: NoticeHandler.bulkDelete()
+    }
   },
 };
 const localProvider = new LocalProvider({
@@ -80,20 +83,7 @@ localProvider.upload = async function (file, key) {
     where: { id }
   });
 };
-localProvider.path = function (key, bucket) {
-  return process.platform === "win32"
-    ? `${path.join(bucket || this.bucket, key)}`
-    : `/${path.join(bucket || this.bucket, key)}`;
-};
-localProvider.delete = async function (key, bucket) {
-  const fileLink =
-    process.platform === "win32"
-      ? this.path(key, bucket)
-      : this.path(key, bucket).slice(1);
-  if (fs.existsSync(fileLink)) {
-    await fs.promises.unlink(fileLink);
-  }
-};
+
 // 부가기능(upload)
 const noticeFeatures = [
   uploadFeature({
