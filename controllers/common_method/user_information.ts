@@ -54,7 +54,7 @@ export async function getEventBookmarkInfo(userId: string) {
         include: [{ model: BookmarkAsset, as: 'BookmarkAssets' }]
     });
 
-    if (bookmarks) {
+    if (bookmarks.BookmarkAssets.length) {
         const ret = bookmarks.BookmarkAssets.map(ba => ba.fk_event_id.toString());
         await redisClient.sAdd(redisKey, ret);
         return ret;
@@ -135,7 +135,9 @@ export async function getNoticeReadInfo(userId: string) {
         throw new Error(`잘못된 userId:${userId} 입니다.`)
     }
     const list = noticeReads.ReadAssets.map(ra => ra.fk_notice_id.toString());
-    await redisClient.sAdd(`user:noticeReads:${userId}`, list);
+    if (list.length) {
+        await redisClient.sAdd(`user:noticeReads:${userId}`, list);
+    }
     
     return list
 }

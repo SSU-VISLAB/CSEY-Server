@@ -9,6 +9,8 @@ redisClient.on('error', (err) => console.log('Redis Client Error', err));
 const connectRedis = async () => {
   await redisClient.connect();
   await redisClient.flushAll();
+  console.log("redis flush All")
 };
 
 export { connectRedis, redisClient };
+

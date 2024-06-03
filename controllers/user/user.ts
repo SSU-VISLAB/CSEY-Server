@@ -53,7 +53,7 @@ export const getUserInfo = async (req: express.Request, res: express.Response) =
             getEventLikeInfo(userId),
             getNoticeLikeInfo(userId),
             getNoticeReadInfo(userId)
-        ])
+        ]);
         const userInformation = {
             alarm,
             bookmark,
