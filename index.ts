@@ -4,6 +4,8 @@ import AdminJS from "adminjs";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { json, urlencoded } from "express";
+import * as fs from 'fs';
+import https from 'https';
 import path from "path";
 import * as url from "url";
 import { isRunOnDist, mode } from "./adminPage/components/index.js";
@@ -14,10 +16,13 @@ import { alarmRouter, eventRouter, linktreeRouter, noticeRouter, userRouter } fr
 
 const port = 7070;
 const corsOptions = {
-  origin: mode == "production" ? "http://203.253.21.193:8080" : "http://localhost:8080",
+  origin: mode == "production" ? "https://203.253.21.193:8080" : "https://localhost:8080",
   credentials: true,
 };
-
+const sslOptions = {
+  key: fs.readFileSync('/home/viskkh/domain.key'),
+  cert: fs.readFileSync('/home/viskkh/domain.crt')
+};
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const app = express();
 console.log({__dirname, css: path.join(__dirname, `./${isRunOnDist ? '../' : ''}adminPage/components/css`)});
@@ -75,10 +80,6 @@ const start = async () => {
   // 연결 test 및 게시글 캐싱
   await initializeRedis();
 
-  app.listen(port, () => {
-    console.log(
-      `AdminJS started on http://localhost:${port}${admin.options.rootPath}`
-    );
-  });
+  https.createServer(sslOptions, app).listen(port);
 };
 start();
