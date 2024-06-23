@@ -20,8 +20,8 @@ const corsOptions = {
   credentials: true,
 };
 const sslOptions = {
-  key: fs.readFileSync('/home/viskkh/domain.key'),
-  cert: fs.readFileSync('/home/viskkh/domain.crt')
+  key: fs.readFileSync(mode == 'production' ? '/home/viskkh/domain.key': './domain.key'),
+  cert: fs.readFileSync(mode == 'production' ? '/home/viskkh/domain.crt': './domain.crt')
 };
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const app = express();

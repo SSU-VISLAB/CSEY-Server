@@ -2,7 +2,6 @@ import express from 'express';
 import User from '../../models/user.js';
 import { redisClient } from '../../redis/connect.js';
 import { getEventBookmarkInfo, getEventLikeInfo, getNoticeLikeInfo, getNoticeReadInfo } from '../common_method/index.js';
-import { getAlarmInfo } from '../common_method/user_information.js';
 import { generate } from "../jwt/index.js";
 
 type LoginSuccess = {
@@ -47,20 +46,18 @@ export const deleteAccount = async (req: express.Request, res: express.Response)
 export const getUserInfo = async (req: express.Request, res: express.Response) => {
     try {
         const userId = req.params.id;
-        const [alarm, bookmark, eventLike, noticeLike, noticeRead] = await Promise.all([
-            getAlarmInfo(userId),
+        const [bookmark, eventLike, noticeLike, noticeRead] = await Promise.all([
             getEventBookmarkInfo(userId),
             getEventLikeInfo(userId),
             getNoticeLikeInfo(userId),
             getNoticeReadInfo(userId)
         ]);
         const userInformation = {
-            alarm,
             bookmark,
             eventLike,
             noticeLike,
             noticeRead
-        }
+        };
 
         return res.status(200).json(userInformation);
     } catch (e) {

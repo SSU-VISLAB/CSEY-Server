@@ -1,12 +1,14 @@
 import * as express from "express";
-import { Bookmark, BookmarkAsset, sequelize } from "../../models/index.js";
+import { Bookmark, BookmarkAsset, FCMToken, sequelize } from "../../models/index.js";
 import { redisClient } from "../../redis/connect.js";
+import { subscribeTopic, unsubscribeTopic } from "../alarm/index.js";
 import { findObjectByPk, validateRequestBody } from "../common_method/index.js";
 import { IEventUserRequest } from "./request/request.js";
 
 const bodyList = [
     "event_id",
     "user_id",
+    "fcmToken"
 ]
 
 const EXPIRE = 3600; // 유효시간 1시간
@@ -23,7 +25,7 @@ export const setBookmark = async (
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
-        const { user_id, event_id } = body;
+        const { user_id, event_id, fcmToken } = body;
         // DB에서 행사와 유저 찾기
         const errorMessage = await findObjectByPk(body);
         if (errorMessage) {
@@ -31,7 +33,7 @@ export const setBookmark = async (
         }
 
         // 북마크에 이미 추가되어 있는지 확인
-        let [bookmark, created] = await Bookmark.findOrCreate({
+        const [bookmark, created] = await Bookmark.findOrCreate({
             where: { fk_user_id: user_id },
             defaults: { fk_user_id: +user_id },
             transaction,
@@ -43,8 +45,15 @@ export const setBookmark = async (
             fk_bookmark_id: bookmark.id,
         }, { transaction, ignoreDuplicates: true });
 
+        const fcmData = await FCMToken.findOne({
+            where: {
+                fk_user_id: user_id,
+                token: fcmToken
+            },
+            transaction
+        });
+        subscribeTopic(fcmData.token, `event:${event_id}_${fcmData.timer}`);
         await transaction.commit();
-
         // Redis에 있는 해당 사용자의 북마크 정보 업데이트
         await redisClient.sAdd(`user:bookmarks:${user_id}`, event_id.toString());
 
@@ -68,7 +77,7 @@ export const deleteBookmark = async (
         if (!validateRequestBody(body, bodyList)) {
             return res.status(404).json({ error: "잘못된 key 입니다." });
         }
-        const { user_id, event_id } = body;
+        const { user_id, event_id, fcmToken } = body;
 
         // DB에서 공지와 유저 찾기
         const errorMessage = await findObjectByPk(body);
@@ -88,6 +97,15 @@ export const deleteBookmark = async (
                 transaction: transaction
             });
         }
+
+        const { timer } = await FCMToken.findOne({
+            where: {
+                fk_user_id: user_id,
+                token: fcmToken
+            },
+            transaction
+        });
+        unsubscribeTopic(fcmToken, `event:${event_id}_${timer}`);
 
         await transaction.commit();
 

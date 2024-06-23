@@ -9,7 +9,8 @@ import NoticesLike from "./notices_like.js";
 import Read from "./reads.js";
 import ReadAsset from "./reads_assets.js";
 import { sequelize } from "./sequelize.js";
+import FCMToken from './tokens.js';
 import User from "./user.js";
 
-export { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, Notice, NoticesLike, Read, ReadAsset, User, sequelize };
+export { Admin, Alarm, Bookmark, BookmarkAsset, Event, EventsLike, FCMToken, Notice, NoticesLike, Read, ReadAsset, User, sequelize };
 

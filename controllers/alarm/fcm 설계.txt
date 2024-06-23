@@ -1,0 +1,64 @@
+fcm 설계
+
+0. 필요데이터
+  기기 토큰
+  토픽(alarmData에서 추출)
+
+1. 등록 순서도
+  클라이언트
+    1. 클라에서 토큰 획득
+    2. 서버로 토큰과 토픽 전송
+
+  서버
+    3. 토큰과 토픽 등록
+
+2. 메세지 전송 순서도
+  서버
+    1. node scheduler로 일정 등록
+    2. 토픽별로 전송
+
+  클라이언트
+    3. onMessage, background로 수신 및 표시
+
+3. 등록/해제 정보
+  A. 알림설정
+    - 북마크 or 전체
+        event_push: '행사 알림 켜기',
+          events_timer: '알림 시간',
+          events_form: '알림 형태',
+        events_post: '행사 등록 알림 켜기',
+    - 학사일정
+        major_schedule_push: '일정 당일 알림 켜기',
+        major_schedule_post: '일정 등록 알림 켜기',
+    - 공지
+        notice_push: '일반 공지 알림 켜기',
+        alerts_push: '긴급 공지 알림',
+        
+  B. 종류 별 가능한 토픽
+    - 북마크/전체: 시간24개
+        북마크: 개별 행사 전송(topic-event:id_time)
+        전체: 전체 행사 전송(topic-event_time)
+    - 행사등록, 학사일정, 공지(당일 알림, 등록)
+        당일 알림: 24시간 전에 전송(topic-var_push)
+        등록: 등록과 동시에 전송(topic-var_post)
+
+  C. 등록 시나리오
+    0. 전체 알람
+      on/off마다 클라이언트 이벤트 리스너 활성/비활성
+    1. event_push
+      A. 전체 받기
+        - event_time 토픽만 구독
+        - 다른 토픽들 구독 해제
+      B. 북마크만 받기
+        - 북마크 했던 event:id_time 토픽들 구독
+        - event_time 토픽 구독 해제
+    2. events_post, major_schedule_post/push, notice/alerts_push
+      - 해당 토픽 구독
+      - off시 해당 토픽 구독 해제
+
+  D. 등록 타이밍
+    최초 등록
+      - 클라이언트에서 setAlarm api 호출
+    알람 수정(on/off, bookmark)
+      - 버튼 조작 시 setAlarm/bookmark api 호출
+    

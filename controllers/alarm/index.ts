@@ -1,4 +1,5 @@
 import { setAlarm } from "./alarm.js";
+import { sendFCM, subscribeTopic, unsubscribeTopic } from './fcmUtils.js';
 
-export { setAlarm };
+export { sendFCM, setAlarm, subscribeTopic, unsubscribeTopic };
 
