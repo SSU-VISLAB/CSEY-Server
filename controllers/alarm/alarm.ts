@@ -5,7 +5,6 @@ import { getEventBookmarkInfo } from "../common_method/user_information.js";
 import { subscribeTopic, unsubscribeTopic } from "./index.js";
 
 const alarmDataKeyList = [
-  "id",
   "alarm_push",
   "event_push",
   "events_timer",
@@ -15,7 +14,6 @@ const alarmDataKeyList = [
   "major_schedule_post",
   "notice_push",
   "alerts_push",
-  "fk_user_id"
 ];
 
 type SetAlarmBody = {
@@ -32,16 +30,17 @@ export const setAlarm = async (
     const userId = params.id;
     const alarmData: IAlarm = JSON.parse(body.alarmData);
     const token = body.fcmToken;
+    const timer = alarmData.events_timer;
     // body값이 잘못됐는지 확인
     const alarmDataKeys = Object.keys(alarmData);
-    if (alarmDataKeys.some((key) => !alarmDataKeyList.includes(key))) {
+    if (alarmDataKeyList.some((key) => !alarmDataKeys.includes(key))) {
       return res.status(401).json({ error: "잘못된 key 입니다." });
     }
     const topics = await getTopics(userId, alarmData);
 
     const [fcmToken, created] = await FCMToken.findOrCreate({
       where: { fk_user_id: +userId, token },
-      defaults: { fk_user_id: +userId, token, topics, timer: alarmData.events_timer },
+      defaults: { fk_user_id: +userId, token, topics, timer },
       transaction,
     });
     // created면 토픽 등록
@@ -52,7 +51,7 @@ export const setAlarm = async (
     } else { // 수정이면 토픽 등록도 수정
       const before = fcmToken.topics;
       const after = topics;
-      await fcmToken.update({ topics, timer: alarmData.events_timer }, {
+      await fcmToken.update({ topics, timer }, {
         transaction
       });
       const { added, removed } = findDifferences(before, after);
