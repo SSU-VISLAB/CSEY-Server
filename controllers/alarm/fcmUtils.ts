@@ -4,7 +4,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const jsonFilePath = path.join(fileURLToPath(new URL(".", import.meta.url)), "../../firebaseKey.json");
+const jsonFilePath = path.join(fileURLToPath(new URL(".", import.meta.url)), "../../../firebaseKey.json");
 const json = readFile(jsonFilePath, "utf-8");
 json.then((v) => {
   admin.initializeApp({
@@ -38,7 +38,7 @@ export const unsubscribeTopic = (token: string | string[], topic: string) => {
       console.log('Error unsubscribing from topic:', error);
     })
     .finally(() => {
-      console.log('Successfully subscribed from topic:', topic);
+      console.log('Successfully unsubscribed from topic:', topic);
     });
 }
 

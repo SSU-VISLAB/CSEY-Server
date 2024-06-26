@@ -17,7 +17,7 @@ const alarmDataKeyList = [
 ];
 
 type SetAlarmBody = {
-  alarmData: string;
+  alarmData: IAlarm;
   fcmToken: string;
 }
 // PUT /users/:id/alarms/set
@@ -28,7 +28,7 @@ export const setAlarm = async (
   const transaction = await sequelize.transaction();
   try {
     const userId = params.id;
-    const alarmData: IAlarm = JSON.parse(body.alarmData);
+    const alarmData = body.alarmData;
     const token = body.fcmToken;
     const timer = alarmData.events_timer;
     // body값이 잘못됐는지 확인
